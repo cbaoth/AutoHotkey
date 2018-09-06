@@ -1,0 +1,64 @@
+= AutoHokey Scripts
+Andreas Weyer <dev@cbaoth.de>
+v1.0, 2018-09-06
+:toc:
+:toc-placement: auto
+//:sectnums:
+//:sectnumlevels: 3
+:source-highlighter: prettify
+//:source-highlighter: highlight.js
+:imagesdir: ./adoc_assets
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+== WindowTracking.ahk
+
+link:WindowTracking.ahk[] is a script that tracks window changes mainly to monitor window details like window id, class, process id, process executable and process name as a development tool e.g. for AutoHotkey.
+
+Thes capture windows details are shown in a simple tooltip:
+
+image::windowtracking_tootlip_1.png[]
+
+The script includes a blacklist that ignores windows like windows task-bar/-choose, desktop, the autohotkey tooltip itself and other windows that usually doesn't want to capture. These blacklisted windows are still captured, but separately. The details of the last captured blacklisted window can optionally be shown too:
+
+image::windowtracking_tootlip_2.png[]
+
+The defautl hotkeys win-F8 and win-shift-F8 toggle the tooltip _(monitoring on/off)_. While monitoring is activated the tooltip will refresh every time a different window is activated _(focus change)_.
+
+[source,autohetkey]
+----
+; win-F8 -> toggle tooltip without blacklisted windows
+#F8::_toggleShowTrackedWindows() ; clipboard on close, show final tt 5sec
+;#F8::_toggleShowTrackedWindows(,0,0) ; no clipboard, close immediate
+;#F8::_toggleShowTrackedWindows(,2) ; always clipboard (each change)
+
+; win-shift_F8 -> toggle tooltip with blacklisted windows
+#+F8::_toggleShowTrackedWindows(true) ; bl + clipboard on close, show final tt 5sec
+;#+F8::_toggleShowTrackedWindows(true,0,0) ; bl + no clipboard, close immediate
+;#F8::_toggleShowTrackedWindows(true,2) ; bl + always clipboard (each change)
+----
+
+Per default the tootlip content is copied to the clobard when monitoring is stopped _(toggle off)_. It is also possible to continuously update the clipboard or to not update the clipboard at all.
+
+The clipboard format is pretty much identical to the tooltip text, but it uses a single tab as colnumn delimiter and some "decorative" characters _(surrounding the variables)_ are omitted:
+
+[format=tsv,cols="1,3"]
+|===
+*ACTIVE WINDOW:*	 &nbsp;
+active_id	0x831b5a
+active_title	README.adoc - dotfiles - Visual Studio Code
+active_class	Chrome_WidgetWin_1
+active_pid	343836
+active_procname	Code.exe
+*PREVIOUS WINDOW:*	&nbsp;
+previous_id	0xd61bb4
+previous_title	AutoHotkey Community - Index page - Firefox Developer Edition
+previous_class	MozillaWindowClass
+previous_pid	172388
+previous_procname	firefox.exe
+|===
