@@ -16,19 +16,21 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-== WindowTracking.ahk
+== link:WindowTracking.ahk[]
 
-link:WindowTracking.ahk[] is a script that tracks window changes mainly to monitor window details like window id, class, process id, process executable and process name as a development tool e.g. for AutoHotkey.
+A script that tracks current and previous window details, like window id, class, process id, process executable and process name, in global variables, including a hotkey tooltip and clipboard functionality to be used as Windows / AutoHotkey development tool.
 
-Thes capture windows details are shown in a simple tooltip:
+By Pressing `Win-F8` _(default key binding)_ the monitoring mode is activated. While aktive, a tooltip like the following will be shown and updated after each window switch:
 
 image::windowtracking_tootlip_1.png[]
 
-The script includes a blacklist that ignores windows like windows task-bar/-choose, desktop, the autohotkey tooltip itself and other windows that usually doesn't want to capture. These blacklisted windows are still captured, but separately. The details of the last captured blacklisted window can optionally be shown too:
+The script includes a blacklist that ignores windows like windows task-bar/-choose, desktop, the autohotkey tooltip itself and other windows that usually doesn't want to capture. These blacklisted windows are still captured, but in a separate set of variables (single last blacklisted window only).
+
+The details of the last captured blacklisted window can additionally be shown by pressing `Win-Shift-F8` _(default key binding)_:
 
 image::windowtracking_tootlip_2.png[]
 
-The defautl hotkeys win-F8 and win-shift-F8 toggle the tooltip _(monitoring on/off)_. While monitoring is activated the tooltip will refresh every time a different window is activated _(focus change)_.
+The _(default)_ hotkeys `Win-(Shift-)F8` toggle the tooltip _(on/off)_. While monitoring is activated the tooltip will refreshes every time a new window is activated _(focus change)_.
 
 [source,autohetkey]
 ----
@@ -43,9 +45,9 @@ The defautl hotkeys win-F8 and win-shift-F8 toggle the tooltip _(monitoring on/o
 ;#F8::_toggleShowTrackedWindows(true,2) ; bl + always clipboard (each change)
 ----
 
-Per default the tootlip content is copied to the clobard when monitoring is stopped _(toggle off)_. It is also possible to continuously update the clipboard or to not update the clipboard at all.
+Per default the tootlip content is copied to the clipboard when monitoring is stopped _(toggle off)_ and the tooltip is updated for the last time _(before closing)_. Alternatively it is also possible to continuously update the clipboard _(on every window change)_ or to not update the clipboard at all. See the code documentation of `_toggleShowTrackedWindows` and the examples above.
 
-The clipboard format is pretty much identical to the tooltip text, but it uses a single tab as colnumn delimiter and some "decorative" characters _(surrounding the variables)_ are omitted:
+The clipboard text contains the same information as the tooltip but in a slightly simplified/cleaner format using `\t` as column delimiter:
 
 [format=tsv,cols="1,3"]
 |===
@@ -62,3 +64,31 @@ previous_class	MozillaWindowClass
 previous_pid	172388
 previous_procname	firefox.exe
 |===
+
+== Games
+
+Some game specific hotkeys and functions.
+
+=== link:PathOfExile.ahk[]
+
+Requires functions from link:Commons.ahk[]
+
+[cols="1,3",options="header"]
+|===
+Key|Function|
+``` _(hyphon)_ | Panik button. Use all flasks in random order with random intermittend delay.|
+`ctrl-h` | Enter the hideout _(if possible, e.g. from cities/camps)_.|
+|===
+
+=== link:Skyrim.ahk[]
+
+[cols="1,3",options="header"]
+|===
+Key|Function|
+`Win-[` | Load *Riften Honeyside* house using console command _(cheat, no official fast travel)_|
+`Win-]` | Load *Riften Thieves Guild Headquarters* using console command _(cheat, no official fast travel)_|
+|===
+
+=== link:Divinity.ahk[]: Original Sin
+
+_Todo ..._

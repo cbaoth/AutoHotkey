@@ -1,4 +1,4 @@
-; WindowTracking.ahk: Track window properties
+﻿; WindowTracking.ahk: Track window properties
 
 ; {{{ = Help =================================================================
 ; This script monitors details from the currently active and previously active
@@ -66,7 +66,9 @@ DetectHiddenWindows, On ; include hidden windows
 ; }}} - HotKeys --------------------------------------------------------------
 ; }}} = Environment ==========================================================
 
-; {{{ = Tooltip Helper =======================================================
+; {{{ = Commons ==============================================================
+; Same functions as in Commons.ahk, re-defined with "_" prefix (stand-alone).
+
 ; remove ToolTip after timeout in seconds (default 5), example:
 ;ToolTip, "Some text ..." ; show a tooltip
 ;_removeToolTipDelay() ; hide tolltip after 5 sec
@@ -76,7 +78,7 @@ _removeToolTip() {
 _removeToolTipDelay(sec=5) {
   SetTimer, _removeToolTip, % sec * -1000 ; remove tooltip after 5sec
 }
-; }}} = Tooltip Helper =======================================================
+; }}} = Commons ==============================================================
 
 ; {{{ = Window Tracking ======================================================
 ; {{{ - Trackng --------------------------------------------------------------
