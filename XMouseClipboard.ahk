@@ -2,26 +2,71 @@
 
 ; https://autohotkey.com/board/topic/44064-copy-on-select-implementation
 
-; {{{ = Copy Mouse Selectin ==================================================
+SetTitleMatchMode, RegEx
+
+; {{{ = HotKeys ==============================================================
+; {{{ - Copy On Selection ----------------------------------------------------
 ;; only use this in text-only windows (e.g. terminals), would trigger ctrl-c for
 ;; any mouse drag (e.g. drag files, icons, tabs, etc.) and copying of selection
 ;; not always intended (e.g. select and override something in an editor)
+
+;; DISABLED: works but needs further improvements (only copy if a text was
+;; selected, and only for specific windows like teriminals). If activated like
+;; it is, it copies too often (mostli undesired)
 
 ;; copy text on mouse drag or double-click (assume word selection)
 ;#IfWinNotActive ahk_class KiTTY ; already copies on selection
 ;$~LButton::
 ;  if (A_PriorHotKey = A_ThisHotKey && A_TimeSincePriorHotkey < 500)
-;    ; copy on double-click (asuming word selection)
+;    ;; copy on double-click (asuming word selection)
 ;    _xCopySelection()
 ;  else
-;    ; copy text (assuming mouse-drag selection)
-;    _xCopyOnMouseSelection()
+;    ;; copy text (assuming mouse-drag selection)
+;    _xCopyOnMouseSelection(20) ; using given mouse_drag_threshold (pixels)
 ;return
 ;return
+; }}} - Copy On Selection ----------------------------------------------------
 
+; {{{ - Paste On MiddleClick -------------------------------------------------
+;; bind middleclick to paste clipboard, bind shift-middleclick to paste
+;; quoted "" clipboard
+;; (~) middleclick is still performed
+;; ($) script will not trigger itself
+
+;; disable feature for some apps that already use middlemouse paste ore have
+;; other issues with this feature
+#IfWinNotActive ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty)$
+  $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
+  $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; Ctrl-v, add double quotes ""
+#IfWinNotActive
+
+;; we exclude Chrome_WidgetWin_1 due to some electron apps requiring other keys
+;; so we have to activate the default binings for all regular electron apps and
+;; chrome itself
+#IfWinActive ahk_exe i)\\(chrome|Code)\.exe$
+  $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
+  $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; Ctrl-v, add double quotes ""
+#IfWinNotActive
+
+;; some (partially electron based) terminals require Ctrl-Shift-v and no
+;; click-throug {~}
+#IfWinActive ahk_exe i)\\(terminus|hyper)\.exe$
+  $mbutton::_xPasteOnMiddleClick("^+v")
+  $+mbutton::_xPasteOnMiddleClick("^+v", "{ASC 34}")
+#IfWinNotActive
+
+;; apps in which only the quoted-paste feature should be active, but without
+;; click-through (~). these apps already support middle-click paste
+#IfWinActive ahk_class i)^(MozillaWindowClass|KiTTY|Putty)$
+  $+mbutton::_xPasteOnMiddleClick("{MButton}", "{ASC 34}")
+#IfWinActive
+; }}} - Paste On MiddleClick -------------------------------------------------
+; }}} = HotKeys ==============================================================
+
+; {{{ = Copy Mouse Selection =================================================
 ;; copy newly (mouse) selected text to the clipboard
-;; mouse_drag_threshould = min drag distance, if actual value lower -> do nothing
-;; lower -> works with smaller selections but may trigger in unwanted cases
+;; mouse_drag_threshould = min drag distance, if actual distance lower -> do nothing
+;; lower values will work with shorter selections but may trigger in unwanted cases
 _xCopyOnMouseSelection(mouse_drag_threshold:=20) {
   local mouse_start_pos_x, mouse_start_pos_y
   local mouse_end_pos_x, mouse_end_pos_y
@@ -59,69 +104,30 @@ _xCopySelection() {
   SendInput ^c ; copy selection to clipboard
   ; }
 }
-; }}} = Copy Mouse Selectin ==================================================
+; }}} = Copy Mouse Selection =================================================
 
 ; {{{ = Paste on Middle-Click ================================================
-;; bind middleclick to paste clipboard, bind shift-middleclick to paste
-;; quoted "" clipboard, contains some exceptions
-;; (~) middleclick is still performed
-;; ($) script will not trigger itself
-
-;GroupAdd, MButtonPaste, ahk_class Putty ; MozillaWindowClass
-;GroupAdd, MButtonPaste, ahk_class KiTTY
-;return
-
-#IfWinNotActive ahk_class MozillaWindowClass ; about:config, middlemouse.paste = true
-$~mbutton::_xPasteOnMiddleClick()
-;$mbutton::_xPasteOnMiddleClick()
-$~+mbutton::_xPasteOnMiddleClick()
-;$+mbutton::_xPasteOnMiddleClick()
-return
-
 ;; x-like paste on mouse middle-click with special handling for some apps
 ;; and added quotes "[Clipboard]" when Shift is pressed
-_xPasteOnMiddleClick() {
-  local clip_set, clip_tmp
-  local win_class, win_procname
-
-  ;; skip all of this if clipboard contains non-text object
-  if !DllCall("IsClipboardFormatAvailable", "uint", 1) {
+;; paste_key = keybinding for pasting clipboard content (default: Ctrl-v)
+;; quote_key = optinal quote keys inserted before and after pasting
+_xPasteOnMiddleClick(paste_key:="^v", quote_key:="") {
+  ;; skip whole process if clipboard contains non-text object
+  if ! DllCall("IsClipboardFormatAvailable", "uint", 1) {
     return
   }
 
-  ;; get current window details
-  WinGetClass, win_class, A
-  WinGet, win_procname, ProcessName, A
-
-  ;; save clipboard and add quotes, if shift is pressed
-  if GetKeyState("Shift") {
-    ; add quotes to clipboard. solution not so nice, potential side-effects if
-    ; someone is watching clipboard.
-    clip_tmp = %Clipboard%
-    Clipboard = "%Clipboard%"
-    clip_set := true
-  } else clip_set := false
-
-  ;; some terminasl already use MButton for pasting (simply do nothing)
-  if (win_class == "KiTTY") {
-    ; if (clip_set) {
-    ;   ; already use, only extend with quote (shift) featuer
-    SendInput {MButton}
-    ; }
-  ;; some terminals use: ctrl-shift-v
-  } else if (win_procname = "terminus.exe" || win_procname = "hyper.exe") {
-    SendInput ^+v ; ctrl-shift-v for these terminals
-  ;; some apps use: ctrl-insert
-  ; } else if (...) {
-  ;   Sendinput ^+{Insert}
-  ;; use (default): ctrl-v
-  } else {
-    SendInput ^v ; ctrl-v default
+  ;; add leading quote (if any)
+  if quote_key { ; GetKeyState("Shift", "P") {
+    Send, % quote_key
   }
 
-  ;; reset clipboard content, if temporarily changed before
-  if clip_set {
-    Clipboard = %clip_tmp%
+  ;; paste using given key
+  SendInput, % paste_key
+
+  ;; add trailing quote (if any)
+  if quote_key {
+    Send, % quote_key
   }
 }
 ; }}} = Paste on Middle-Click ================================================
