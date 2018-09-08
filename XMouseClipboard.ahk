@@ -22,7 +22,7 @@ SetTitleMatchMode, RegEx
 ;    _xCopySelection()
 ;  else
 ;    ;; copy text (assuming mouse-drag selection)
-;    _xCopyOnMouseSelection(20) ; using given mouse_drag_threshold (pixels)
+;    _xCopyOnMouseSelection(, 20) ; using given mouse_drag_threshold (pixels)
 ;return
 ;return
 ; }}} - Copy On Selection ----------------------------------------------------
@@ -37,7 +37,7 @@ SetTitleMatchMode, RegEx
 ;; other issues with this feature
 #IfWinNotActive ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty)$
   $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
-  $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; Ctrl-v, add double quotes ""
+  $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
 #IfWinNotActive
 
 ;; we exclude Chrome_WidgetWin_1 due to some electron apps requiring other keys
@@ -45,14 +45,14 @@ SetTitleMatchMode, RegEx
 ;; chrome itself
 #IfWinActive ahk_exe i)\\(chrome|Code)\.exe$
   $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
-  $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; Ctrl-v, add double quotes ""
+  $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
 #IfWinNotActive
 
 ;; some (partially electron based) terminals require Ctrl-Shift-v and no
 ;; click-throug {~}
 #IfWinActive ahk_exe i)\\(terminus|hyper)\.exe$
-  $mbutton::_xPasteOnMiddleClick("^+v")
-  $+mbutton::_xPasteOnMiddleClick("^+v", "{ASC 34}")
+  $mbutton::_xPasteOnMiddleClick("^+v") ; Ctrl-Shift-v
+  $+mbutton::_xPasteOnMiddleClick("^+v", "{ASC 34}") ; add double quotes ""
 #IfWinNotActive
 
 ;; apps in which only the quoted-paste feature should be active, but without
@@ -67,41 +67,37 @@ SetTitleMatchMode, RegEx
 ;; copy newly (mouse) selected text to the clipboard
 ;; mouse_drag_threshould = min drag distance, if actual distance lower -> do nothing
 ;; lower values will work with shorter selections but may trigger in unwanted cases
-_xCopyOnMouseSelection(mouse_drag_threshold:=20) {
+_xCopyOnMouseSelection(copy_key:="^c", mouse_drag_threshold:=20) {
   local mouse_start_pos_x, mouse_start_pos_y
   local mouse_end_pos_x, mouse_end_pos_y
-  local mouse_travel_distance
+  local dist_x, dist_y, dist_travel
 
   MouseGetPos, mouse_start_pos_x, mouse_start_pos_y ; start position
   KeyWait LButton ; wait until LButton (drag) is released
   MouseGetPos, mouse_end_pos_x, mouse_end_pos_y ; end position
   ;; travel distance between the points
-  mouse_travel_distance := Round(Sqrt((Abs(mouse_start_pos_x - mouse_end_pos_x) ** 2)
-                                      + (Abs(mouse_start_pos_y - mouse_end_pos_y) ** 2)))
+  dist_x := Abs(mouse_start_pos_x - mouse_end_pos_x) ; x axis distance
+  dist_y := Abs(mouse_start_pos_y - mouse_end_pos_y) ; y axis distance
+  dist_xy := Round(Sqrt((dist_x ** 2) + (dist_y ** 2))) ; screen travel distance
   ;; threshold not reached? return (do nothing)
-  if (mouse_travel_distance < mouse_drag_threshold) {
+  if (dist_xy < mouse_drag_threshold) {
     return
   }
   ; ToolTip % "x distance: " . Abs(mouse_start_pos_x - mouse_end_pos_x)
   ;           . "`ny distance: " . Abs(mouse_start_pos_y - mouse_end_pos_y)
-  ;           . "`ntravel distance: " . mouse_travel_distance
+  ;           . "`ntravel distance: " . dist_xy
   _xCopySelection()
 }
 
 ;; copy selection using ctrl-c per default (add app specifics here)
-_xCopySelection() {
+_xCopySelection(copy_key:="^c") {
   local win_class, win_procname
 
   ;; get current window details
   WinGetClass, win_class, A
   WinGet, win_procname, ProcessName, A
 
-  ; if (win_class == "KiTTY") {
-  ;   return ; do nothing, already
-  ; } else if (...) {
-  ;   SendInput ^+c
-  ; } else { ; default
-  SendInput ^c ; copy selection to clipboard
+  SendInput, % copy_key ; copy selection to clipboard
   ; }
 }
 ; }}} = Copy Mouse Selection =================================================

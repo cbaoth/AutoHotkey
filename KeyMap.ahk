@@ -71,18 +71,18 @@ SC056::Control
 
 ;#HotkeyModifierTimeout -1
 ;; Colemak alternative braces
-;<^>!n::Send {ASC 40}  ; AltGr-n -> (
-;é::Send {ASC 40}      ; AltGr-n -> (
-;<^>!e::Send {ASC 41}  ; AltGr-e -> )
-;ñ::Send {ASC 40}      ; AltGr-e -> )
-;<^>!+n::Send {ASC 91} ; AltGr-N -> [
-;Ñ::Send {ASC 40}      ; AltGr-N -> [
-;<^>!+e::Send {ASC 93} ; AltGr-E -> ]
-;É::Send {ASC 40}      ; AltGr-E -> ]
-;<^>!i::Send {ASC 123} ; AltGr-N -> {
-;í::Send {ASC 123}     ; AltGr-N -> {
-;<^>!o::Send {ASC 125} ; AltGr-E -> }
-;ó::Send {ASC 125}     ; AltGr-E -> }
+<^>!n::Send {ASC 40}  ; AltGr-n -> (
+é::Send {ASC 40}      ; AltGr-n -> (
+<^>!e::Send {ASC 41}  ; AltGr-e -> )
+ñ::Send {ASC 40}      ; AltGr-e -> )
+<^>!+n::Send {ASC 91} ; AltGr-N -> [
+Ñ::Send {ASC 40}      ; AltGr-N -> [
+<^>!+e::Send {ASC 93} ; AltGr-E -> ]
+É::Send {ASC 40}      ; AltGr-E -> ]
+<^>!i::Send {ASC 123} ; AltGr-N -> {
+í::Send {ASC 123}     ; AltGr-N -> {
+<^>!o::Send {ASC 125} ; AltGr-E -> }
+ó::Send {ASC 125}     ; AltGr-E -> }
 
 ;; Simulate a NUMPAD (win+ctrl+[x])
 ;#^6::NumLock
@@ -104,10 +104,17 @@ SC056::Control
 ; }}} = Hacker Remapping =====================================================e
 
 ; {{{ = CapsLock n [KEY] =====================================================
+;; RightWin-W/A/S/D (Colemak: W/A/R/S) -> Cursor (no RightWin on all Keyboards)
 ;>#w::Send {Up}
 ;>#a::Send {Left}
 ;>#r::Send {Down}
 ;>#s::Send {Right}
+
+;; Win-I/J/K/L (Colemak: U/N/E/I) -> Cursor (improved VIM bindings)
+#u::Send {Up}
+#n::Send {Left}
+#e::Send {Down}
+#i::Send {Right}
 
 ;; http://www.autohotkey.com/board/topic/113783-hand-friendly-text-navigation-help/
 ;CapsLock & w::
@@ -154,27 +161,14 @@ SC056::Control
 #<!0::Send {Volume_Mute} ; Win-LeftAlt-0
 ; }}} = Media Keys ===========================================================
 
-; {{{ = Windows commands + SHIFT (if deactivated) ============================
-;; re-enable some basic windows key-bindings, but with additional Shift mod
-;; can be used if windows default keybindings are disabled (done to avoid
-;; unnecessary mappings like Win-1/2/3/...)
-
-;; (Shift-)Win+e (f on Colemak) -> Exlorer
-#+f::Run, explorer.exe
-;; (Shift-)Win+d (s on Colemak) -> Show Desktop
-#+s::Run, %userprofile%\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\Shows Desktop.lnk
-;; (Shift-)Win+r (p on Colemak) -> Run-dialog
-#+r::Run, explorer.exe Shell:::{2559a1f3-21d7-11d4-bdaf-00c04f60b9f0}
-; }}} = Windows commands + SHIFT (if deactivated) ============================
-
 ; {{{ = Win-X, [Key] control sequences =======================================
 ;; Win-X, [Key] - Emacs/Screen/Tmux-like control sequence
 #x::
   Input Key, L1, T2
-  if Key=k
-    WinKill, A  ; kill active window
-  else if Key=c
-    WinClose, A ; close active window
+  if Key=k ; k: kill active window
+    WinKill, A
+  else if Key=c ; c: close active window
+    WinClose, A
 return
 ; }}} = Win-X, [Key] control sequences =======================================
 

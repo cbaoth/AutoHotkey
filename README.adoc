@@ -16,6 +16,80 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
+:icon-x: image:https://png.icons8.com/color/50/000000/close-window.png[,24]
+:icon-ok: image:https://png.icons8.com/color/50/000000/ok.png[,24]
+
+== link:AutoHotkey.ahk[]
+
+[cols=""]
+Core AHK script.
+
+All included scripts expect that the following parametrs are set:
+
+[source,autohotkey]
+----
+SetTitleMatchMode, RegEx ; Match window names, ahk_class, ahk_exec, etc. using regex
+----
+
+All AHK scripts listed below are included in this core script. In addition at least the following key-bings are defined:
+
+[cols="1,2,2,4",options="header"]
+|====
+|Active|Key|Action|Description
+|{icon-ok}|`Win-Return`|Open Terminal|Runs one of _(first availlable)_: https://eugeny.github.io/terminus/[Terminus], https://hyper.is/[Hyper], http://www.9bis.net/kitty/[ConEmu], Powershell _(open home directory)_.
+|{icon-ok}|`Win-Shift-Return`|Run Powershell as Admin|Runs Powershell as Admininistrator.
+|{icon-ok}|`Win-F1-4`|SSH|Focus / launch various SSH sessions (http://www.9bis.net/kitty/[KITTY]).
+|{icon-ok}|`Win-b`|Browser|Focus / launch browser (https://www.google.de/chrome/[Chrome]).
+|{icon-ok}|`Win-e` _(US: k)_|Editor|Focus / launch editor (https://code.visualstudio.com/[VS Code]).
+|{icon-ok}|`Win-Shift-e` _(US: K)_|Paste to Editor|Copy selection, paste into editor _(newline)_, and switch back to original window.
+|{icon-ok}|`Win-m`|Mail|Focus / launch mail client (Outlook).
+|{icon-ok}|`Win-w`|Web Search|Web search for current text selection.
+|{icon-ok}|`Win-Shift-f` _(US: e)_|Explorer|Windows "Explorer" Run window exloper _(default: `Win-e`)_. Default bindings disabled.
+|{icon-ok}|`Win-Shift-s` _(US: d)_|Show Desktop|Windows "Show Desktop" _(default: `Win-d`)_. Default bindings disabled.
+|{icon-ok}|`Win-Shift-r` _(US: s)_|Run|Windows "Run Dialog" _(default: `Win-r`)_. Default bindings `Win-s `(US: r) disabled, starts http://keypirinha.com/[Keypirinha] instead _(app setting)_.
+|{icon-ok}|`Win-F9`|Move Window|Move active window to 100x100 of second screen.
+|{icon-ok}|`Win-LeftAlt-F9`|Move Window|Move active window negative by window decoration _(center window content, e.g. hide decoration for game in windowed mode)._
+|====
+
+== link:KeyMap.ahk[]
+
+Some basice key(re-)maps. Note that my default keyboard layout is https://colemak.com[Colemak]:
+
+image::colemak-layout.png[]
+
+Keybiding excerpts _(some disabled in my current setup)_:
+
+[cols="1,2,2,4",options="header"]
+|====
+|Active|Key|Action|Description
+|{icon-ok}|`XButton1` _(Mouse 4)_|`PageUp`|Faster paging than mouse-wheel, if needed. Replaces prev/next (usually useless, key-combo).
+|{icon-ok}|`XButton2` _(Mouse 5)_|`PageDown`|_See above ..._
+|{icon-ok}|`Win-Alt-Space`|`MediaKey: Pause`|Easy acces, esp. if dedicated media keys are not availlable.
+|{icon-ok}|`Win-Alt-Up`|`MediaKey: Previous Track`|_See above ..._
+|{icon-ok}|`Win-Alt-Down`|`MediaKey: Next Track`|_See above ..._
+|{icon-ok}|`Win-Alt-0`|`MediaKey: Toggle Mute`|_See above ..._
+|{icon-ok}|`Win-Alt-Dash` _(-)_|`MediaKey: Lower Volume`|_See above ..._
+|{icon-ok}|`Win-Alt-=` _(+)_|`MediaKey: Raise Volume`|_See above ..._
+|{icon-ok}|`Win-x, Win-c`|Close current window|Same as Alt-F4
+|{icon-ok}|`Win-x, Win-k`|Kill current window (process)|Easily kill app if not responding
+|{icon-ok}|`Alt/Shift-ScrollLock`|Toggle CapsLock|Noone really needs CapsLock nowadays but sometimes it is activated for no apparent reason, so it's good to have a key-binding to deactivate it._
+|{icon-ok}|`SC056` _(DE: `<>&#124;`)_|`Control`|If, for some strange twist of faith, I'm forced to use a german QWERTZ keybobard, the otherwise useless `<>&#124;` key will be re-mapped to `Control`.
+|{icon-x}|`[/]`|`(/)`|Classic lisp hacker / emacs mapping, but also practical foro most users in daily life (since `(/)` more commonly used, but dedicated keys for less used `[/]`. Today I favor the mappings shown below.
+|{icon-ok}|`AltGr-n/e`|`(/)`|Homerow access _(`j/k` on US layout)_.
+|{icon-ok}|`AltGr-N/E`|`[/]`|Homerow access _(`J/K` on US layout)_.
+|{icon-ok}|`AltGr-i/o`|`{/}`|Homerow access _(`l/;` on US layout)_.
+|====
+
+Additional _(currently disabled)_ mappings exist for:
+
+* German umlauts accessiable on default german keybord positions + `AltGr` (e.g. `AltGr-;` &rarr; `ö`) or like on common international layout _(AltGr)_ position (e.g. `AltGr-p` &rarr; `ö`).
+** The latter is already the case with the international US Colemak layout.
+* `CapsLock` &rarr; `Backspace`
+** Already default with Colemak layout _(partially not the case in the past)_.
+* `CapsLock` &rarr; `Control`
+** Old hacker mapping _(e.g. from emacs users)_ but no longer prefered by me. Ctrl already easily accessible but `backspace` requires leaving home-row, so I prefer `backspace` instead.
+
+
 == link:WindowTracking.ahk[]
 
 A script that tracks current and previous window details, like window id, class, process id, process executable and process name, in global variables, including a hotkey tooltip and clipboard functionality to be used as Windows / AutoHotkey development tool.
@@ -30,7 +104,7 @@ The details of the last captured blacklisted window can additionally be shown by
 
 image::windowtracking_tootlip_2.png[]
 
-The _(default)_ hotkeys `Win-(Shift-)F8` toggle the tooltip _(on/off)_. While monitoring is activated the tooltip will refreshes every time a new window is activated _(focus change)_.
+The _(default)_ hotkeys `Win-(Alt-)F8` toggle the tooltip _(on/off)_. While monitoring is activated the tooltip will refreshes every time a new window is activated _(focus change)_.
 
 [source,autohetkey]
 ----
@@ -65,6 +139,37 @@ previous_pid	172388
 previous_procname	firefox.exe
 |===
 
+== link:XMouseClipboard.ahk[]
+
+This script tries to provide the "copy on selection" and "middle-click paste" features known from X Windows.
+
+=== Middle-click Paste
+Allows middle-click (`MButton`) paste in most apps, with "click-through" (`~`) support _(for apps that treat middle-click in a special way, e.g. navigation in 3D/CAD apps)_, and special rules for individual apps like e.g. KITTY/Putty/Firefox _(`MButton` paste configurable)_ or common terminals (`Ctrl-Shift-v`).
+
+[cols="1,3",options="header"]
+|===
+|Key|Function
+|`MButton`|Paste text into the current app (key binding depending on app, default `Ctrl-v`, terminals usually `Ctrl-Shift-v`, etc.)
+|`Shift-MButton`|Same as above but enclose the pasted text into double-quotes `"{Clipboard}"`.
+|===
+
+=== Copy on Selection
+
+This one is a bit tricky. For now the script is not able to identify whether a text window / editor is active (with a text selection) or not. It is only able to identify that a _drag_ action was performed with the mouse. Since there are any number of possible drag actions that could be performed, intentially _(e.g. drag-drop file)_ or unintentially _(e.g. drag slightly when clicking an action button)_ this approach is not very reliable. In addition in many cases it is not desired that a selected text is automatically copied to the clipboard _(e.g. select text to override / compare it with the clipboard content)_. That's why this feature is currently disabled (in my scripts), it would need additional work an restrictions _(e.g. termianal windows only)_ to be usable in an accetable manner. Since most windows termials already support copy on selection out of the box, ther is currently no immediate need for this feature.
+
+== link:ConfineMouse.ahk[]
+
+This scripts confines the mouse inside the current window's screen area, optionally without the decoration _(fixed margin)_.
+
+[cols="1,3",options="header"]
+|===
+|Key|Function
+|`Win-F11`|Toggle window confinement with a fixed margin to exclude window decoration.
+|`Win-Alt-F11`|Same as above but confined to the full window size include deciration.
+|===
+
+This is sometimes desired when working in a mouse-heavy application or game, especially in a mutli-screen environment. In other usecase are apps/games that are windowed but should actually be full-screen. The scripts helps avoiding exiting the working area by mistake and by mistake clicking e.g. somewhere on the window borders, outside the window or on the task-bar.
+
 == Games
 
 Some game specific hotkeys and functions.
@@ -85,10 +190,14 @@ Key|Function|
 [cols="1,3",options="header"]
 |===
 Key|Function|
-`Win-[` | Load *Riften Honeyside* house using console command _(cheat, no official fast travel)_|
-`Win-]` | Load *Riften Thieves Guild Headquarters* using console command _(cheat, no official fast travel)_|
+`Win-[` | Load *Riften Honeyside* house using console command _(considered a cheat, no official fast travel)_|
+`Win-]` | Load *Riften Thieves Guild Headquarters* using console command _(considered a cheat, no official fast travel)_|
 |===
 
 === link:Divinity.ahk[]: Original Sin
 
-_Todo ..._
+...
+
+== Appendix
+
+Icon pack by https://icons8.com/[Icons8]
