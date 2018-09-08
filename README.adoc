@@ -24,14 +24,14 @@ endif::[]
 [cols=""]
 Core AHK script.
 
-All included scripts expect that the following parametrs are set:
+All included scripts assume the following parameter settings:
 
 [source,autohotkey]
 ----
 SetTitleMatchMode, RegEx ; Match window names, ahk_class, ahk_exec, etc. using regex
 ----
 
-All AHK scripts listed below are included in this core script. In addition at least the following key-bings are defined:
+All AHK scripts listed below are included _(referenced)_ in this core script. In addition the following key-bings are defined _(excerpt)_:
 
 [cols="1,2,2,4",options="header"]
 |====
@@ -53,7 +53,7 @@ All AHK scripts listed below are included in this core script. In addition at le
 
 == link:KeyMap.ahk[]
 
-Some basice key(re-)maps. Note that my default keyboard layout is https://colemak.com[Colemak]:
+Some basic key(re-)maps. Note that my default keyboard layout is https://colemak.com[Colemak]:
 
 image::colemak-layout.png[]
 
@@ -62,9 +62,9 @@ Keybiding excerpts _(some disabled in my current setup)_:
 [cols="1,2,2,4",options="header"]
 |====
 |Active|Key|Action|Description
-|{icon-ok}|`XButton1` _(Mouse 4)_|`PageUp`|Faster paging than mouse-wheel, if needed. Replaces prev/next (usually useless, key-combo).
+|{icon-ok}|`XButton1` _(Mouse 4)_|`PageUp`|Faster paging than mouse-wheel. Replaces prev./next _(usually useless)_ binding.
 |{icon-ok}|`XButton2` _(Mouse 5)_|`PageDown`|_See above ..._
-|{icon-ok}|`Win-Alt-Space`|`MediaKey: Pause`|Easy acces, esp. if dedicated media keys are not availlable.
+|{icon-ok}|`Win-Alt-Space`|`MediaKey: Pause`|Easier media key acces _(also usefull if dedicated keys not availlable)_.
 |{icon-ok}|`Win-Alt-Up`|`MediaKey: Previous Track`|_See above ..._
 |{icon-ok}|`Win-Alt-Down`|`MediaKey: Next Track`|_See above ..._
 |{icon-ok}|`Win-Alt-0`|`MediaKey: Toggle Mute`|_See above ..._
@@ -72,12 +72,12 @@ Keybiding excerpts _(some disabled in my current setup)_:
 |{icon-ok}|`Win-Alt-=` _(+)_|`MediaKey: Raise Volume`|_See above ..._
 |{icon-ok}|`Win-x, Win-c`|Close current window|Same as Alt-F4
 |{icon-ok}|`Win-x, Win-k`|Kill current window (process)|Easily kill app if not responding
-|{icon-ok}|`Alt/Shift-ScrollLock`|Toggle CapsLock|Noone really needs CapsLock nowadays but sometimes it is activated for no apparent reason, so it's good to have a key-binding to deactivate it._
+|{icon-ok}|`Alt/Shift-ScrollLock`|Toggle CapsLock|Noone really needs CapsLock nowadays but sometimes it is activated for no apparent reason, so it's good to have a key-binding to deactivate it.
 |{icon-ok}|`SC056` _(DE: `<>&#124;`)_|`Control`|If, for some strange twist of faith, I'm forced to use a german QWERTZ keybobard, the otherwise useless `<>&#124;` key will be re-mapped to `Control`.
-|{icon-x}|`[/]`|`(/)`|Classic lisp hacker / emacs mapping, but also practical foro most users in daily life (since `(/)` more commonly used, but dedicated keys for less used `[/]`. Today I favor the mappings shown below.
-|{icon-ok}|`AltGr-n/e`|`(/)`|Homerow access _(`j/k` on US layout)_.
-|{icon-ok}|`AltGr-N/E`|`[/]`|Homerow access _(`J/K` on US layout)_.
-|{icon-ok}|`AltGr-i/o`|`{/}`|Homerow access _(`l/;` on US layout)_.
+|{icon-x}|`[/]`|`(/)`|Classic lisp hacker / emacs mapping, but also practical in daily life, since `(/)` is more commonly used than `[/]` even thoug dedicated keys exist for the latter.
+|{icon-ok}|`AltGr-n/e`|`(/)`|Homerow access to brackets _(`j/k` on US layout)_.
+|{icon-ok}|`AltGr-N/E`|`[/]`|Homerow access to brackets _(`J/K` on US layout)_.
+|{icon-ok}|`AltGr-i/o`|`{/}`|Homerow access to brackets _(`l/;` on US layout)_.
 |====
 
 Additional _(currently disabled)_ mappings exist for:
@@ -119,7 +119,7 @@ The _(default)_ hotkeys `Win-(Alt-)F8` toggle the tooltip _(on/off)_. While moni
 ;#F8::_toggleShowTrackedWindows(true,2) ; bl + always clipboard (each change)
 ----
 
-Per default the tootlip content is copied to the clipboard when monitoring is stopped _(toggle off)_ and the tooltip is updated for the last time _(before closing)_. Alternatively it is also possible to continuously update the clipboard _(on every window change)_ or to not update the clipboard at all. See the code documentation of `_toggleShowTrackedWindows` and the examples above.
+Per default the tootlip content is copied to the clipboard when monitoring is stopped _(toggle off)_. Alternatively it is possible to continuously update the clipboard _(on every window change)_ or to not update the clipboard at all. See the code documentation of `_toggleShowTrackedWindows` and the examples above.
 
 The clipboard text contains the same information as the tooltip but in a slightly simplified/cleaner format using `\t` as column delimiter:
 
