@@ -171,31 +171,47 @@ This scripts confines the mouse inside the current window's screen area, optiona
 This is sometimes desired when working in a mouse-heavy application or game, especially in a mutli-screen environment. In other usecase are apps/games that are windowed but should actually be full-screen. The scripts helps avoiding exiting the working area by mistake and by mistake clicking e.g. somewhere on the window borders, outside the window or on the task-bar.
 
 
-== link:CopyPasteToApp.ahk[]
+== link:SendToWindow.ahk[]
 
-This script copies the current selection into the clipboard, switches to a given target window (e.g. editor), pasts the clipboard content and returns back to the previous window.
+This script sends a sequence of keys to the current window _(optional)_, switches to a target window, sends another key sequence _(optional)_, and finally switches back to the previous window.
 
 [cols="1,3",options="header"]
 |===
 |Key|Function
-|`Win-Alt-e`|Copy (text only) to Visual Studio Code, before pasting press `End`, after pasting press `Return, Home`.
+|`Win-Alt-e`|Copy _(text only)_ to clipboard, switch to code editor, paste text switch back.
+|`Win-Alt-Shift-e`|Copy _(text only)_ to clipboard, switch to code editor, press `End, Return, Home` _(add newline, home to avoid auto-indent)_ and paste text.
 |===
+
+The following (configurable) steps are executed in sequence:
+
+* Optionally clear the clipboard (`clipboard_mode > 0`)
+* Optoinally send a series of keys (`source_keys`) to the active window
+* Optionally wait for the clipboard (`clipboard_mode > 0`)
+* Optionally stop if clipboard dose contain something other than text (`clipboard_mode == 0`)
+* Switch to the `target_window`
+* Optionally send a series of keys (`target_keys`) to the target window
+* Switch back to the previously active window
 
 === Hotkey Examples
 
+Note that the default parameters are set to copy text only (`cliboard_mode = 1`) using `Ctrl-c` (`source_keys = "^c"`) and `Ctrl-v` (`target_keys = "^v"`).
+
 [source,autohetkey]
 ----
-;; copy to Notepad++
-#!e::_copyPasteToApp("ahk_class i)^Notepad\+\+$")
+;; copy text only to Notepad++ (no fancy stuff)
+_sendToWindow("ahk_class i)^Notepad\+\+$")
 
-;; copy to emacs using Ctrl-y to paste
-#!e::_copyPasteToApp("ahk_class i)^Emacs$",, "^y")
+;; copy text only to emacs using Ctrl-y to paste
+_sendToWindow("ahk_class i)^Emacs$",, "^y")
 
-;; Copy to KITTY SSH session (host 10.0.23.12) using Shift-Insert, finally press Return
-#!e::_copyPasteToApp("i)10.0.23.12.*ssh.*Kitty",, "+{Insert}","","{Return}") ; paste to ssh
+;; switch to mpv an toggle playback (play/pause) using the space key
+_sendToWindow("ahk_class i)^mpv$", "", "{Space}", 0)
 
-;; Copy to WordPad into a new line and add newline after pasting, copy non-text (e.g. images) too
-#!e::_copyPasteToApp("ahk_class WordPadClass",,, "+{End}{Return}", "{Return}", false) ; paste to wordpad (non-text too)
+;; copy to KITTY SSH session (host 10.0.23.12) using Shift-Insert, finally press Return
+_sendToWindow("i)10.0.23.12.*ssh.*Kitty",, "+{Insert}{Return}")
+
+;; copy to WordPad into a new line and add newline after pasting, copy non-text too (e.g. images)
+_sendToWindow("ahk_class WordPadClass",, "{End}{Return}^v{Return}", 2)
 ----
 
 == Games
