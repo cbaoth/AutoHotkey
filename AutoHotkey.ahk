@@ -47,6 +47,8 @@ SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMod
 #Include ConfineMouse.ahk
 ;; X like paste on middle-click
 #Include XMouseClipboard.ahk
+;; Copy-paste current selection to editor
+#Include CopyPasteToApp.ahk
 ;; activate win+mouse drage and resize
 #Include AutoHotkey_EasyWindowDrag.ahk
 
@@ -77,9 +79,6 @@ SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMod
 ; }}} - Windows commands + SHIFT (if deactivated) ----------------------------
 
 ; {{{ - Putty / Kitty --------------------------------------------------------
-#+F1::Run, %KITTY% ; Win-Shift-F1 -> open Kitty
-#F1::Run, %KITTY% -load "yav.in"  ; Win-F1 -> SSH to yav.in
-
 ;; define ssh hotkeys based on current host (map Win-F* to kitty profiles)
 #If %computername% = motoko ; on host motoko
   #F2::Run, %KITTY% -load "saito"
@@ -91,6 +90,9 @@ SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMod
   #F3::Run, %KITTY% -load "saito (remote)"
   #F4::Run, %KITTY% -load "motoko-vm (remote)"
 #If
+
+#!F1::Run, %KITTY% ; Win-Alt-F1 -> open Kitty
+#F1::Run, %KITTY% -load "yav.in"  ; Win-F1 -> SSH to yav.in
 ; }}} - Putty / Kitty --------------------------------------------------------
 
 ; {{{ - Run or Focus Apps ----------------------------------------------------
@@ -168,62 +170,6 @@ return
   }
 return
 ; }}} - Quick Web Search -----------------------------------------------------
-
-; {{{ - Copy and Paste to App ------------------------------------------------
-;; copy current selection, if the clipboard contains text, switch to the editor
-;; paste clipboard text in a new line, and switch back to the previous window
-;; copy_key = they key to copy to the clipboard (default: Ctrl-c)
-;; paste_key = they key to paste the clipboard content (default: Ctrl-v)
-;; pre_paste_keys = the keys to send before pasting (default: {End})
-;; post_paste_keys = the keys to send after pasting (default: {Return}{Home})
-_copyPasteToEditor(editor_window:="ahk_class i)^Notepad$", copy_key:="^c"
-                 , paste_key:="^v", pre_paste_keys:="{End}"
-                 , post_paste_keys:="{Return}{Home}") {
-  local win_id, editor_id
-
-  ;; clear clipboard
-  Clipboard =
-
-  ;; remember currently active window and get editor window
-  WinGet, win_id, ID, A
-  WinGet, editor_id, ID, ahk_exe i)\\Code\.exe$
-
-  ;; editor not found,
-  if ! editor_id {
-    return
-  }
-
-  ;; copy (something, hopefully a text selection)
-  SendInput, % copy_key
-  ;; wait for the clipboard to be set
-  ClipWait
-  ;; skip whole process if clipboard contains non-text object
-  if ! DllCall("IsClipboardFormatAvailable", "uint", 1) {
-    return
-  }
-  ;; switch to editor window (if existing) and paste clipboard
-  if WinExist(editor_window) {
-      WinActivate
-      WinWaitActive
-      if pre_paste_keys {
-        SendInput, % pre_paste_keys
-      }
-      ; paste clipboard text
-      SendInput, % paste_key
-      if post_paste_keys {
-        SendInput, % post_paste_keys
-      }
-  }
-  ;WinWaitNotActive, ahk_id %win_id%
-  WinActivate, ahk_id %win_id%
-}
-
-;; Win-Alt-e: copy selection (text) to editor
-;#!e::_copyPasteToEditor() ; notepad
-;#!e::_copyPasteToEditor() ; notepad++
-;#!e::_copyPasteToEditor("ahk_class i)^Emacs$", "^c", "^y") ; emacs
-#!e::_copyPasteToEditor("ahk_exe i)\\Code\.exe") ; vscode
-; }}} - Copy and Paste to App ------------------------------------------------
 
 ; {{{ - Window Move ---------------------------------------------------------
 ; http://www.autohotkey.com/docs/commands/WinMove.htm
