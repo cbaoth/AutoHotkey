@@ -28,6 +28,8 @@ global KITTY := HOME . "\bin\kitty\kitty.exe"
 
 DetectHiddenWindows, On ; include hidden windows
 SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMode.htm#RegEx
+
+#F12::Reload ; Win-F12: reload this script
 ; }}} - General Settings -----------------------------------------------------
 ; }}} = Core =================================================================
 
@@ -63,7 +65,6 @@ SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMod
 ; }}} = Hot Strings ==========================================================
 
 ; {{{ = App Launcher =========================================================
-#F12::Reload ; Win-F12: reload this script
 ; {{{ - Windows commands + SHIFT (if deactivated) ----------------------------
 ;; re-enable some basic windows key-bindings, but with additional Shift mod
 ;; can be used if windows default keybindings are disabled (done to avoid

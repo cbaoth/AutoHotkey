@@ -1,4 +1,4 @@
-; CopyPasteToApp.ahk: Copy-paste text to an app
+; SendToWindow.ahk: Send keys to a specific window (e.g. copy & paste)
 
 ; {{{ = HotKeys ==============================================================
 ;; Win-Alt-e: copy selection (text) to code editor
@@ -9,8 +9,8 @@
 ;#!e::_sendToWindow("ahk_class i)^Notepad\+\+$")
 ;; copy text only to emacs using Ctrl-y to paste
 ;#!e::_sendToWindow("ahk_class i)^Emacs$",, "^y")
-;; switch to mpv an pause playback (using space key)
-;#!e::_sendToWindow("ahk_class i)^mpv$", "", "{Space}", 0)
+;; Win-Alt-; switch to mpv/netflix/youtube an pause playback (using space)
+#!;::_sendToWindow("^(.* mpv|Netflix .*|.* YouTube .*)$", "", "{Space}", 0)
 ;; Copy to KITTY SSH session (host 10.0.23.12) using Shift-Insert, finally press Return
 ;#!e::_sendToWindow("i)10.0.23.12.*ssh.*Kitty",, "+{Insert}{Return}")
 ;; Copy to WordPad into a new line and add newline after pasting, copy non-text too (e.g. images)

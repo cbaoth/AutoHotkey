@@ -180,6 +180,7 @@ This script sends a sequence of keys to the current window _(optional)_, switche
 |Key|Function
 |`Win-Alt-e`|Copy _(text only)_ to clipboard, switch to code editor, paste text switch back.
 |`Win-Alt-Shift-e`|Copy _(text only)_ to clipboard, switch to code editor, press `End, Return, Home` _(add newline, home to avoid auto-indent)_ and paste text.
+|`Win-Alt-;`|Switch to link:https://mpv.io/[mpv]/netflix/youtube an pause playback _(using space)_
 |===
 
 The following (configurable) steps are executed in sequence:
@@ -204,8 +205,8 @@ _sendToWindow("ahk_class i)^Notepad\+\+$")
 ;; copy text only to emacs using Ctrl-y to paste
 _sendToWindow("ahk_class i)^Emacs$",, "^y")
 
-;; switch to mpv an toggle playback (play/pause) using the space key
-_sendToWindow("ahk_class i)^mpv$", "", "{Space}", 0)
+;; switch to mpv/netflix/youtube an pause playback (using space)
+_sendToWindow("^(.* mpv|Netflix .*|.* YouTube .*)$", "", "{Space}", 0)
 
 ;; copy to KITTY SSH session (host 10.0.23.12) using Shift-Insert, finally press Return
 _sendToWindow("i)10.0.23.12.*ssh.*Kitty",, "+{Insert}{Return}")
