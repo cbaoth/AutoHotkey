@@ -74,10 +74,10 @@ Keybiding excerpts _(some disabled in my current setup)_:
 |{icon-ok}|`Win-x, Win-k`|Kill current window (process)|Easily kill app if not responding
 |{icon-ok}|`Alt/Shift-ScrollLock`|Toggle CapsLock|Noone really needs CapsLock nowadays but sometimes it is activated for no apparent reason, so it's good to have a key-binding to deactivate it.
 |{icon-ok}|`SC056` _(DE: `<>&#124;`)_|`Control`|If, for some strange twist of faith, I'm forced to use a german QWERTZ keybobard, the otherwise useless `<>&#124;` key will be re-mapped to `Control`.
-|{icon-x}|`[/]`|`(/)`|Classic lisp hacker / emacs mapping, but also practical in daily life, since `(/)` is more commonly used than `[/]` even thoug dedicated keys exist for the latter.
-|{icon-ok}|`AltGr-n/e`|`(/)`|Homerow access to brackets _(`j/k` on US layout)_.
-|{icon-ok}|`AltGr-N/E`|`[/]`|Homerow access to brackets _(`J/K` on US layout)_.
-|{icon-ok}|`AltGr-i/o`|`{/}`|Homerow access to brackets _(`l/;` on US layout)_.
+|{icon-x}|`[ ]`|`( )`|Classic lisp hacker / emacs mapping, but also practical in daily life, since `( )` is more commonly used than `[ ]` even though dedicated keys exist for the latter.
+|{icon-ok}|`AltGr-n/e`|`( )`|Homerow access to brackets _(`j/k` on US layout)_.
+|{icon-ok}|`AltGr-N/E`|`[ ]`|Homerow access to brackets _(`J/K` on US layout)_.
+|{icon-ok}|`AltGr-i/o`|`{ }`|Homerow access to brackets _(`l/;` on US layout)_.
 |====
 
 Additional _(currently disabled)_ mappings exist for:
@@ -155,21 +155,20 @@ Allows middle-click (`MButton`) paste in most apps, with "click-through" (`~`) s
 
 === Copy on Selection
 
-This one is a bit tricky. For now the script is not able to identify whether a text window / editor is active (with a text selection) or not. It is only able to identify that a _drag_ action was performed with the mouse. Since there are any number of possible drag actions that could be performed, intentially _(e.g. drag-drop file)_ or unintentially _(e.g. drag slightly when clicking an action button)_ this approach is not very reliable. In addition in many cases it is not desired that a selected text is automatically copied to the clipboard _(e.g. select text to override / compare it with the clipboard content)_. That's why this feature is currently disabled (in my scripts), it would need additional work an restrictions _(e.g. termianal windows only)_ to be usable in an accetable manner. Since most windows termials already support copy on selection out of the box, ther is currently no immediate need for this feature.
+This one is a bit tricky. For now the script is not able to identify whether a text window / editor is active (with a text selection) or not. It is only able to identify that a _drag_ action was performed with the mouse. Since there are any number of possible drag actions that could be performed, intentially _(e.g. drag-drop file)_ or unintentially _(e.g. drag slightly when clicking an action button)_ this approach is not very reliable. In addition, in many cases it is not desired that a selected text is automatically copied to the clipboard _(e.g. select text to override / compare it with the clipboard content)_. That's why this feature is currently disabled (in my scripts), it would need additional work an restrictions _(e.g. termianal windows only)_ to be usable in an accetable manner. Since most windows termials already support copy on selection out of the box, there is currently no immediate need for this feature.
 
 == link:ConfineMouse.ahk[]
 
-This scripts confines the mouse inside the current window's screen area, optionally without the decoration _(fixed margin)_.
+This scripts confines the mouse to a window's screen area, either of the window currently below the mouse cursor _(default)_ or the active window. The confinement area can optionally be reduced by a fixed margint to exclude the window decoration.
+
+Mouse cursor confinement is sometimes desired when working in a mouse-heavy application or games _(e.g. in windowed mode)_, especially in a mutli-screen environment. The scripts helps avoiding exiting the working area and prevent unwanted clickes _(e.g. taskbar, different app, etc.)_.
 
 [cols="1,3",options="header"]
 |===
 |Key|Function
-|`Win-F11`|Toggle window confinement with a fixed margin to exclude window decoration.
-|`Win-Alt-F11`|Same as above but confined to the full window size include deciration.
+|`Win-F11`|Toggle window confinement to the window currently below the mouse cursor with a fixed margin, excluding the window decoration.
+|`Win-Alt-F11`|Same as above but confined to the full window size, include deciration.
 |===
-
-This is sometimes desired when working in a mouse-heavy application or game, especially in a mutli-screen environment. In other usecase are apps/games that are windowed but should actually be full-screen. The scripts helps avoiding exiting the working area by mistake and by mistake clicking e.g. somewhere on the window borders, outside the window or on the task-bar.
-
 
 == link:SendToWindow.ahk[]
 
