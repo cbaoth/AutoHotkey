@@ -47,6 +47,7 @@ global window_tracking_active
 #SingleInstance, Force ; only run one instance of this script (always)
 DetectHiddenWindows, On ; include hidden windows
 ;#Warn ; activate warnings
+#MaxThreadsPerHotkey 2
 
 ; {{{ - HotKeys --------------------------------------------------------------
 ; It's not easily possible (and not intended) to open multiple tooltips at the
@@ -60,7 +61,7 @@ DetectHiddenWindows, On ; include hidden windows
 ;#F8::_toggleShowTrackedWindows(,2) ; always clipboard (each change)
 
 ; win-alt-F8 -> toggle tooltip with blacklisted windows
-#!F8::_toggleShowTrackedWindows(true) ; bl + clipboard on close, show final tt 5sec
+#!F8::_toggleShowTrackedWindows(true, true) ; bl + clipboard on close, show final tt 5sec
 ;#+F8::_toggleShowTrackedWindows(true,0,0) ; bl + no clipboard, close immediate
 ;#F8::_toggleShowTrackedWindows(true,2) ; bl + always clipboard (each change)
 ; }}} - HotKeys --------------------------------------------------------------
@@ -83,52 +84,71 @@ _removeToolTipDelay(sec=5) {
 ; {{{ = Window Tracking ======================================================
 ; {{{ - Trackng --------------------------------------------------------------
 ; keep track of currently and previously active window
-; use is_first_time = true when opening tracking for the first time
+; use is_first_time: true when opening tracking for the first time
 ;   initially updating active_* before waiting for a window change
-; interval = wait in 1 sec intervals for window change, interruption of wait
-;   loop only possible within this interval
-_trackWindows(is_first_time:=false, interval:=.2) {
+; interval: polling interval in seconds (default: 200ms)
+; track_active: track active window if true, else track window below cursor
+_trackWindows(track_active, is_first_time:=false, interval:=.2) {
   ; temporary window details (currently active window)
-  local win_id, win_title, win_class, win_pid, win_exe
+  local new_id, win_id, win_title, win_class, win_pid, win_exe
 
-  ; get current window details
-  WinGet, win_id, ID, A
-  WinGetTitle, win_title, A
-  WinGetClass, win_class, A
-  WinGet, win_pid, PID, A
-  WinGet, win_exe, ProcessPath, A
+  ; get current window / mouseover details
+  if track_active {
+    WinGet, win_id, ID, A
+  } else {
+    MouseGetPos,,, win_id
+  }
+
+  WinGetTitle, win_title, ahk_id %win_id%
+  WinGetClass, win_class, ahk_id %win_id%
+  WinGet, win_pid, PID, ahk_id %win_id%
+  WinGet, win_exe, ProcessPath, ahk_id %win_id%
 
   ; first execution?
   if is_first_time {
-    _updateWindowDetails() ; simply update window details without previous
+    _updateWindowDetails(track_active) ; simply update window details without previous
   } else { ; else wait for window change or interrupt
     loop {
       if ! window_tracking_active { ; stop monitoring?
         return ; interrupted, return
       }
-      ; wait until a new window is activated or interval is reached
-      WinWaitNotActive, ahk_id %win_id%,, interval
-      if ! ErrorLevel { ; window was found (no timeout)
-        break ; found -> stop and update details (below)
+      if track_active {
+        ; continue until a new window is activated or interval is reached
+        WinWaitNotActive, ahk_id %win_id%,, interval
+        if ! ErrorLevel { ; active window ha changed (no timeout)
+          break ; stop and update details (below)
+        }
+      } else {
+        ; continue until the window below the mouse cursor changes
+        sleep interval * 1000
+        MouseGetPos,,, new_id
+        if (new_id != win_id) { ; window below cursor has changed
+          break ; stop and update details (below)
+        }
       }
     }
     ; new window active -> update all details, treat win_* as previous window
-    _updateWindowDetails(win_id, win_title, win_class, win_pid, win_exe)
+    _updateWindowDetails(track_active, win_id, win_title, win_class, win_pid, win_exe)
   }
 }
 
 ; update window detail variables
 ; optionall provide previous window details (for use in loop)
-_updateWindowDetails(prev_id:="", prev_title:="", prev_class:="", prev_pid:="", prev_exe:="") {
+; track_active = track active window if true, else track window below cursor
+_updateWindowDetails(track_active, prev_id:="", prev_title:="", prev_class:="", prev_pid:="", prev_exe:="") {
   ; temporary window details (currently active window)
   local win_id, win_title, win_class, win_pid, win_exe
 
-  ; get current window details
-  WinGet, win_id, ID, A
-  WinGetTitle, win_title, A
-  WinGetClass, win_class, A
-  WinGet, win_pid, PID, A
-  WinGet, win_exe, ProcessPath, A
+  ; get current window / mouseover details
+  if track_active {
+    WinGet, win_id, ID, A
+  } else {
+    MouseGetPos,,, win_id
+  }
+  WinGetTitle, win_title, ahk_id %win_id%
+  WinGetClass, win_class, ahk_id %win_id%
+  WinGet, win_pid, PID, ahk_id %win_id%
+  WinGet, win_exe, ProcessPath, ahk_id %win_id%
 
   ; completely ignore the tooltip itself (results in strange effects)
   if (win_class = "tooltips_class32") {
@@ -213,29 +233,32 @@ _prepareDataForClipboard(data) {
 ; {{{ - Blacklist -----------------------------------------------------------
 ; is given window blacklisted? change  as needed, return false to deactivate
 _isBlacklistedWindow(win_id, win_title, win_class, win_pid, win_exe) {
-  return win_exe = "AutoHotkey.exe" ; AHK
-     || (win_exe = "explorer.exe" ; Windows explorer components
-         && (win_class = "MultitaskingViewFrame" ; task chooser (alt-tab)
-             || win_class = "Windows.UI.Core.CoreWindow" ; start-menu / task view (win-tab)
-             || win_class = "Shell_TrayWnd" ; task-bar
-             || win_class = "ApplicationManager_DesktopShellWindow" ; task-bar related
-             || win_class = "WorkerW")) ; windows desktop
-     || win_exe = "greenshot.exe"
+  local win_cmd := RegExReplace(win_exe, ".*\\")
+  return win_cmd == "AutoHotkey.exe" ; AHK
+     || (win_cmd == "explorer.exe" ; Windows explorer components
+         && (win_class == "MultitaskingViewFrame" ; task chooser (alt-tab)
+             || win_class == "Windows.UI.Core.CoreWindow" ; start-menu / task view (win-tab)
+             || win_class == "Shell_TrayWnd" ; task-bar
+             || win_class == "ApplicationManager_DesktopShellWindow" ; task-bar related
+             || win_class == "WorkerW")) ; windows desktop
+     || win_cmd == "greenshot.exe"
 }
 ; }}} - Blacklist -----------------------------------------------------------
 
 ; {{{ - Toggle Loop ----------------------------------------------------------
 ; toggle loop _getWindowData
+; track_active: track active window if true, else track window below cursor (default)
+; include_blacklisted: show blacklisted window details (else: tracked but hidden)
 ; clipboard_mode: 0: none, 1: only on close, 2: always (on window change)
 ; tt_timeout: tooltip timeout (hide with a delay, set 0 for immediate)
-_toggleShowTrackedWindows(include_blacklisted:=false, clipboard_mode:=1
-                        , tt_timeout:=5) {
+_toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false
+                        , clipboard_mode:=1, tt_timeout:=5) {
   static active
   static first_time := true
   static data
 
   active := !active
-  window_tracking_active := active
+  window_tracking_active := active ; interrupt existing loop (if running)
 
   ; just activated?
   if active { ; cleanup previous tooltips (if existing)
@@ -256,7 +279,7 @@ _toggleShowTrackedWindows(include_blacklisted:=false, clipboard_mode:=1
       break
     }
     if first_time {
-      _trackWindows(true) ; get active window and don't wait for win change
+      _trackWindows(track_active, true) ; get active window and don't wait for win change
       data := _getWindowData(false, false)
       ToolTip % _prepareDataForTootlip(data)
       first_time := false
@@ -266,7 +289,7 @@ _toggleShowTrackedWindows(include_blacklisted:=false, clipboard_mode:=1
       }
     }
     ; waits for window change, then update window data
-    _trackWindows(false)
+    _trackWindows(track_active, false)
     ; tracking interrupted, coninue with final iteration (data update above)
     if !active {
       continue

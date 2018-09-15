@@ -21,6 +21,7 @@ global KITTY := HOME . "\bin\kitty\kitty.exe"
 ; {{{ - General Settings -----------------------------------------------------
 #SingleInstance, Force ; only run one instance (always)
 ;#MaxThreads, 20 ; allow the use of additional threads
+#MaxThreadsPerHotkey 2
 ;#Warn ; activate warnings
 ;#InstallKeybdHook ; https://autohotkey.com/docs/commands/_InstallKeybdHook.htm
 ;#InstallMouseHook ; https://autohotkey.com/docs/commands/_InstallMouseHook.htm

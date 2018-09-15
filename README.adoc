@@ -92,31 +92,33 @@ Additional _(currently disabled)_ mappings exist for:
 
 == link:WindowTracking.ahk[]
 
-A script that tracks current and previous window details, like window id, class, process id, process executable and process name, in global variables, including a hotkey tooltip and clipboard functionality to be used as Windows / AutoHotkey development tool.
+A script that tracks window details, like window id, class, process id, process executable and process name, in global variables allowing visualization in a tooltip and copy-to-clipboad. Intended to be used as a Windows / AutoHotkey development tool.
 
-By Pressing `Win-F8` _(default key binding)_ the monitoring mode is activated. While active, a tooltip like the following will be shown and updated after each window switch:
+By pressing `Win-F8` the mouse cursor monitoring mode is activated. While active, a tooltip like the following will be shown and updated whenever the mouse cursor focuses on a new window:
 
 image::windowtracking_tootlip_1.png[]
 
+Instead of following the mouse cursor it's also possible to update the tooltip whenever the active window changes _(e.g. on alt-tab)_.
+
 The script includes a blacklist that ignores windows like windows task-bar/-choose, desktop, the AHK tooltip itself and other windows that usually doesn't want to capture. These blacklisted windows are still captured, but in a separate set of variables (single last blacklisted window only).
 
-The details of the last captured blacklisted window can additionally be shown by pressing `Win-Shift-F8` _(default key binding)_:
+By pressing `Win-Shift-F8` the active window monitoring mode is activated, additionally showing details of the last blacklisted window:
 
 image::windowtracking_tootlip_2.png[]
 
-The _(default)_ hotkeys `Win-(Alt-)F8` toggle the tooltip _(on/off)_. While monitoring is activated the tooltip will refreshes every time a new window is activated _(focus change)_.
+The hotkeys `Win-(Alt-)F8` toggle the tooltip _(on/off)_. While active the tooltip will update either every time the mouse curser hovers above a new window (`Win-F8`, `track_active = false`) or whenever a new window is activated (`Win-Alt-F8`, `track_active = true`).
 
 [source,autohetkey]
 ----
-; win-F8 -> toggle tooltip without blacklisted windows
+; win-F8 -> toggle mouse hover tooltip without blacklisted windows
 #F8::_toggleShowTrackedWindows() ; clipboard on close, show final tt 5sec
-;#F8::_toggleShowTrackedWindows(,0,0) ; no clipboard, close immediate
-;#F8::_toggleShowTrackedWindows(,2) ; always clipboard (each change)
+;#F8::_toggleShowTrackedWindows(,,0,0) ; no clipboard, close immediate
+;#F8::_toggleShowTrackedWindows(,,2) ; always clipboard (each change)
 
-; win-shift_F8 -> toggle tooltip with blacklisted windows
-#+F8::_toggleShowTrackedWindows(true) ; bl + clipboard on close, show final tt 5sec
-;#+F8::_toggleShowTrackedWindows(true,0,0) ; bl + no clipboard, close immediate
-;#F8::_toggleShowTrackedWindows(true,2) ; bl + always clipboard (each change)
+; win-shift_F8 -> toggle active window tooltip with blacklisted windows
+#+F8::_toggleShowTrackedWindows(true, true) ; bl + clipboard on close, show final tt 5sec
+;#+F8::_toggleShowTrackedWindows(true, true, 0, 0) ; bl + no clipboard, close immediate
+;#F8::_toggleShowTrackedWindows(true, true, 2) ; bl + always clipboard (each change)
 ----
 
 Per default the tooltip content is copied to the clipboard when monitoring is stopped _(toggle off)_. Alternatively it is possible to continuously update the clipboard _(on every window change)_ or to not update the clipboard at all. See the code documentation of `_toggleShowTrackedWindows` and the examples above.
