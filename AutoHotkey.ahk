@@ -89,15 +89,14 @@ SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMod
 
 ; {{{ - Putty / Kitty --------------------------------------------------------
 ;; define ssh hotkeys based on current host (map Win-F* to kitty profiles)
-#If %computername% = motoko ; on host motoko
-    #F2::Run, %KITTY% -load "saito"
-#F3::Run, %KITTY% -load "motoko-vm" ; local linux vm
+#If %computername% = weyera04 ; work host?
+    #F2::Run, %KITTY% -load "saito (remote)"
+    ;#F3::Run, %KITTY% -load "motoko-vm (remote)" ; linux vm on motoko
 #If
 
-#If %computername% = weyera03 ; on host weyera02
-    #F2::Run, %KITTY% -load "build"
-#F3::Run, %KITTY% -load "saito (remote)"
-#F4::Run, %KITTY% -load "motoko-vm (remote)"
+#If %computername% != weyera04 ; proviate host?
+    #F2::Run, %KITTY% -load "saito"
+    ;#F3::Run, %KITTY% -load "motoko-vm" ; linux vm on motoko
 #If
 
 #!F1::Run, %KITTY% ; Win-Alt-F1 -> open Kitty
