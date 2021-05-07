@@ -150,10 +150,12 @@ SC056::Control
 ; {{{ = Media Keys ===========================================================
 ;; Simulate Media Keys (alternative shortcuts)
 #<!Space::Send {Media_Play_Pause} ; Win-LeftAlt-SpaceArrow
+#<!Right::Send {Media_Play_Pause} ; Win-LeftAlt-RightArrow
 #<!Up::Send    {Media_Prev}       ; Win-LeftAlt-upArrow
 #<!Down::Send  {Media_Next}       ; Win-LeftAlt-DownArrow
 #<!Left::Send  {Media_Stop}       ; Win-LeftAlt-LeftArrow
-#<!Right::Send {Media_Play_Pause} ; Win-LeftAlt-RightArrow
+#<!,::Send     {Media_Prev}       ; Win-LeftAlt-,
+#<!.::Send     {Media_Next}       ; Win-LeftAlt-.
 
 ;; Simulate Volume Keys (alternative shortcuts)
 #<!=::Send {Volume_Up}   ; Win-LeftAlt-Equal

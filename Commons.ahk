@@ -69,6 +69,18 @@ removeToolTip() {
   ToolTip
 }
 removeToolTipDelay(sec=5) {
-  SetTimer, _removeToolTip, % sec * -1000 ; remove tooltip after 5sec
+  SetTimer, _removeToolTip, % sec * -1000 ; remove tooltip after delay
 }
 ; }}} = ToolTips =============================================================
+
+; {{{ = SplashImage ==========================================================
+;; remove SplashImage after a given timeout in seconds (default 5), example:
+;SplashImage, Image.png
+;_removeToolTipDelay() ; hide tolltip after 5 sec
+removeSplashImage() {
+  SplashImage, Off
+}
+removeSplashImageDelay(sec=5) {
+  SetTimer, removeSplashImage, % sec * -1000 ; remove splashimage after delay
+}
+; }}} = SplashImage ==========================================================

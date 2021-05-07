@@ -35,7 +35,7 @@ SetTitleMatchMode, RegEx
 
 ;; enable feature for all but a few apps that e.g. already use middlemouse
 ;; paste (like some terminals) or that have other issues with this feature
-#IfWinNotActive ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty|PuttyNG)$
+#IfWinNotActive ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty|PuttyNG|Qt5QWindowIcon|GxWindowClass)$
   $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
   $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
 #IfWinNotActive

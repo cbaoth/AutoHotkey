@@ -21,8 +21,10 @@ EnvGet, JAVA_HOME, JAVA_HOME
 global KITTY := HOME . "\bin\kitty\kitty.exe"
 
 ; {{{ - General Settings -----------------------------------------------------
+#NoEnv
 #SingleInstance, Force ; only run one instance (always)
-    ;#MaxThreads, 20 ; allow the use of additional threads
+#Persistent
+#MaxThreads, 20 ; allow the use of additional threads
 #MaxThreadsPerHotkey 2
 ;#Warn ; activate warnings
 ;#InstallKeybdHook ; https://autohotkey.com/docs/commands/_InstallKeybdHook.htm
@@ -31,6 +33,10 @@ global KITTY := HOME . "\bin\kitty\kitty.exe"
 
 DetectHiddenWindows, On ; include hidden windows
 SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMode.htm#RegEx
+
+; register on-clipboard-change event (defied below)
+; has to be added before any hotkey
+OnClipboardChange("clipChanged", -1)
 
 #F12::Reload ; Win-F12: reload this script
 ; }}} - General Settings -----------------------------------------------------
@@ -61,6 +67,7 @@ SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMod
 ; {{{ - Games ----------------------------------------------------------------
 #Include Games\PathOfExile.ahk
 #Include Games\Skyrim.ahk
+#Include Games\Diablo3.ahk
 ; }}} - Games ----------------------------------------------------------------
 ; }}} = Include Additional Scripts ===========================================
 
@@ -89,32 +96,27 @@ SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMod
 
 ; {{{ - Putty / Kitty --------------------------------------------------------
 ;; define ssh hotkeys based on current host (map Win-F* to kitty profiles)
-#If %computername% = weyera04 ; work host?
+#If A_ComputerName = weyera04 ; work host?
     #F2::Run, %KITTY% -load "saito (remote)"
-    ;#F3::Run, %KITTY% -load "motoko-vm (remote)" ; linux vm on motoko
 #If
 
-#If %computername% != weyera04 ; proviate host?
+#If A_ComputerName != weyera04 ; proviate host?
     #F2::Run, %KITTY% -load "saito"
-    ;#F3::Run, %KITTY% -load "motoko-vm" ; linux vm on motoko
 #If
 
-#!F1::Run, %KITTY% ; Win-Alt-F1 -> open Kitty
 #F1::Run, %KITTY% -load "yav.in"  ; Win-F1 -> SSH to yav.in
+#!F1::Run, %KITTY% ; Win-Alt-F1 -> open Kitty
 ; }}} - Putty / Kitty --------------------------------------------------------
 
 ; {{{ - Run or Focus Apps ----------------------------------------------------
 ;; Win-Shift-Enter: Run powershell as administrator
 #Enter::
-    if (FileExist("C:\Apps\cmder\Cmder.exe"))
+    if FileExist("C:\Apps\cmder\Cmder.exe") {
         Run, "C:\Apps\cmder\Cmder.exe"
-    else if (FileExist(APP_DATA . "\Local\terminus\Terminus.exe"))
-        Run, % APP_DATA . "\Local\terminus\Terminus.exe"
-    else if (FileExist(APP_DATA . "\Local\hyper\Hyper.exe"))
-        Run, % APP_DATA . "\Local\hyper\Hyper.exe"
-    else
+    } else {
         ;Run "cmd.exe" /K cd C:\ & cd "%HOME%" & %HOME_DRIVE%
         Run, "powershell.exe" -NoExit -Command cd C:\; cd "%HOME%"; "%HOME_DRIVE%"
+    }
 return
 
 ;; Win-Shift-Enter: Run powershell as administrator
@@ -125,34 +127,46 @@ return
 
 ;; Win-Shift-f: focus / run file manager
 #+f::
-    IfWinExist, ahk_exe i)\\doublecmd\.exe$
+    if WinExist("ahk_exe i)\\doublecmd\.exe$") {
         WinActivate
-    else
+    } else {
         Run C:\Program Files\Double Commander\doublecmd.exe
+    }
 return
 
 ;; Win-Shift-e: Focus/run browser
 #+b::
-    if WinExist("Google Chrome$")
+    if WinExist("Firefox Developer Edition$") {
         WinActivate
-    else
-        Run C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+    } else if WinExist("Google Chrome$") {
+        WinActivate
+    } else {
+        if FileExist("C:\Program Files\Firefox Developer Edition\firefox.exe") {
+            Run C:\Program Files\Firefox Developer Edition\firefox.exe
+        } else if (FileExist("C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")) {
+            Run C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+        }
+    }
 return
 
 ;; Win-Shift-e: Focus/run editor
 #+e::
-    IfWinExist, ahk_exe i)\\Code\.exe$
+    if WinExist("ahk_exe i)\\Code\.exe$") {
         WinActivate
-    else
+    } else if FileExist("C:\Program Files\Microsoft VS Code\Code.exe") {
+        Run C:\Program Files\Microsoft VS Code\Code.exe
+    } else {
         Run %APP_DATA%\Local\Programs\Microsoft VS Code\Code.exe
+    }
 return
 
 ;; Win-Shift-e: Focus/run mail client
 #+m::
-    if WinExist("ahk_exe i)\\OUTLOOK\.EXE$") && WinExist("ahk_class i)rctrl_renwnd32$")
+    if WinExist("ahk_exe i)\\OUTLOOK\.EXE$") && WinExist("ahk_class i)rctrl_renwnd32$") {
         WinActivate
-    else
+    } else if FileExist("C:\Programme\Microsoft Office\Office15\OUTLOOK.EXE") {
         Run C:\Programme\Microsoft Office\Office15\OUTLOOK.EXE
+    }
 return
 ; }}} - Run or Focus Apps ----------------------------------------------------
 ; }}} = App Launcher =========================================================
@@ -199,12 +213,54 @@ return
 stayAwake()
 {
     static stayAwakeToggle
-    SetTimer, DummyMouseEvent, % (stayAwakeToggle :=! stayAwakeToggle) ? 225000 : "Off"
+    SetTimer, DummyMouseEvent, % (stayAwakeToggle := !stayAwakeToggle) ? 225000 : "Off"
     ToolTip % "Stay Awake: " . (stayAwakeToggle ? "On" : "Off")
     _removeToolTipDelay(1.5)
     DummyMouseEvent:
         MouseMove,0,0,0,R ; mouse pointer stays in place but sends a mouse event
     return
 }
+
+; OnClipboardChange("clipChanged", -1) events, see above
+global clipChangedToggle := false
+global clipChangedUlrsOnly := false
+
+clipChanged(Type) {
+    ; clipboard monitoring is on AND clipboard contains text only
+    ; AND clipboard contains url (if url-only is enabled)?
+    if (clipChangedToggle and Type == 1
+        and (!clipChangedUlrsOnly or InStr(Clipboard, "://"))) {
+        ToolTip % "Saved: " SubStr(Clipboard, 1, 100) (StrLen(Clipboard) > 100 ? "..." : "")
+        _removeToolTipDelay(1.5)
+        outFile := clipChangedUlrsOnly ? HOME . "\ahk_from_clipboard_urls.txt" : HOME . "\ahk_from_clipboard.txt"
+        FileAppend, %clipboard%`r`n, %outFile%
+    }
+}
+
+; Win-F7: Toggle clipboard monitoring for any text content
+; If enabled monitor the clipboard for any new text and when found appends the
+; whole clippoard to $HOME/ahk_from_clipboard.txt
+#F6::
+    ; togle only if same mode, else switch mode only
+    if !(clipChangedToggle and clipChangedUlrsOnly) {
+        clipChangedToggle := !clipChangedToggle
+    }
+    clipChangedUlrsOnly := false
+    ToolTip % "Clipboard Monitoring" . (clipChangedToggle ? " (All): On" : ": Off")
+    _removeToolTipDelay(1.5)
+return
+
+; Win-Alt-F7: Toggle clipboard monitoring for URLs only
+; If enabled monitor the clipboard for URLs (any .*:// schema) and when found
+; appends the whole clippoard to $HOME/ahk_from_clipboard_urls.txt
+#<!F6::
+    ; togle only if same mode, else switch mode only
+    if !(clipChangedToggle and !clipChangedUlrsOnly) {
+        clipChangedToggle := !clipChangedToggle
+    }
+    clipChangedUlrsOnly := true
+    ToolTip % "Clipboard Monitoring" . (clipChangedToggle ? " (URL): On" : ": Off")
+    _removeToolTipDelay(1.5)
+return
 ; }}} - Misc -----------------------------------------------------------------
 ; }}} = Additional HotKeys ===================================================

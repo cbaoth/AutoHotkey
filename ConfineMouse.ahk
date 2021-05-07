@@ -74,7 +74,7 @@ _confineMouseCursorToActiveWindow(windowed:=false, active_window:=false) {
     confine_y2 := max(confine_y, win_y2 + confine_mouse_y2_offset)
   }
   ;; show debug information
-  ToolTip, % confine_x . "/" . confine_y . ", " . confine_x2 . "/" . confine_y2
+  ;;ToolTip, % confine_x . "/" . confine_y . ", " . confine_x2 . "/" . confine_y2
   ;; confine mouse cursor to the calculated area
   _confineMouseCursor(confine_x, confine_y, confine_x2, confine_y2)
 }

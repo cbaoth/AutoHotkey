@@ -19,7 +19,9 @@ endif::[]
 :icon-x: image:https://png.icons8.com/color/50/000000/close-window.png[,24]
 :icon-ok: image:https://png.icons8.com/color/50/000000/ok.png[,24]
 
-== link:AutoHotkey.ahk[]
+== AutoHotkey.ahk
+
+*Source: link:AutoHotkey.ahk[]*
 
 [cols=""]
 Core AHK script.
@@ -51,7 +53,9 @@ All AHK scripts listed below are included _(referenced)_ in this core script. In
 |{icon-ok}|`Win-LeftAlt-F9`|Move Window|Move active window negative by window decoration _(center window content, e.g. hide decoration for game in windowed mode)._
 |====
 
-== link:KeyMap.ahk[]
+== KeyMap.ahk
+
+*Source: link:KeyMap.ahk[]*
 
 Some basic key(re-)maps. Note that my default keyboard layout is https://colemak.com[Colemak]:
 
@@ -65,8 +69,8 @@ Keybiding excerpts _(some disabled in my current setup)_:
 |{icon-ok}|`XButton1` _(Mouse 4)_|`PageUp`|Faster paging than mouse-wheel. Replaces prev./next _(usually useless)_ binding.
 |{icon-ok}|`XButton2` _(Mouse 5)_|`PageDown`|_See above ..._
 |{icon-ok}|`Win-Alt-Space`|`MediaKey: Pause`|Easier media key access _(also useful if dedicated keys not available)_.
-|{icon-ok}|`Win-Alt-Up`|`MediaKey: Previous Track`|_See above ..._
-|{icon-ok}|`Win-Alt-Down`|`MediaKey: Next Track`|_See above ..._
+|{icon-ok}|`Win-Alt-Up/Comma`|`MediaKey: Previous Track`|_See above ..._
+|{icon-ok}|`Win-Alt-Down/Period`|`MediaKey: Next Track`|_See above ..._
 |{icon-ok}|`Win-Alt-0`|`MediaKey: Toggle Mute`|_See above ..._
 |{icon-ok}|`Win-Alt-Dash` _(-)_|`MediaKey: Lower Volume`|_See above ..._
 |{icon-ok}|`Win-Alt-=` _(+)_|`MediaKey: Raise Volume`|_See above ..._
@@ -90,7 +94,9 @@ Additional _(currently disabled)_ mappings exist for:
 ** Old hacker mapping _(e.g. from emacs users)_ but no longer preferred by me. Ctrl already easily accessible but `backspace` requires leaving home-row, so I prefer `backspace` instead.
 
 
-== link:WindowTracking.ahk[]
+== WindowTracking.ahk
+
+*Source: link:WindowTracking.ahk[]*
 
 A script that tracks window details, like window id, class, process id, process executable and process name, in global variables allowing visualization in a tooltip and copy-to-clipboad. Intended to be used as a Windows / AutoHotkey development tool.
 
@@ -141,7 +147,9 @@ previous_pid	172388
 previous_procname	firefox.exe
 |===
 
-== link:XMouseClipboard.ahk[]
+== XMouseClipboard.ahk
+
+*link:XMouseClipboard.ahk[]*
 
 This script tries to provide the "copy on selection" and "middle-click paste" features known from X Windows.
 
@@ -159,7 +167,9 @@ Allows middle-click (`MButton`) paste in most apps, with "click-through" (`~`) s
 
 This one is a bit tricky. For now the script is not able to identify whether a text window / editor is active (with a text selection) or not. It is only able to identify that a _drag_ action was performed with the mouse. Since there are any number of possible drag actions that could be performed, intentionally _(e.g. drag-drop file)_ or unintentionally _(e.g. drag slightly when clicking an action button)_ this approach is not very reliable. In addition, in many cases it is not desired that a selected text is automatically copied to the clipboard _(e.g. select text to override / compare it with the clipboard content)_. That's why this feature is currently disabled (in my scripts), it would need additional work an restrictions _(e.g. terminal windows only)_ to be usable in an acceptable manner. Since most windows terminals already support copy on selection out of the box, there is currently no immediate need for this feature.
 
-== link:ConfineMouse.ahk[]
+== ConfineMouse.ahk
+
+*Source: link:ConfineMouse.ahk[]*
 
 This scripts confines the mouse to a window's screen area, either of the window currently below the mouse cursor _(default)_ or the active window. The confinement area can optionally be reduced by a fixed margin to exclude the window decoration.
 
@@ -172,7 +182,9 @@ Mouse cursor confinement is sometimes desired when working in a mouse-heavy appl
 |`Win-Alt-F11`|Same as above but confined to the full window size, include decoration.
 |===
 
-== link:SendToWindow.ahk[]
+== SendToWindow.ahk
+
+*Source: link:SendToWindow.ahk[]*
 
 This script sends a sequence of keys to the current window _(optional)_, switches to a target window, sends another key sequence _(optional)_, and finally switches back to the previous window.
 
@@ -220,7 +232,9 @@ _sendToWindow("ahk_class WordPadClass",, "{End}{Return}^v{Return}", 2)
 
 Some game specific hotkeys and functions.
 
-=== link:PathOfExile.ahk[]
+=== PathOfExile.ahk
+
+*Source: link:PathOfExile.ahk[]*
 
 Requires functions from link:Commons.ahk[]
 
@@ -231,7 +245,9 @@ Key|Function|
 `ctrl-h` | Enter the hideout _(if possible, e.g. from cities/camps)_.|
 |===
 
-=== link:Skyrim.ahk[]
+=== Skyrim.ahk
+
+*Source: link:Skyrim.ahk[]*
 
 [cols="1,3",options="header"]
 |===
@@ -240,7 +256,9 @@ Key|Function|
 `Win-]` | Load *Riften Thieves Guild Headquarters* using console command _(considered a cheat, no official fast travel)_|
 |===
 
-=== link:Divinity.ahk[]: Original Sin
+=== Divinity.ahk: Original Sin
+
+*Source: link:Divinity.ahk[]*
 
 ...
 
