@@ -5,12 +5,17 @@
 ;;   Tab -> "Panic Button" (use all flasks in random order with random sleep)
 ;;
 ;; Expected in-game keyboard shortcuts (assuming Colemak layout)
-;;   Alt -> Action Meta
-;;   Ctrl -> Highlight
-;;   Show Minimap -> Z
+;;   Alt -> Action Meta (replacing Ctrl)
+;;   Ctrl -> Highlight (or any other available key but Alt)
+;;   Show Minimap -> Z (or any other available key but Tab)
 ;;   Flask 1-5 -> 1/2/3/4/5
 ;;   Action 1-6 -> Q/W/F/P/G/J
 ;;   Action Meta 1-6 -> Alt-Q/W/F/P/G/J
+;;
+;; This way no additional mouse buttons are necessary (all accessible via KB
+;; with any 3-button mouse w/o wheel re-mapping) and in most cases only
+;; tab (panic) and qwfpgj (qwert) with optional meta key Alt must be used,
+;; drastically reducing finger movements in combat situations.
 
 #IfWinActive, ahk_class POEWindowClass
 
@@ -20,7 +25,7 @@
 ;  Send {Return}/kick MyName{Return}
 ;return
 
-;; map alt-a/r/s/t/ (querty: asdf) to mouse button 4/5
+;; map alt-a/r/s/t/ (querty: asdf) to mouse button 4/5 (alt. action 5+6 map.)
 ;!a::PgDn ; alt-a -> pageUp (mouse button 4)
 ;!r::PgUp ; alt-r -> pageDown (mouse button 5)
 ;; alt-s/t map to ctrl-pageUp/down (ctrl + mouse button 4/5)
