@@ -13,9 +13,8 @@ EnvGet, HOME, HOMEPATH
 global HOME_DRIVE
 EnvGet, HOME_DRIVE, HOMEDRIVE
 global APP_DATA := HOME . "\AppData"
-global GIT := HOME . "\git"
-global USER_HOME := "C:\Users\yasuo"
-global AHK_HOME := HOME . "\git\AutoHotkey"
+;global GIT_HOME := HOME . "\git"
+;global AHK_HOME := HOME . "\git\AutoHotkey"
 global JAVA_HOME
 EnvGet, JAVA_HOME, JAVA_HOME
 global KITTY := HOME . "\bin\kitty\kitty.exe"
@@ -34,8 +33,7 @@ global KITTY := HOME . "\bin\kitty\kitty.exe"
 DetectHiddenWindows, On ; include hidden windows
 SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMode.htm#RegEx
 
-; register on-clipboard-change event (defied below)
-; has to be added before any hotkey
+; register on-clipboard-change event (defied below), must be befor hotkeys
 OnClipboardChange("clipChanged", -1)
 
 #F12::Reload ; Win-F12: reload this script
@@ -47,7 +45,6 @@ OnClipboardChange("clipChanged", -1)
 #Include %A_ScriptDir%
 ;; some common functions
 #Include Commons.ahk
-
 ;; some key (re-)maps (colemak, hacking, etc.)
 #Include KeyMap.ahk
 ;; bind *#F8 hotkeys to window detail tracking tooltip
@@ -241,10 +238,10 @@ clipChanged(Type) {
 ; If enabled monitor the clipboard for any new text and when found appends the
 ; whole clippoard to $HOME/ahk_from_clipboard.txt
 #F6::
-    ; togle only if same mode, else switch mode only
-    if !(clipChangedToggle and clipChangedUlrsOnly) {
-        clipChangedToggle := !clipChangedToggle
-    }
+    ;; togle only if same mode, else switch mode only
+    ;if !(clipChangedToggle and clipChangedUlrsOnly) {
+    clipChangedToggle := !clipChangedToggle
+    ;}
     clipChangedUlrsOnly := false
     ToolTip % "Clipboard Monitoring" . (clipChangedToggle ? " (All): On" : ": Off")
     _removeToolTipDelay(1.5)
@@ -254,10 +251,10 @@ return
 ; If enabled monitor the clipboard for URLs (any .*:// schema) and when found
 ; appends the whole clippoard to $HOME/ahk_from_clipboard_urls.txt
 #<!F6::
-    ; togle only if same mode, else switch mode only
-    if !(clipChangedToggle and !clipChangedUlrsOnly) {
-        clipChangedToggle := !clipChangedToggle
-    }
+    ;; togle only if same mode, else switch mode only
+    ;if !(clipChangedToggle and !clipChangedUlrsOnly) {
+    clipChangedToggle := !clipChangedToggle
+    ;}
     clipChangedUlrsOnly := true
     ToolTip % "Clipboard Monitoring" . (clipChangedToggle ? " (URL): On" : ": Off")
     _removeToolTipDelay(1.5)
