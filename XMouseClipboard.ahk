@@ -36,36 +36,30 @@ SetTitleMatchMode, RegEx
 ;; enable feature for all but a few apps that e.g. already use middlemouse
 ;; paste (like some terminals) or that have other issues with this feature
 #IfWinNotActive ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty|PuttyNG|Qt5QWindowIcon|GxWindowClass)$
+  ;; w/o click-through (~). these apps already support middle-click paste
+  ;; $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
+  $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
+#IfWinNotActive
+;; we generally excluded Chrome_WidgetWin_1 in the default binings above due
+;; since some electron apps requiring other keys, so we have to (re-)activate
+;; the same default binings for all compatibl electron apps and chrome itself
+#IfWinActive ahk_exe i)(chrome|Code)\.exe$
   $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
   $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
 #IfWinNotActive
 
-;; map ctrl-(shift-)v to middle-click for apps that natively support
-;; middle-click pasting but don't support ctrl-v (like some terminals)
-#IfWinActive ahk_class i)^(KiTTY|Putty|PuttyNG)$
-  ^v::_xPasteOnMiddleClick("{MButton}")
-  ^+v::_xPasteOnMiddleClick("{MButton}", "{ASC 34}")
-#IfWinActive
-
-;; we exclude Chrome_WidgetWin_1 due to some electron apps requiring other keys
-;; so we have to activate the default binings for all regular electron apps and
-;; chrome itself
-#IfWinActive ahk_exe i)\\(chrome|Code)\.exe$
-  $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
-  $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
-#IfWinNotActive
-
-;; some (partially electron based) terminals require Ctrl-Shift-v and no
+;; and some (partially electron based) terminals require Ctrl-Shift-v and no
 ;; click-throug {~}
-#IfWinActive ahk_exe i)\\(terminus|hyper)\.exe$
+#IfWinActive ahk_exe i)(terminus|hyper)\.exe$
   $mbutton::_xPasteOnMiddleClick("^+v") ; Ctrl-Shift-v
   $+mbutton::_xPasteOnMiddleClick("^+v", "{ASC 34}") ; add double quotes ""
 #IfWinNotActive
 
-;; apps in which only the quoted-paste feature should be active, but without
-;; click-through (~). these apps already support middle-click paste
-#IfWinActive ahk_class i)^(MozillaWindowClass|KiTTY|Putty|PuttyNG)$
-  $+mbutton::_xPasteOnMiddleClick("{MButton}", "{ASC 34}")
+;; map ctrl-(shift-)v to middle-click for apps that natively support
+;; middle-click pasting but don't support ctrl-v (like some terminals)
+#IfWinActive ahk_class i)(KiTTY|Putty|PuttyNG)$
+  ^v::_xPasteOnMiddleClick("{MButton}")
+  ^+v::_xPasteOnMiddleClick("{MButton}", "{ASC 34}")
 #IfWinActive
 ; }}} - Paste On MiddleClick -------------------------------------------------
 ; }}} = HotKeys ==============================================================
