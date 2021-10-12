@@ -232,7 +232,7 @@ _sendToWindow("ahk_class WordPadClass",, "{End}{Return}^v{Return}", 2)
 
 Some game specific hotkeys and functions.
 
-=== PathOfExile.ahk
+=== Path of Exile
 
 *Source: link:PathOfExile.ahk[]*
 
@@ -245,7 +245,7 @@ Key|Function|
 `ctrl-h` | Enter the hideout _(if possible, e.g. from cities/camps)_.|
 |===
 
-=== Skyrim.ahk
+=== Skyrim
 
 *Source: link:Skyrim.ahk[]*
 
@@ -256,11 +256,25 @@ Key|Function|
 `Win-]` | Load *Riften Thieves Guild Headquarters* using console command _(considered a cheat, no official fast travel)_|
 |===
 
-=== Divinity.ahk: Original Sin
+=== Divinity Original Sin
 
 *Source: link:Divinity.ahk[]*
 
-...
+
+=== Diablo III
+
+*Source: link:Diablo3.ahk[]*
+
+
+=== Diablo II Resurrected
+
+*Source: link:Diablo2Resurrected.ahk[]*
+
+
+=== Grim Dawn
+
+*Source: link:GrimDawn.ahk[]*
+
 
 == Appendix
 

@@ -70,7 +70,7 @@ return
 #Include Games\Skyrim.ahk
 #Include Games\Diablo3.ahk
 #Include Games\Diablo2Resurrected.ahk
-#Include Games\GrimDawn.ahk
+;#Include Games\GrimDawn.ahk
 ; }}} - Games ----------------------------------------------------------------
 ; }}} = Include Additional Scripts ===========================================
 
