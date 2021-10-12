@@ -171,6 +171,13 @@ return
         Run C:\Programme\Microsoft Office\Office15\OUTLOOK.EXE
     }
 return
+
+;; Win-Shift-l: Lenovo quick settings
+#+q::
+   if FileExist("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe") {
+       run C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe
+   }
+return
 ; }}} - Run or Focus Apps ----------------------------------------------------
 ; }}} = App Launcher =========================================================
 
