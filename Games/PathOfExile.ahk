@@ -1,16 +1,15 @@
 ﻿; PathOfExile.ahk: Path of Exile scripts
 
 ;; Important changes made by this script
-;;   Alt-(Shift-)Tab -> Windwos Window Switch DISABLED (use Win-Tab instead)
+;;   Alt-(Shift-)Tab -> Windows Tab-Switching DISABLED to aviod accidents,
+;;                      use Win-(Alt)-Tab instead
 ;;   Tab -> "Panic Button" (use all flasks in random order with random sleep)
 ;;
 ;; Expected in-game keyboard shortcuts (assuming Colemak layout)
-;;   Alt -> Action Meta (replacing Ctrl)
-;;   Ctrl -> Highlight (or any other available key but Alt)
 ;;   Show Minimap -> Z (or any other available key but Tab)
 ;;   Flask 1-5 -> 1/2/3/4/5
-;;   Action 1-6 -> Q/W/F/P/G/J
-;;   Action Meta 1-6 -> Alt-Q/W/F/P/G/J
+;;   Action 1-6 -> Q/W/F/P/G/PageUp (where PageUp = mouse button 4)
+;;   Action Meta 1-6 -> Ctrl-Q/W/F/P/G/PageUp
 ;;
 ;; This way no additional mouse buttons are necessary (all accessible via KB
 ;; with any 3-button mouse w/o wheel re-mapping) and in most cases only
@@ -18,6 +17,38 @@
 ;; drastically reducing finger movements in combat situations.
 
 #IfWinActive, ahk_class POEWindowClass
+
+;; rndSleepSendSeq wrapper with default sleep time range for skill actions
+;; Some skill (non-instant) take time to cast, meaning if the sequence is
+;; called too fast some skills might be skipped. For this reason we either need
+;; a larger sleep time between clicks and/or the longer casts must be put at
+;; the end of the sequence (that's why we don't randomize keys here).
+poeRndSleepSendSeq(keyArray) { ; just a wrapper to set some defaults
+  ; tweek depening on the current skill setup, min 150 has worked well for me
+  rndSleepSendSeq(keyArray, 150, 200)
+}
+
+;;; TODO make this configurable
+;;; left-control: send multiple actions at once (single-click mass-cast)
+;$*LControl::
+;  ;; Pressing left-control while left-mouse-button is pressed (moving) will
+;  ;; send action buttons f/p/g in random order with random sleeps.
+;  If GetKeyState("LButton") {
+;    poeRndSleepSendSeq(["f","p","g"])
+;  }
+;return;
+
+;; ctrl + row below action button -> trigger action button above + all actions
+;; actions next (right) to it
+;<^q::poeRndSleepSendSeq(["q","w","f","p","g"]) ; colemak
+;<^w::poeRndSleepSendSeq(["w","f","p","g"])
+;<^f::poeRndSleepSendSeq(["f","p","g"])
+;<^p::poeRndSleepSendSeq(["p","g"])
+
+XButton1::poeRndSleepSendSeq(["q","w","f","p"]) ; mouse4: w,f,p (skill seq.)
+;<^XButton1::poeRndSleepSendSeq(["w","f","p"]) ; mouse4: w,f,p (skill seq.)
+;<^XButton1::send, ^q                        ; ctrl-mouse4: ctrl-q (skill)
+;XButton2::MButton                           ; mouse5: middle-mouse
 
 ;; ctlr-k: exit party (kick self)
 ; ^k::
@@ -46,22 +77,44 @@ KeyWait Control
 Send {Return}/hideout{Return}
 return
 
+
+; poe_include_flask_1 = true
+
+; CustomColor := "EEAA99"  ; Can be any RGB color (it will be made transparent below).
+; Gui +LastFound +AlwaysOnTop -Caption +ToolWindow  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
+; Gui, Color, %CustomColor%
+; Gui, Font, s32  ; Set a large font size (32-point).
+; Gui, Add, Text, vMyText cLime, XXXXX YYYYY  ; XX & YY serve to auto-size the window.
+; ; Make all pixels of this color transparent and make the text itself translucent (150):
+; WinSet, TransColor, %CustomColor% 150
+; SetTimer, UpdateOSD, 200
+; Gosub, UpdateOSD  ; Make the first update immediate rather than waiting for the timer.
+; Gui, Show, x0 y400 NoActivate  ; NoActivate avoids deactivating the currently active window.
+; return
+
+; !F12::
+; UpdateOSD:
+; MouseGetPos, MouseX, MouseY
+; GuiControl,, MyText, X%MouseX%, Y%MouseY%
+; return
+
+
 ;; panic buttons - trigger all flasks in random order with random sleep times
+;; sleep times is not an issue here (compared to skill actions)
 tab:: ; tab
 ;SC029:: ; hyphon "`"
 ;!SC029:: ; alt-hyphon (alt may be pressed by mistake)
-rndSleepSend(["1","2","3","4","5"], 25, 150)
-;rndSleepSend(["q","w","f","p","g"], 25, 150) ; colemak qwert
+rndSleepSend(["1","2","3","4","5"], 5, 50)
 return
 
 ;; LControl + MButton: auto-left-click until either LControl/MButton released
 <^MButton::
 Loop {
-  SetMouseDelay 30
-  Click
-    If (! GetKeyState("MButton") || ! GetKeyState("LControl")) {
-    Break ; interrupt if KButton or LCtrl released
-  }
+ SetMouseDelay 30
+ Click
+   If (! GetKeyState("MButton") || ! GetKeyState("LControl")) {
+   Break ; interrupt if KButton or LCtrl released
+ }
 }
 return
 

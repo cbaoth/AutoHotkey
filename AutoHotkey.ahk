@@ -36,7 +36,11 @@ SetTitleMatchMode, RegEx ; https://autohotkey.com/docs/commands/SetTitleMatchMod
 ; register on-clipboard-change event (defied below), must be befor hotkeys
 OnClipboardChange("clipChanged", -1)
 
-#F12::Reload ; Win-F12: reload this script
+#F12::
+  Tooltip, Restarting ..
+  Sleep 250
+  Reload ; Win-F12: reload this script
+return
 ; }}} - General Settings -----------------------------------------------------
 ; }}} = Core =================================================================
 
@@ -65,6 +69,8 @@ OnClipboardChange("clipChanged", -1)
 #Include Games\PathOfExile.ahk
 #Include Games\Skyrim.ahk
 #Include Games\Diablo3.ahk
+#Include Games\Diablo2Resurrected.ahk
+#Include Games\GrimDawn.ahk
 ; }}} - Games ----------------------------------------------------------------
 ; }}} = Include Additional Scripts ===========================================
 
@@ -81,8 +87,8 @@ OnClipboardChange("clipChanged", -1)
 ;; unnecessary mappings like Win-1/2/3/...)
 ;; shell commands: https://www.softwareok.com/?seite=faq-Windows-10&faq=41
 
-;; (Shift-)Win+e (f on Colemak) -> Exlorer
-#+f::Run, explorer.exe
+;; (Alt-)Win+e (f on Colemak) -> Exlorer
+#!f::Run, explorer.exe
 
 ;; (Shift-)Win+d (s on Colemak) -> Show Desktop
 #+s::Run, %userprofile%\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\Shows Desktop.lnk

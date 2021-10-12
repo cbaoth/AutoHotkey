@@ -25,7 +25,7 @@ arrayRndEntry(ByRef array, remove:=false) {
   }
   return array[idx] ; return without modifying array
 }
-;+2::tst(["a", "b", "c"])
+;SC029::tst(["a", "b", "c"])
 ; }}} = Arrays ===============================================================
 
 ; {{{ = Random ===============================================================
@@ -42,10 +42,10 @@ rndSend(keyArray) {
   Random, rnd, 1, keyArray.Length()
   Send % keyArray[rnd]
 }
-;+1::rndSend(["a", "b", "c"])
+;SC029::rndSend(["a", "b", "c"])
 
-;; send given keys (keyArray) in random sequence, sleep random amount of seconds
-;; (min/max) beween each key
+;; send given keys (keyArray) in random sequence, sleep random amount of
+;; milliseconds (min/max) beween each key press
 rndSleepSend(keyArray, min, max) {
   local keysToSend := keyArray
   local isFirst := true
@@ -58,7 +58,22 @@ rndSleepSend(keyArray, min, max) {
       isFirst := false
   }
 }
-;+1::rndSleepSend(["a", "b", "c"], 1000, 2000)
+;SC029::rndSleepSend(["a", "b", "c"], 100, 200)
+
+;; send given keys (keyArray) in the given sequence, sleep random amount of
+;; milliseconds (min/max) beween each key press
+rndSleepSendSeq(keyArray, min, max) {
+  local isFirst := true
+  for idx, key in keyArray {
+      if (!isFirst) {
+        Random, rnd, %min%, %max%
+        Sleep %rnd%
+      }
+      Send % key
+      isFirst := false
+  }
+}
+;SC029::rndSleepSendSeq(["a", "b", "c"], 100, 200)
 ; }}} = Random ===============================================================
 
 ; {{{ = ToolTips =============================================================

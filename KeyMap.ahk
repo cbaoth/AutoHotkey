@@ -71,18 +71,18 @@ SC056::Control
 
 ;#HotkeyModifierTimeout -1
 ;; Colemak alternative braces
-<^>!n::Send {ASC 40}  ; AltGr-n -> (
-é::Send {ASC 40}      ; AltGr-n -> (
-<^>!e::Send {ASC 41}  ; AltGr-e -> )
-ñ::Send {ASC 40}      ; AltGr-e -> )
-<^>!+n::Send {ASC 91} ; AltGr-N -> [
-Ñ::Send {ASC 40}      ; AltGr-N -> [
-<^>!+e::Send {ASC 93} ; AltGr-E -> ]
-É::Send {ASC 40}      ; AltGr-E -> ]
-<^>!i::Send {ASC 123} ; AltGr-N -> {
-í::Send {ASC 123}     ; AltGr-N -> {
-<^>!o::Send {ASC 125} ; AltGr-E -> }
-ó::Send {ASC 125}     ; AltGr-E -> }
+;<^>!n::Send {ASC 40}  ; AltGr-n -> (
+;é::Send {ASC 40}      ; AltGr-n -> (
+;<^>!e::Send {ASC 41}  ; AltGr-e -> )
+;ñ::Send {ASC 40}      ; AltGr-e -> )
+;<^>!+n::Send {ASC 91} ; AltGr-N -> [
+;Ñ::Send {ASC 40}      ; AltGr-N -> [
+;<^>!+e::Send {ASC 93} ; AltGr-E -> ]
+;É::Send {ASC 40}      ; AltGr-E -> ]
+;<^>!i::Send {ASC 123} ; AltGr-N -> {
+;í::Send {ASC 123}     ; AltGr-N -> {
+;<^>!o::Send {ASC 125} ; AltGr-E -> }
+;ó::Send {ASC 125}     ; AltGr-E -> }
 
 ;; Simulate a NUMPAD (win+ctrl+[x])
 ;#^6::NumLock
