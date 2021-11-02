@@ -77,6 +77,12 @@ KeyWait Control
 Send {Return}/hideout{Return}
 return
 
+;; (alt-)mouse-wheel-up/down: up/down key, so they can be used as action keys
+;; note: disable "Mousewheel Zoom" under Options > UI, use ctrl+wheel to scroll
+;!WheelUp::
+WheelUp::Send {Up}
+;!WheelDown::
+WheelDown::Send {Down}
 
 ; poe_include_flask_1 = true
 
@@ -101,9 +107,13 @@ return
 
 ;; panic buttons - trigger all flasks in random order with random sleep times
 ;; sleep times is not an issue here (compared to skill actions)
-tab:: ; tab
+;; IMPORTANT: USE AT YOUR OWN RISK
+;; Since "Any macro that performs more than one action is bannable, as
+;;        is anything that sends it based on a timer."
+;; https://www.pathofexile.com/forum/view-thread/473902/page/6#p4197749
 ;SC029:: ; hyphon "`"
 ;!SC029:: ; alt-hyphon (alt may be pressed by mistake)
+tab:: ; tab
 rndSleepSend(["1","2","3","4","5"], 5, 50)
 return
 
@@ -117,5 +127,20 @@ Loop {
  }
 }
 return
+
+;; ctrl-shift-c: copy item description w/o ranges (PoB import issue)
+~^+c::PoESanitizeClipItem()
+
+PoESanitizeClipItem() {
+  ToolTip % "x"
+  _removeToolTipDelay(1.5)
+  ; roughly check if clip contetn looks like an item description
+  if InStr(Clipboard, "--------") {
+    ; strip all number ranges and mod details
+    Clipboard := RegExReplace(Clipboard,"(\([0-9-]+\)|\{ [^{]+\ })\n?")
+    ToolTip % "a"
+  }
+  removeToolTipDelay()
+}
 
 return ; #IfWinActive, ahk_class POEWindowClass
