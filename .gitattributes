@@ -1,0 +1,5 @@
+.gitattributes text eol=lf
+.gitignore text eol=lf
+LICENSE text eol=lf
+*.adoc text eol=lf
+*.ahk text eol=lf

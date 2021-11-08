@@ -67,6 +67,10 @@ XButton1::poeRndSleepSendSeq(["q","w","f","p"]) ; mouse4: w,f,p (skill seq.)
 !tab::return
 !+tab::return
 
+;; ignore pure windows key press (don't open start menu)
+~LWin Up::return
+~RWin Up::return
+
 ;; alt--/= map to numbad -/= (zoom minimap)
 !-::NumpadSub
 !=::NumpadAdd
@@ -75,6 +79,12 @@ XButton1::poeRndSleepSendSeq(["q","w","f","p"]) ; mouse4: w,f,p (skill seq.)
 ^h::
 KeyWait Control
 Send {Return}/hideout{Return}
+return
+
+;; alt-esc: exit to character selection (panic button)
+!ESC::
+KeyWait Alt
+Send {Return}/exit{Return}
 return
 
 ;; (alt-)mouse-wheel-up/down: up/down key, so they can be used as action keys
@@ -131,16 +141,14 @@ return
 ;; ctrl-shift-c: copy item description w/o ranges (PoB import issue)
 ~^+c::PoESanitizeClipItem()
 
+;; roughly check if clip contetn looks like an item description and if so
+;; strip ranges and details (seems to cause issuse with PoB)
 PoESanitizeClipItem() {
-  ToolTip % "x"
-  _removeToolTipDelay(1.5)
-  ; roughly check if clip contetn looks like an item description
-  if InStr(Clipboard, "--------") {
+  ClipWait, 1
+  if (not ErrorLevel and InStr(Clipboard, "--------")) {
     ; strip all number ranges and mod details
     Clipboard := RegExReplace(Clipboard,"(\([0-9-]+\)|\{ [^{]+\ })\n?")
-    ToolTip % "a"
   }
-  removeToolTipDelay()
 }
 
 return ; #IfWinActive, ahk_class POEWindowClass
