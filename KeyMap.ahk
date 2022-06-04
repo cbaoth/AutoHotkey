@@ -143,10 +143,6 @@ SC056::Control
 ;return
 ; }}} = CapsLock + [KEY] =====================================================
 
-; {{{ = Window Modifiers =====================================================
-#!t:: Winset, AlwaysOnTop, , A ; Win-Alt-T: toggle window always-on-top mode
-; }}} = Window Modifiers =====================================================
-
 ; {{{ = Media Keys ===========================================================
 ;; Simulate Media Keys (alternative shortcuts)
 #<!Space::Send {Media_Play_Pause} ; Win-LeftAlt-SpaceArrow

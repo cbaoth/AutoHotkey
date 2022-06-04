@@ -216,6 +216,21 @@ return
 
 ; }}} - Window Move ----------------------------------------------------------
 
+; {{{ - Window States/Styles -------------------------------------------------
+; Win-Alt-t: Toggle window's always-on-top state
+#!t:: Winset, AlwaysOnTop, , A
+
+; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
+; https://www.autohotkey.com/boards/viewtopic.php?t=74849
+#!s::
+	WinGet, ExStyle, ExStyle, A  ; "A" means the active window
+	If  !(ExStyle & 0x00000080)  ; visible on all desktops
+		WinSet, ExStyle, 0x00000080, A
+	else
+		WinSet, ExStyle, -0x00000080, A
+return
+; }}} - Window States/Styles -------------------------------------------------
+
 ; {{{ - Misc -----------------------------------------------------------------
 ; Win-F5: Toggle timer to keep PC awake (dummy mouse event every 4 min)
 #F5::stayAwake()
