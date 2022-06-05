@@ -1,4 +1,4 @@
-﻿; AutoHotkey.ahk: Core AutoHotkey script
+; AutoHotkey.ahk: Core AutoHotkey script
 
 ; {{{ = Help =================================================================
 ;; doc: http://ahkscript.org/docs/KeyList.htm
@@ -17,7 +17,7 @@ global APP_DATA := HOME . "\AppData"
 ;global AHK_HOME := HOME . "\git\AutoHotkey"
 global JAVA_HOME
 EnvGet, JAVA_HOME, JAVA_HOME
-global KITTY := HOME . "\bin\kitty\kitty.exe"
+global PUTTY := "putty.exe"
 
 ; {{{ - General Settings -----------------------------------------------------
 #NoEnv
@@ -97,19 +97,19 @@ return
 #+r::Run explorer.exe shell:::{2559a1f3-21d7-11d4-bdaf-00c04f60b9f0}
 ; }}} - Windows commands + SHIFT (if deactivated) ----------------------------
 
-; {{{ - Putty / Kitty --------------------------------------------------------
-;; define ssh hotkeys based on current host (map Win-F* to kitty profiles)
+; {{{ - Putty ----------------------------------------------------------------
+;; define ssh hotkeys based on current host (map Win-F* to putty profiles)
 #If A_ComputerName = weyera04 ; work host?
-    #F2::Run, %KITTY% -load "saito (remote)"
+    #F2::Run, %PUTTY% -load "saito (remote)"
 #If
 
-#If A_ComputerName != weyera04 ; proviate host?
-    #F2::Run, %KITTY% -load "saito"
+#If A_ComputerName != weyera04 ; private host?
+    #F2::Run, %PUTTY% -load "saito"
 #If
 
-#F1::Run, %KITTY% -load "yav.in"  ; Win-F1 -> SSH to yav.in
-#!F1::Run, %KITTY% ; Win-Alt-F1 -> open Kitty
-; }}} - Putty / Kitty --------------------------------------------------------
+#F1::Run, %PUTTY% -load "11001001.org"  ; Win-F1 -> SSH to yav.in
+#!F1::Run, %PUTTY% ; Win-Alt-F1 -> open Putty
+; }}} - Putty ----------------------------------------------------------------
 
 ; {{{ - Run or Focus Apps ----------------------------------------------------
 ;; Win-Shift-Enter: Run powershell as administrator

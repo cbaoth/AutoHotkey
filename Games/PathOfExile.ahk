@@ -77,14 +77,17 @@ XButton1::poeRndSleepSendSeq(["q","w","f","p"]) ; mouse4: w,f,p (skill seq.)
 
 ;; ctrl-h: go to hideout
 ^h::
-KeyWait Control
-Send {Return}/hideout{Return}
+  KeyWait Control
+  Send {Return}/hideout{Return}
 return
 
 ;; alt-esc: exit to character selection (panic button)
 !ESC::
-KeyWait Alt
-Send {Return}/exit{Return}
+  Critical
+  BlockInput On
+  KeyWait Alt
+  Send {Return}/exit{Return}
+  BlockInput Off
 return
 
 ;; (alt-)mouse-wheel-up/down: up/down key, so they can be used as action keys
@@ -124,31 +127,30 @@ WheelDown::Send {Down}
 ;SC029:: ; hyphon "`"
 ;!SC029:: ; alt-hyphon (alt may be pressed by mistake)
 tab:: ; tab
-rndSleepSend(["1","2","3","4","5"], 5, 50)
+  rndSleepSend(["1","2","3","4","5"], 5, 50)
 return
 
 ;; LControl + MButton: auto-left-click until either LControl/MButton released
-<^MButton::
-Loop {
- SetMouseDelay 30
- Click
-   If (! GetKeyState("MButton") || ! GetKeyState("LControl")) {
-   Break ; interrupt if KButton or LCtrl released
- }
-}
-return
+; <^MButton::
+; Loop {
+;   SetMouseDelay 30
+;   Click
+;     If (! GetKeyState("MButton") || ! GetKeyState("LControl")) {
+;     Break ; interrupt if KButton or LCtrl released
+;   }
+; }
+; return
 
 ;; ctrl-shift-c: copy item description w/o ranges (PoB import issue)
-~^+c::PoESanitizeClipItem()
-
-;; roughly check if clip contetn looks like an item description and if so
-;; strip ranges and details (seems to cause issuse with PoB)
-PoESanitizeClipItem() {
+^+c::
+  ;; copy, roughly check if clip content looks like an item description, if so
+  ;; strip ranges and details (seems to cause issuse with PoB)
+  Send, ^c
   ClipWait, 1
   if (not ErrorLevel and InStr(Clipboard, "--------")) {
     ; strip all number ranges and mod details
     Clipboard := RegExReplace(Clipboard,"(\([0-9-]+\)|\{ [^{]+\ })\n?")
   }
-}
+return
 
 return ; #IfWinActive, ahk_class POEWindowClass
