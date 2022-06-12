@@ -1,4 +1,4 @@
-; AutoHotkey.ahk: Core AutoHotkey script
+﻿; AutoHotkey.ahk: Core AutoHotkey script
 
 ; {{{ = Help =================================================================
 ;; doc: http://ahkscript.org/docs/KeyList.htm
@@ -216,7 +216,7 @@ return
 
 ; }}} - Window Move ----------------------------------------------------------
 
-; {{{ - Window States/Styles -------------------------------------------------
+; {{{ - Window/Desktop States/Styles -----------------------------------------
 ; Win-Alt-t: Toggle window's always-on-top state
 #!t:: Winset, AlwaysOnTop, , A
 
@@ -229,7 +229,11 @@ return
 	else
 		WinSet, ExStyle, -0x00000080, A
 return
-; }}} - Window States/Styles -------------------------------------------------
+
+; Win-Ctrl-q/w: Desktop previous/next
+#^q::Send #^{Left}
+#^w::Send #^{Right}
+; }}} - Window/Desktop States/Styles -----------------------------------------
 
 ; {{{ - Misc -----------------------------------------------------------------
 ; Win-F5: Toggle timer to keep PC awake (dummy mouse event every 4 min)
