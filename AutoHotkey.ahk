@@ -61,16 +61,17 @@ return
 #Include SendToWindow.ahk
 ;; activate win+mouse drage and resize
 ;#Include AutoHotkey_EasyWindowDrag.ahk ; DEPRECATED, BUGGY
-#Include *i WinDrag.ahk  ; Include if exists (not in git repo, no OC)
+#Include *i WinDrag.ahk  ; include if exists (not in git repo, no OC)
 #LButton::WindowMouseDragMove()
 #RButton::WindowMouseDragResize()
 
 ; {{{ - Games ----------------------------------------------------------------
-#Include Games\PathOfExile.ahk
-#Include Games\Skyrim.ahk
-#Include Games\Diablo3.ahk
-#Include Games\Diablo2Resurrected.ahk
-;#Include Games\GrimDawn.ahk
+; include if exists (maybe deleted on non-gaming hosts)
+#Include *i Games\PathOfExile.ahk
+#Include *i Games\Skyrim.ahk
+#Include *i Games\Diablo3.ahk
+#Include *i Games\Diablo2Resurrected.ahk
+#Include *i Games\GrimDawn.ahk
 ; }}} - Games ----------------------------------------------------------------
 ; }}} = Include Additional Scripts ===========================================
 
@@ -99,11 +100,11 @@ return
 
 ; {{{ - Putty ----------------------------------------------------------------
 ;; define ssh hotkeys based on current host (map Win-F* to putty profiles)
-#If A_ComputerName = weyera04 ; work host?
+#If InStr(A_ComputerName, "weyera0") = 1 ; work host?
     #F2::Run, %PUTTY% -load "saito (remote)"
 #If
 
-#If A_ComputerName != weyera04 ; private host?
+#If ! InStr(A_ComputerName, "weyera0") = 1 ; non-work host?
     #F2::Run, %PUTTY% -load "saito"
 #If
 
