@@ -58,7 +58,7 @@ return
 ;; X like paste on middle-click
 #Include XMouseClipboard.ahk
 ;; Some send-to-window hotkeys (e.g. copy to editor)
-#Include SendToWindow.ahk
+;#Include SendToWindow.ahk
 ;; activate win+mouse drage and resize
 ;#Include AutoHotkey_EasyWindowDrag.ahk ; DEPRECATED, BUGGY
 #Include *i WinDrag.ahk  ; include if exists (not in git repo, no OC)
@@ -89,13 +89,13 @@ return
 ;; shell commands: https://www.softwareok.com/?seite=faq-Windows-10&faq=41
 
 ;; (Alt-)Win+e (f on Colemak) -> Exlorer
-#!f::Run, explorer.exe
+;#!f::Run, explorer.exe
 
-;; (Shift-)Win+d (s on Colemak) -> Show Desktop
-#+s::Run, %userprofile%\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\Shows Desktop.lnk
+;; (Shift-)Win+d (on Colemak) -> Show Desktop
+#+d::Run, %userprofile%\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\Shows Desktop.lnk
 
-;; (Shift-)Win+r (p on Colemak) -> Run-dialog
-#+r::Run explorer.exe shell:::{2559a1f3-21d7-11d4-bdaf-00c04f60b9f0}
+;; (Shift-)Win+r (on Colemak) -> Run-dialog
+;#+r::Run explorer.exe shell:::{2559a1f3-21d7-11d4-bdaf-00c04f60b9f0}
 ; }}} - Windows commands + SHIFT (if deactivated) ----------------------------
 
 ; {{{ - Putty ----------------------------------------------------------------
@@ -108,91 +108,64 @@ return
     #F2::Run, %PUTTY% -load "saito"
 #If
 
-#F1::Run, %PUTTY% -load "11001001.org"  ; Win-F1 -> SSH to yav.in
+#F1::Run, %PUTTY% -load "11001001.org"  ; Win-F1 -> SSH to 11001001.org
 #!F1::Run, %PUTTY% ; Win-Alt-F1 -> open Putty
 ; }}} - Putty ----------------------------------------------------------------
 
-; {{{ - Run or Focus Apps ----------------------------------------------------
-;; Win-Shift-Enter: Run powershell as administrator
-#Enter::
-    if FileExist("C:\Apps\cmder\Cmder.exe") {
-        Run, "C:\Apps\cmder\Cmder.exe"
-    } else {
-        ;Run "cmd.exe" /K cd C:\ & cd "%HOME%" & %HOME_DRIVE%
-        Run, "powershell.exe" -NoExit -Command cd C:\; cd "%HOME%"; "%HOME_DRIVE%"
+; {{{ - Win-R, [Key] control sequences ---------------------------------------
+;; Win-R, [Key] - Emacs/Screen/Tmux-like control sequence
+#r::
+  ToolTip % "r: run, e: code, (+)p: ps, (+)c: cmd"
+  Input Key, C L1 T2 ; read case-sens. length 1 w/ 2sec timeout
+  removeToolTip()
+  if (ErrorLevel = "Timeout") {
+    return
+  }
+  StringCaseSense, On ; parse case sensitive (in this context only)
+  switch Key {
+    ; r: run run-dialog
+    case "r": FileDlg := ComObjCreate("Shell.Application").FileRun, FileDlg := ""
+    ; e: run windows explorer
+    case "e": Run, "explorer.exe"
+    ; e: focus/run vs code editor
+    case "e": focusOrRun("code.exe")
+    ; (shift)p: run powershell (as admin)
+    case "p": Run, "powershell.exe" -NoExit -Command cd C:\; cd "%HOME%"; "%HOME_DRIVE%"
+    case "P": Run, *RunAs "powershell.exe" -NoExit -Command cd c:\; cd "%HOME%"; "%HOME_DRIVE%"
+    ; (shift)c: run cmd (as admin)
+    case "c": Run, "cmd.exe" /K cd c:\ & cd "%HOME%" & %HOME_DRIVE%
+    case "C": Run, *RunAs "cmd.exe" /K cd c:\ & cd "%HOME%" & %HOME_DRIVE%
+    ; k: focus/run keepassxc
+    case "k": focusOrRun("C:\Program Files\KeePassXC\KeePassXC.exe")
+    ;;; w: focus/run web browser
+    ;case "b": focusOrRun("firefox.exe")
+  }
+return
+; }}} - Win-R, [Key] control sequences ---------------------------------------
+
+; {{{ - Others ---------------------------------------------------------------
+#If A_ComputerName = PUPPTE ; puppet (lenove notebook) only
+  ;; Win-Shift-q: Lenovo quick settings
+  #+q::
+    if FileExist("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe") {
+      focusOrRun("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe")
     }
-return
-
-;; Win-Shift-Enter: Run powershell as administrator
-#+Enter::
-    ;Run *RunAs "cmd.exe" /K cd c:\ & cd "%HOME%" & %HOME_DRIVE%
-    Run *RunAs "powershell.exe" -NoExit -Command cd c:\; cd "%HOME%"; "%HOME_DRIVE%"
-return
-
-;; Win-Shift-f: focus / run file manager
-#+f::
-    if WinExist("ahk_exe i)\\doublecmd\.exe$") {
-        WinActivate
-    } else {
-        Run C:\Program Files\Double Commander\doublecmd.exe
-    }
-return
-
-;; Win-Shift-e: Focus/run browser
-#+b::
-    if WinExist("Firefox Developer Edition$") {
-        WinActivate
-    } else if WinExist("Google Chrome$") {
-        WinActivate
-    } else {
-        if FileExist("C:\Program Files\Firefox Developer Edition\firefox.exe") {
-            Run C:\Program Files\Firefox Developer Edition\firefox.exe
-        } else if (FileExist("C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")) {
-            Run C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
-        }
-    }
-return
-
-;; Win-Shift-e: Focus/run editor
-#+e::
-    if WinExist("ahk_exe i)\\Code\.exe$") {
-        WinActivate
-    } else if FileExist("C:\Program Files\Microsoft VS Code\Code.exe") {
-        Run C:\Program Files\Microsoft VS Code\Code.exe
-    } else {
-        Run %APP_DATA%\Local\Programs\Microsoft VS Code\Code.exe
-    }
-return
-
-;; Win-Shift-e: Focus/run mail client
-#+m::
-    if WinExist("ahk_exe i)\\OUTLOOK\.EXE$") && WinExist("ahk_class i)rctrl_renwnd32$") {
-        WinActivate
-    } else if FileExist("C:\Programme\Microsoft Office\Office15\OUTLOOK.EXE") {
-        Run C:\Programme\Microsoft Office\Office15\OUTLOOK.EXE
-    }
-return
-
-;; Win-Shift-l: Lenovo quick settings
-#+q::
-   if FileExist("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe") {
-       run C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe
-   }
-return
-; }}} - Run or Focus Apps ----------------------------------------------------
+  return
+#If
+; }}} - Others ---------------------------------------------------------------
 ; }}} = App Launcher =========================================================
 
 ; {{{ = Additional HotKeys ===================================================
 ; {{{ - Quick Web Search -----------------------------------------------------
 ;; Win-Shift-w: copy selection and web search
-#+w::
-    Send, ^c
-    ClipWait
-    ;; search only if clipboard contains object of type text
-    if DllCall("IsClipboardFormatAvailable", "uint", 1) {
-        Run, % "https://startpage.com/do/search?query=" . Clipboard ; may need encoding
-    }
-return
+;#+w::
+;    Send, ^c
+;    ClipWait
+;    ;; search only if clipboard contains object of type text
+;    if DllCall("IsClipboardFormatAvailable", "uint", 1) {
+;        Run, % "https://startpage.com/do/search?query=" . Clipboard ; may need encoding
+;    }
+;return
 ; }}} - Quick Web Search -----------------------------------------------------
 
 ; {{{ - Window Move ----------------------------------------------------------

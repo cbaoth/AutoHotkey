@@ -1,5 +1,19 @@
 ﻿; Commons.ahk: Some common functions to be used in other scripts
 
+; {{{ = Run == ===============================================================
+;; focus existing instance or run if needed
+focusOrRun(target, workDir="", winSize=""){
+	SplitPath target, execFile
+	Process, Exist, %execFile%
+	PID = %ErrorLevel%
+	if (PID = 0) {
+		Run, %target%, %workDir%, %winSize%
+	} else {
+		WinActivate, ahk_pid %PID%
+	}
+}
+; }}} = Run ==================================================================
+
 ; {{{ = Arrays ===============================================================
 ;; return: random array index (within the range of the given array)
 arrayRndIdx(array) {
