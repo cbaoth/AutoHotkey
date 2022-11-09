@@ -13,23 +13,23 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;; Access Umlauts like on Int. Colemak layout (via AltGr). Should be availlable
 ;; per default, if not enable this:
 ;; availlable for some reason
-;<^>!a::Send, ä  ; RightAlt-a
-;<^>!+a::Send, Ä ; RightAlt-A
-;<^>!o::Send, ö  ; RightAlt-o
-;<^>!+o::Send, Ö ; RightAlt-O
-;<^>!u::Send, ü  ; RightAlt-u
-;<^>!+u::Send, Ü ; RightAlt-U
-;<^>!s::Send, ß  ; RightAlt-s
+;<^>!a::SendInput, ä  ; RightAlt-a
+;<^>!+a::SendInput, Ä ; RightAlt-A
+;<^>!o::SendInput, ö  ; RightAlt-o
+;<^>!+o::SendInput, Ö ; RightAlt-O
+;<^>!u::SendInput, ü  ; RightAlt-u
+;<^>!+u::SendInput, Ü ; RightAlt-U
+;<^>!s::SendInput, ß  ; RightAlt-s
 ; }}} - International Layout Position ----------------------------------------
 ; {{{ - German Keyboard Position ---------------------------------------------
 ;; Access Umlauts (like) on a German keyboard when using US layout (+ AltGr)
-;<^>!'::Send, ä  ; RightAlt-'
-;<^>!+'::Send, Ä ; RightAlt-"
-;<^>!;::Send, ö  ; RightAlt-;
-;<^>!+;::Send, Ö ; RightAlt-:
-;<^>![::Send, ü  ; RightAlt-[
-;<^>!+[::Send, Ü ; RightAlt-{
-;<^>!-::Send, ß  ; RightAlt-Dash
+;<^>!'::SendInput, ä  ; RightAlt-'
+;<^>!+'::SendInput, Ä ; RightAlt-"
+;<^>!;::SendInput, ö  ; RightAlt-;
+;<^>!+;::SendInput, Ö ; RightAlt-:
+;<^>![::SendInput, ü  ; RightAlt-[
+;<^>!+[::SendInput, Ü ; RightAlt-{
+;<^>!-::SendInput, ß  ; RightAlt-Dash
 ; }}} - German Keyboard Position ---------------------------------------------
 ; }}} = Umlaute ==============================================================
 
@@ -58,31 +58,31 @@ SC056::Control
 
 ;; US Layout (QWERTY) / Colemak braces re-map: () <-> []
 ; since () is more commonly used, especially in lisp and other languages
-;[::Send {ASC 40}
-;]::Send {ASC 41}
-;+9::Send {ASC 91}
-;+0::Send {ASC 93}
+;[::SendInput {ASC 40}
+;]::SendInput {ASC 41}
+;+9::SendInput {ASC 91}
+;+0::SendInput {ASC 93}
 
 ;; US Layout (QWERTY) alternative braces
-;>!j::Send {ASC 40}  ; RightAlt-j -> (
-;>!k::Send {ASC 41}  ; RightAlt-k -> )
-;>!+j::Send {ASC 91} ; RightAlt-J -> [
-;>!+k::Send {ASC 93} ; RightAlt-K -> ]
+;>!j::SendInput {ASC 40}  ; RightAlt-j -> (
+;>!k::SendInput {ASC 41}  ; RightAlt-k -> )
+;>!+j::SendInput {ASC 91} ; RightAlt-J -> [
+;>!+k::SendInput {ASC 93} ; RightAlt-K -> ]
 
 ;#HotkeyModifierTimeout -1
 ;; Colemak alternative braces
-;<^>!n::Send {ASC 40}  ; AltGr-n -> (
-;é::Send {ASC 40}      ; AltGr-n -> (
-;<^>!e::Send {ASC 41}  ; AltGr-e -> )
-;ñ::Send {ASC 40}      ; AltGr-e -> )
-;<^>!+n::Send {ASC 91} ; AltGr-N -> [
-;Ñ::Send {ASC 40}      ; AltGr-N -> [
-;<^>!+e::Send {ASC 93} ; AltGr-E -> ]
-;É::Send {ASC 40}      ; AltGr-E -> ]
-;<^>!i::Send {ASC 123} ; AltGr-N -> {
-;í::Send {ASC 123}     ; AltGr-N -> {
-;<^>!o::Send {ASC 125} ; AltGr-E -> }
-;ó::Send {ASC 125}     ; AltGr-E -> }
+;<^>!n::SendInput {ASC 40}  ; AltGr-n -> (
+;é::SendInput {ASC 40}      ; AltGr-n -> (
+;<^>!e::SendInput {ASC 41}  ; AltGr-e -> )
+;ñ::SendInput {ASC 40}      ; AltGr-e -> )
+;<^>!+n::SendInput {ASC 91} ; AltGr-N -> [
+;Ñ::SendInput {ASC 40}      ; AltGr-N -> [
+;<^>!+e::SendInput {ASC 93} ; AltGr-E -> ]
+;É::SendInput {ASC 40}      ; AltGr-E -> ]
+;<^>!i::SendInput {ASC 123} ; AltGr-N -> {
+;í::SendInput {ASC 123}     ; AltGr-N -> {
+;<^>!o::SendInput {ASC 125} ; AltGr-E -> }
+;ó::SendInput {ASC 125}     ; AltGr-E -> }
 
 ;; Simulate a NUMPAD (win+ctrl+[x])
 ;#^6::NumLock
@@ -103,60 +103,96 @@ SC056::Control
 ;#^/::NumpadDot
 ; }}} = Hacker Remapping =====================================================e
 
-; {{{ = CapsLock n [KEY] =====================================================
-;; RightWin-W/A/S/D (Colemak: W/A/R/S) -> Cursor (no RightWin on all Keyboards)
-;>#w::Send {Up}
-;>#a::Send {Left}
-;>#r::Send {Down}
-;>#s::Send {Right}
+; {{{ = Cursor ===============================================================
+;; LWin-U/N/E/I (on Colemak) -> Cursor (similar to but more natural than VIM)
+<#u::SendInput {Up}
+<#n::SendInput {Left}
+<#e::SendInput {Down}
+<#i::SendInput {Right}
+;; Same with LShift for arrow key selection
+<+<#u::SendInput +{Up}
+<+<#n::SendInput +{Left}
+<+<#e::SendInput +{Down}
+<+<#i::SendInput +{Right}
+;; Same with LCtrl for arrow key selection
+<^<#u::SendInput ^{Up}
+<^<#n::SendInput ^{Left}
+<^<#e::SendInput ^{Down}
+<^<#i::SendInput ^{Right}
+;; LWin-LAlt-U/N/E/I (on Colemak) -> PageUp/Home/PageDown/End
+<#!n::SendInput {Home}
+<#!i::SendInput {End}
+<#!u::SendInput {PgUp}
+<#!e::SendInput {PgDn}
+;; Same with LShift for arrow key selection
+<+<#<!n::SendInput +{Home}
+<+<#<!i::SendInput +{End}
+<+<#<!u::SendInput +{PgUp}
+<+<#<!e::SendInput +{PgDn}
+;; Same with LCtrl for arrow key selection
+;<^<#<!n::SendInput ^{Home}
+;<^<#<!i::SendInput ^{End}
+;<^<#<!u::SendInput ^{PgUp}
+;<^<#<!e::SendInput ^{PgDn}
 
-;; Win-I/J/K/L (Colemak: U/N/E/I) -> Cursor (improved VIM bindings)
-#u::Send {Up}
-#n::Send {Left}
-#e::Send {Down}
-#i::Send {Right}
+;; In case Win-Shift-Alt conflicts with the Office hotkey(s) execute this in PS
+;; to disable the Office (hot) Key:
+;; REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32
+; }}} = Cursor ===============================================================
 
+; {{{ = CapsLock + [Key] =====================================================
 ;; http://www.autohotkey.com/board/topic/113783-hand-friendly-text-navigation-help/
 ;CapsLock & w::
 ;  if getKeyState("alt") = 0
-;    Send, {Up}
+;    SendInput, {Up}
 ;  else
-;    Send, {PageUp}
+;    SendInput, {PageUp}
 ;return
 ;CapsLock & a::
 ;  if getKeyState("alt") = 0
-;    Send, {Left}
+;    SendInput, {Left}
 ;  else
-;    Send, {Home}
+;e   SendInput, {Home}
 ;return
 ;CapsLock & r::
 ;  if getKeyState("alt") = 0
-;    Send, {Down}
+;    SendInput, {Down}
 ;  else
-;    Send, {PageDown}
+;    SendInput, {PageDown}
 ;return
 ;CapsLock & s::
 ;  if getKeyState("alt") = 0
-;    Send, {Right}
+;    SendInput, {Right}
 ;  else
-;    Send, {End}
+;    SendInput, {End}
 ;return
 ; }}} = CapsLock + [KEY] =====================================================
 
+; {{{ = ISO Mini KB ==========================================================
+;; Some improvements to ISO (non-ANSI) Mini Keyboard w/ missing (FN only) keys
+;#If A_ComputerName = MOTOKO ; host that uses us intl. (ISO) keyboard
+;; Win+Del -> Insert
+#Del::SendInput {Insert}
+;; (Shift-)\ -> Enter (simulate ANSI Enter), use (Shift-)Win-\ to send \/|
+\::SendInput {Enter}
++\::SendInput +{Enter}
+;#If
+; }}} = ISO Mini KB ==========================================================
+
 ; {{{ = Media Keys ===========================================================
 ;; Simulate Media Keys (alternative shortcuts)
-#<!Space::Send {Media_Play_Pause} ; Win-LeftAlt-SpaceArrow
-#<!Right::Send {Media_Play_Pause} ; Win-LeftAlt-RightArrow
-#<!Up::Send    {Media_Prev}       ; Win-LeftAlt-upArrow
-#<!Down::Send  {Media_Next}       ; Win-LeftAlt-DownArrow
-#<!Left::Send  {Media_Stop}       ; Win-LeftAlt-LeftArrow
-#<!,::Send     {Media_Prev}       ; Win-LeftAlt-,
-#<!.::Send     {Media_Next}       ; Win-LeftAlt-.
+#<!Space::SendInput {Media_Play_Pause} ; Win-LeftAlt-SpaceArrow
+#<!Right::SendInput {Media_Play_Pause} ; Win-LeftAlt-RightArrow
+#<!Up::SendInput    {Media_Prev}       ; Win-LeftAlt-upArrow
+#<!Down::SendInput  {Media_Next}       ; Win-LeftAlt-DownArrow
+#<!Left::SendInput  {Media_Stop}       ; Win-LeftAlt-LeftArrow
+#<!,::SendInput     {Media_Prev}       ; Win-LeftAlt-,
+#<!.::SendInput     {Media_Next}       ; Win-LeftAlt-.
 
 ;; Simulate Volume Keys (alternative shortcuts)
-#<!=::Send {Volume_Up}   ; Win-LeftAlt-Equal
-#<!-::Send {Volume_Down} ; Win-LeftAlt-Dash
-#<!0::Send {Volume_Mute} ; Win-LeftAlt-0
+#<!=::SendInput {Volume_Up}   ; Win-LeftAlt-Equal
+#<!-::SendInput {Volume_Down} ; Win-LeftAlt-Dash
+#<!0::SendInput {Volume_Mute} ; Win-LeftAlt-0
 ; }}} = Media Keys ===========================================================
 
 ; {{{ = Win-X, [Key] control sequences =======================================
