@@ -2,6 +2,10 @@
 
 ; All (active) mappings asume Colemak keyboard layout (incl. capslock -> backspace)
 
+;; In case Win-Shift-Alt(-Ctrl) conflicts with the Office hotkey(s) execute this in PS
+;; to disable the Office (hot) Key:
+;; REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32
+
 ; {{{ = Mouse ================================================================
 ;; Remoap thumb mouse buttons to page up/down (instead of prev./next)
 XButton1::PgDn ; Mouse 4 (usually thumb1) -> Page Down
@@ -48,9 +52,12 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;  Else SetCapslockState AlwaysOn
 ;Return
 
-;; Shift/Alt-ScrollLock -> Toggle CapsLock (use if re-mapped)
-+ScrollLock::CapsLock
-!ScrollLock::CapsLock
+;; LShift/LAlt-ScrollLock -> Toggle CapsLock (use if re-mapped via AHK)
+<+ScrollLock::CapsLock
+<!ScrollLock::CapsLock
+
+;; LWin-Backspace -> Toggle ScrollLock
+<#BackSpace::ScrollLock
 
 ;; Unused key #105 (<>| on German kb) -> Control
 ; Key not used on german keyboard when using US or Colemak layout
@@ -103,42 +110,38 @@ SC056::Control
 ;#^/::NumpadDot
 ; }}} = Hacker Remapping =====================================================e
 
-; {{{ = Cursor ===============================================================
-;; LWin-U/N/E/I (on Colemak) -> Cursor (similar to but more natural than VIM)
-<#u::SendInput {Up}
-<#n::SendInput {Left}
-<#e::SendInput {Down}
-<#i::SendInput {Right}
-;; Same with LShift for arrow key selection
-<+<#u::SendInput +{Up}
-<+<#n::SendInput +{Left}
-<+<#e::SendInput +{Down}
-<+<#i::SendInput +{Right}
-;; Same with LCtrl for arrow key selection
-<^<#u::SendInput ^{Up}
-<^<#n::SendInput ^{Left}
-<^<#e::SendInput ^{Down}
-<^<#i::SendInput ^{Right}
-;; LWin-LAlt-U/N/E/I (on Colemak) -> PageUp/Home/PageDown/End
-<#!n::SendInput {Home}
-<#!i::SendInput {End}
-<#!u::SendInput {PgUp}
-<#!e::SendInput {PgDn}
-;; Same with LShift for arrow key selection
-<+<#<!n::SendInput +{Home}
-<+<#<!i::SendInput +{End}
-<+<#<!u::SendInput +{PgUp}
-<+<#<!e::SendInput +{PgDn}
-;; Same with LCtrl for arrow key selection
-;<^<#<!n::SendInput ^{Home}
-;<^<#<!i::SendInput ^{End}
-;<^<#<!u::SendInput ^{PgUp}
-;<^<#<!e::SendInput ^{PgDn}
-
-;; In case Win-Shift-Alt conflicts with the Office hotkey(s) execute this in PS
-;; to disable the Office (hot) Key:
-;; REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32
-; }}} = Cursor ===============================================================
+; {{{ = ScrollLock Alternative Keys ==========================================
+;; ScrollLock toggles the following alternative keys
+#If GetKeyState("ScrollLock", "T")
+  ;; (AnyMod)w/a/r/s -> (AnyMod)ArrowKeys
+  *w::Up
+  *r::Down
+  *a::Left
+  *s::Right
+  ;; (AnyMod)p/t/q/f -> (AnyMod)PageUp/-Down/Home/End
+  *p::PgUp
+  *t::PgDn
+  *q::Home
+  *f::End
+  ;; Simulate a NumPad
+  *SC029::NumLock ; ~ -> NumLock
+  *1::Numpad1     ; 1 -> NumPad 1
+  *2::Numpad2     ; 2 -> NumPad 2
+  *3::Numpad3     ; 3 -> NumPad 3
+  *4::Numpad4     ; 4 -> NumPad 4
+  *5::Numpad5     ; 5 -> NumPad 5
+  *6::Numpad6     ; 6 -> NumPad 6
+  *7::Numpad7     ; 7 -> NumPad 7
+  *8::Numpad8     ; 8 -> NumPad 8
+  *9::Numpad9     ; 9 -> NumPad 9
+  *0::Numpad0     ; 0 -> NumPad 0
+  *-::NumpadSub   ; - -> NumPad -
+  *=::NumpadAdd   ; = -> NumPad +
+  *;::NumpadDot   ; ; -> NumPad .
+  *[::NumpadMult  ; [ -> NumPad *
+  *]::NumpadDiv   ; ] -> NumPad /
+#If
+; }}} = ScrollLock Alternative Keys ==========================================
 
 ; {{{ = CapsLock + [Key] =====================================================
 ;; http://www.autohotkey.com/board/topic/113783-hand-friendly-text-navigation-help/
