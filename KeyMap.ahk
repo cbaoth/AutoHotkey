@@ -118,11 +118,13 @@ SC056::Control
   *r::Down
   *a::Left
   *s::Right
+
   ;; (AnyMod)p/t/q/f -> (AnyMod)PageUp/-Down/Home/End
   *p::PgUp
   *t::PgDn
   *q::Home
   *f::End
+
   ;; Simulate a NumPad
   *SC029::NumLock ; ~ -> NumLock
   *1::Numpad1     ; 1 -> NumPad 1
@@ -140,6 +142,47 @@ SC056::Control
   *;::NumpadDot   ; ; -> NumPad .
   *[::NumpadMult  ; [ -> NumPad *
   *]::NumpadDiv   ; ] -> NumPad /
+
+  ;; Simulate a Mouse
+  ;; source: https://www.autohotkey.com/boards/viewtopic.php?t=24588
+  <#u::MouseMove, 0, -1, 0, R   ; LWin-u -> mouse cursor up 1px
+  *u::MouseMove, 0, -20, 0, R    ; (AnyMod)u -> mouse cursor up 20px
+  <#e::MouseMove, 0, 1, 0, R    ; LWin-e -> mouse cursor down 1px
+  *e::MouseMove, 0, 20, 0, R     ; (AnyMod)e -> mouse cursor down 20px
+  <#n::MouseMove, -1, 0, 0, R   ; LWin-n -> mouse cursor left 1px
+  *n::MouseMove, -20, 0, 0, R    ; (AnyMod)n -> mouse cursor left 20px
+  <#i::MouseMove, 1, 0, 0, R    ; LWin-i -> mouse cursor right 1px
+  *i::MouseMove, 20, 0, 0, R     ; (AnyMod)i -> mouse cursor right 20px
+  *o::click right               ; (AnyMod)h -> (AnyMod) mouse right click
+  ;; Left mouse button somulation with option to drag on key down (hold)
+  ;; source: https://autohotkey.com/board/topic/59665-key-press-and-hold-emulates-mouse-click-and-hold-win7/
+  *h::                          ; (AnyMod)o -> (AnyMod) mouse left click and hold
+     If (A_PriorHotKey = A_ThisHotKey)
+       return
+     click down
+  return
+  *h up::click up               ; (AnyMod) o -> (AnyMod) mouse left click release
+
+  ;; Ignore all remaining regular keys so not to write anything by mistake
+  *g::
+  *j::
+  *l::
+  *y::
+  *d::
+  *'::
+  *\::
+  *z::
+  *x::
+  *c::
+  *v::
+  *b::
+  *k::
+  *m::
+  *,::
+  *.::
+  */::
+    ;; do nothing
+  return
 #If
 ; }}} = ScrollLock Alternative Keys ==========================================
 
