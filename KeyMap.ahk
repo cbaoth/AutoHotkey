@@ -37,7 +37,7 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ; }}} - German Keyboard Position ---------------------------------------------
 ; }}} = Umlaute ==============================================================
 
-; {{{ = Hacker Remapping =====================================================
+; {{{ = Hacker Remapping & Special Keys ======================================
 ;; CapsLock -> Control
 ;CapsLock::Control
 
@@ -59,9 +59,31 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;; LWin-Backspace -> Toggle ScrollLock
 <#BackSpace::ScrollLock
 
-;; Unused key #105 (<>| on German kb) -> Control
-; Key not used on german keyboard when using US or Colemak layout
-SC056::Control
+; {{{ - ISO/ANSI/Mini Tweaks -------------------------------------------------
+;; Some improvements for the Logitech MX Mecahnical Mini (US Intl. ISO, non-ANSI)
+;#If A_ComputerName = MOTOKO ; only on hosts using this keyboard
+;; LWin+Del -> Insert
+>#Del::Insert
+
+;; (Shift-)\ -> Enter, extend the Enter key (simulate ANSI Enter key size)
+;*\::Enter
+;; But allow regular key \| input while LWin is pressed
+;<#\::\
+;<#+\::|
+
+;; (AllMods)LWin-Home/End/PageUp/PageDown -> (AllMods)CapsLock/ScrollLock/NumLock/PrintScreen
+*<#Home::CapsLock
+*<#End::ScrollLock
+*<#PgUp::NumLock
+*<#PgDn::PrintScreen
+;#If
+; }}} - ISO/ANSI/Mini --------------------------------------------------------
+
+;; Unused key #105 (redundant <>| or similar on ISO kb) -> Control
+;; Key not used at all on ISO keyboards when using Colemak/ANSI layout
+SC056::Control  ; -> Control (less distance)
+;SC056::LShift   ; -> LeftShift (to extend the smaller ISO shift key)
+
 
 ;; US Layout (QWERTY) / Colemak braces re-map: () <-> []
 ; since () is more commonly used, especially in lisp and other languages
@@ -108,7 +130,7 @@ SC056::Control
 ;#^m::Numpad2
 ;#^,::Numpad3
 ;#^/::NumpadDot
-; }}} = Hacker Remapping =====================================================e
+; }}} = Hacker Remapping & Special Keys ======================================e
 
 ; {{{ = ScrollLock Alternative Keys ==========================================
 ;; ScrollLock toggles the following alternative keys
@@ -214,17 +236,6 @@ SC056::Control
 ;return
 ; }}} = CapsLock + [KEY] =====================================================
 
-; {{{ = ISO Mini KB ==========================================================
-;; Some improvements to ISO (non-ANSI) Mini Keyboard w/ missing (FN only) keys
-;#If A_ComputerName = MOTOKO ; host that uses us intl. (ISO) keyboard
-;; Win+Del -> Insert
-#Del::SendInput {Insert}
-;; (Shift-)\ -> Enter (simulate ANSI Enter), use (Shift-)Win-\ to send \/|
-\::SendInput {Enter}
-+\::SendInput +{Enter}
-;#If
-; }}} = ISO Mini KB ==========================================================
-
 ; {{{ = Media Keys ===========================================================
 ;; Simulate Media Keys (alternative shortcuts)
 #<!Space::SendInput {Media_Play_Pause} ; Win-LeftAlt-SpaceArrow
@@ -244,11 +255,58 @@ SC056::Control
 ; {{{ = Win-X, [Key] control sequences =======================================
 ;; Win-X, [Key] - Emacs/Screen/Tmux-like control sequence
 #x::
-  Input Key, L1, T2
-  if Key=k ; k: kill active window
-    WinKill, A
-  else if Key=c ; c: close active window
-    WinClose, A
+  tt_text =
+  (
+window [k: kill, c: close]
+power [s: sleep, h: hibernate]
+power plans [1: power save, 2: balanced, 3: high perf., 4: ultimate perf.]
+  )
+  ToolTip % tt_text
+  Input Key, C L1 T5 ; read case-sens. length 1 w/ 2sec timeout
+  removeToolTip()
+  if (ErrorLevel = "Timeout") {
+    return
+  }
+  StringCaseSense, On ; parse case sensitive (in this context only)
+  switch Key {
+    ; k: kill active window
+    case "k": WinKill, A
+    ; c: close active window
+    case "c": WinClose, A
+    ; s: send computer to sleep
+    ; args: bHibernate, bForce, WakeupEventsDisabled
+    ; https://learn.microsoft.com/en-us/windows/win32/api/powrprof/nf-powrprof-setsuspendstate
+    case "s": DllCall("PowrProf\SetSuspendState", "int", 0, "int", 0, "int", 0)
+    ; h: send computer to hibernation
+    ; might need one time enabling via: powercfg.exe /hibernate on
+    case "h": DllCall("PowrProf\SetSuspendState", "int", 1, "int", 0, "int", 0)
+    ; 1: switch to power plane "Power Save"
+    ; use "powercfg -list" to get uuid
+    case "1":
+      if (A_ComputerName == "MOTOKO") {
+        Run, powercfg -setactive "a1841308-3541-4fab-bc81-f71556f20b4a"
+        return
+      }
+    ; 2: switch to power plane "Balanced"
+    case "2":
+      if (A_ComputerName == "MOTOKO") {
+        Run, powercfg -setactive "381b4222-f694-41f0-9685-ff5bb260df2e"
+        return
+      }
+    ; 3: switch to power plane "High Performance"
+    case "3":
+      if (A_ComputerName == "MOTOKO") {
+        Run, powercfg -setactive "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+        return
+      }
+    ; 4: switch to power plane "Ultimate Performance"
+    case "4":
+      if (A_ComputerName == "MOTOKO") {
+        Run, powercfg -setactive "38156909-5918-4777-864e-fbf99c75df8b"
+        return
+      }
+
+  }
 return
 ; }}} = Win-X, [Key] control sequences =======================================
 
