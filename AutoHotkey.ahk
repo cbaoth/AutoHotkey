@@ -72,6 +72,7 @@ return
 #Include *i Games\Diablo3.ahk
 #Include *i Games\Diablo2Resurrected.ahk
 #Include *i Games\GrimDawn.ahk
+#Include *i Games\Fallout4VR.ahk
 ; }}} - Games ----------------------------------------------------------------
 ; }}} = Include Additional Scripts ===========================================
 
