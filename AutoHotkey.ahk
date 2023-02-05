@@ -45,22 +45,28 @@ return
 ; }}} = Core =================================================================
 
 ; {{{ = Include Additional Scripts ===========================================
-;; look for include scripts in the directory where the current script resides
-#Include %A_ScriptDir%
+;; look in main script dir for all following includes
+#Include %A_ScriptDir%\Incl
+
 ;; some common functions
 #Include Commons.ahk
+
 ;; some key (re-)maps (colemak, hacking, etc.)
 #Include KeyMap.ahk
+
 ;; bind *#F8 hotkeys to window detail tracking tooltip
 #Include WindowTracking.ahk
+
 ;; bin *F10 hotkeys to confine mouse to active window
 #Include ConfineMouse.ahk
+
 ;; X like paste on middle-click
 #Include XMouseClipboard.ahk
+
 ;; Some send-to-window hotkeys (e.g. copy to editor)
 ;#Include SendToWindow.ahk
-;; activate win+mouse drage and resize
-;#Include AutoHotkey_EasyWindowDrag.ahk ; DEPRECATED, BUGGY
+
+; include if exists (maybe deleted on non-gaming hosts)
 #Include *i WinDrag.ahk  ; include if exists (not in git repo, no OC)
 #LButton::WindowMouseDragMove()
 #RButton::WindowMouseDragResize()
@@ -212,17 +218,21 @@ return
 
 ; {{{ - Misc -----------------------------------------------------------------
 ; Win-F5: Toggle timer to keep PC awake (dummy mouse event every 4 min)
-#F5::stayAwake()
+#F5::stayAwakeOld()
 
-stayAwake()
-{
-    static stayAwakeToggle
-    SetTimer, DummyMouseEvent, % (stayAwakeToggle := !stayAwakeToggle) ? 225000 : "Off"
-    ToolTip % "Stay Awake: " . (stayAwakeToggle ? "On" : "Off")
-    _removeToolTipDelay(1.5)
-    DummyMouseEvent:
-        MouseMove,0,0,0,R ; mouse pointer stays in place but sends a mouse event
-    return
+stayAwake() {
+  ; TODO
+}
+
+; DEPRAECATED: this seems broken (at least in some scenarios the mouse moves)
+stayAwakeOld() {
+  static stayAwakeToggle
+  SetTimer, DummyMouseEvent, % (stayAwakeToggle := !stayAwakeToggle) ? 225000 : "Off"
+  ToolTip % "Stay Awake: " . (stayAwakeToggle ? "On" : "Off")
+  _removeToolTipDelay(1.5)
+  DummyMouseEvent:
+    MouseMove,0,0,0,R ; mouse pointer stays in place but sends a mouse event
+  return
 }
 
 ; OnClipboardChange("clipChanged", -1) events, see above

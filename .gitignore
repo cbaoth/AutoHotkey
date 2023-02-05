@@ -1,2 +1,4 @@
-AutoHotkey_EasyWindowDrag.ahk
+.sonarlint
+.vscode
 WinDrag.ahk
+LocalStuff.ahk
