@@ -221,7 +221,7 @@ return
 #F5::stayAwakeToggle()
 
 stayAwakeToggle() {
-  counter := new StayAwakeTimer
+  static counter := new StayAwakeTimer
   counter.Toggle()
 }
 
@@ -230,7 +230,7 @@ class StayAwakeTimer {
     this.idleMin := 240000 ; only trigger when idle for at least 4min
     this.intervalMin := 30000 ; wait at least 0.5 min
     this.intervalMax := 270000 ; repeat max every 4.5min
-    this.isActive := fals#IfWinExist, [ WinTitle, WinText]
+    this.isActive := false
     ;this.count := 0
     this.timer := ObjBindMethod(this, "Tick")
   }
