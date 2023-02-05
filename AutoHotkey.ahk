@@ -216,25 +216,49 @@ return
 #^w::Send #^{Right}
 ; }}} - Window/Desktop States/Styles -----------------------------------------
 
-; {{{ - Misc -----------------------------------------------------------------
+; {{{ - Stay Awake -----------------------------------------------------------
 ; Win-F5: Toggle timer to keep PC awake (dummy mouse event every 4 min)
-#F5::stayAwakeOld()
+#F5::stayAwakeToggle()
 
-stayAwake() {
-  ; TODO
+stayAwakeToggle() {
+  counter := new StayAwakeTimer
+  counter.Toggle()
 }
 
-; DEPRAECATED: this seems broken (at least in some scenarios the mouse moves)
-stayAwakeOld() {
-  static stayAwakeToggle
-  SetTimer, DummyMouseEvent, % (stayAwakeToggle := !stayAwakeToggle) ? 225000 : "Off"
-  ToolTip % "Stay Awake: " . (stayAwakeToggle ? "On" : "Off")
-  _removeToolTipDelay(1.5)
-  DummyMouseEvent:
+class StayAwakeTimer {
+  __New() {
+    this.idleMin := 240000 ; only trigger when idle for at least 4min
+    this.intervalMin := 30000 ; wait at least 0.5 min
+    this.intervalMax := 270000 ; repeat max every 4.5min
+    this.isActive := fals#IfWinExist, [ WinTitle, WinText]
+    ;this.count := 0
+    this.timer := ObjBindMethod(this, "Tick")
+  }
+
+  Toggle() {
+    timer := this.timer
+    this.isActive := !this.isActive
+    SetTimer % timer, % (this.isActive ? On : Off)
+    ToolTip % "Stay Awake: " . (this.isActive ? "On" : "Off")
+    _removeToolTipDelay(1.5)
+  }
+
+  Tick() {
+    if (A_TimeIdle > this.idleMin) { ; idle long enough?
+      timer := this.timer
+      this.DummyMouseEvent()
+      Random, interval, % this.intervalMin, % this.intervalMax
+      SetTimer % timer, % interval ; start timer with new random interval
+    } ; not idle long enough -> do nothing
+  }
+
+  DummyMouseEvent() {
     MouseMove,0,0,0,R ; mouse pointer stays in place but sends a mouse event
-  return
+  }
 }
+; }}} - Stay Awake -----------------------------------------------------------
 
+; {{{ - Misc -----------------------------------------------------------------
 ; OnClipboardChange("clipChanged", -1) events, see above
 global clipChangedToggle := false
 global clipChangedUlrsOnly := false
