@@ -52,12 +52,11 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;  Else SetCapslockState AlwaysOn
 ;Return
 
-;; LShift/LAlt-ScrollLock -> Toggle CapsLock (use if re-mapped via AHK)
-<+ScrollLock::CapsLock
-<!ScrollLock::CapsLock
+;; LWin-Backspace -> Toggle CapsLock (use if re-mapped via AHK)
+<#BackSpace::CapsLock
 
-;; LWin-Backspace -> Toggle ScrollLock
-<#BackSpace::ScrollLock
+;; LWin-Alt-Backspace -> Toggle ScrollLock
+<#!BackSpace::ScrollLock
 
 ; {{{ - ISO/ANSI/Mini Tweaks -------------------------------------------------
 ;; Some improvements for the Logitech MX Mecahnical Mini (US Intl. ISO, non-ANSI)
