@@ -25,3 +25,5 @@
   Send("{Return}")
   SetKeyDelay(-1)
 }
+
+#HotIf

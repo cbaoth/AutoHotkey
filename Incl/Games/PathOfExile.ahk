@@ -156,3 +156,5 @@ tab:: ; tab
     A_Clipboard := RegExReplace(A_Clipboard, "(\([0-9-]+\)|\{ [^{]+\ })\n?")
   }
 }
+
+#HotIf

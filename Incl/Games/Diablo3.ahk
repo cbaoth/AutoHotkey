@@ -97,3 +97,5 @@ _d3ClickInventory(clip_pos, click_pylon, find_img_on, find_img_off, find_img_sca
     }
 }
 ; }}} = Diablo 3 Functions ===================================================
+
+#HotIf

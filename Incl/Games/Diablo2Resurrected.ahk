@@ -28,6 +28,8 @@ global d2rHKToggle := false
   _removeToolTipDelay(1)
 }
 
+#HotIf
+
 ;; hotkeys to be toggled via ctrl-~ (combat/typing)
 #HotIf d2rHKToggle and WinActive("ahk_exe i)Diablo II Resurrected.*D2R\.exe$")
 
@@ -79,5 +81,6 @@ global d2rHKToggle := false
 
 ;#UseHook OFF
 
-;#HotIf
 ; }}} - Hotkeys w/ Toggle ----------------------------------------------------
+
+#HotIf
