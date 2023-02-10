@@ -1,4 +1,4 @@
-; Divinity.ahk: Hotkeys for Divinity: Original Sin
+﻿; Divinity.ahk: Hotkeys for Divinity: Original Sin
 
 ;; Toggle Keys
 ; #IfWinActive, ahk_exe EoCApp.exe

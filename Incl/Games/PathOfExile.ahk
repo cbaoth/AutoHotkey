@@ -16,7 +16,7 @@
 ;; tab (panic) and qwfpgj (qwert) with optional meta key Alt must be used,
 ;; drastically reducing finger movements in combat situations.
 
-#IfWinActive, ahk_class POEWindowClass
+#HotIf WinActive("ahk_class POEWindowClass", )
 
 ;; rndSleepSendSeq wrapper with default sleep time range for skill actions
 ;; Some skill (non-instant) take time to cast, meaning if the sequence is
@@ -47,7 +47,7 @@ poeRndSleepSendSeq(keyArray) { ; just a wrapper to set some defaults
 
 XButton1::poeRndSleepSendSeq(["q","w","f","p"]) ; mouse4: w,f,p (skill seq.)
 ;<^XButton1::poeRndSleepSendSeq(["w","f","p"]) ; mouse4: w,f,p (skill seq.)
-;<^XButton1::send, ^q                        ; ctrl-mouse4: ctrl-q (skill)
+;<^XButton1::Send("^q")                        ; ctrl-mouse4: ctrl-q (skill)
 ;XButton2::MButton                           ; mouse5: middle-mouse
 
 ;; ctlr-k: exit party (kick self)
@@ -77,25 +77,27 @@ XButton1::poeRndSleepSendSeq(["q","w","f","p"]) ; mouse4: w,f,p (skill seq.)
 
 ;; ctrl-h: go to hideout
 ^h::
-  KeyWait Control
-  Send {Return}/hideout{Return}
-return
+{
+  ErrorLevel := !KeyWait("Control")
+  Send("{Return}/hideout{Return}")
+}
 
 ;; alt-esc: exit to character selection (panic button)
 !ESC::
-  Critical
-  BlockInput On
-  KeyWait Alt
-  Send {Return}/exit{Return}
-  BlockInput Off
-return
+{
+  Critical()
+  BlockInput("On")
+  ErrorLevel := !KeyWait("Alt")
+  Send("{Return}/exit{Return}")
+  BlockInput("Off")
+}
 
 ;; (alt-)mouse-wheel-up/down: up/down key, so they can be used as action keys
 ;; note: disable "Mousewheel Zoom" under Options > UI, use ctrl+wheel to scroll
 ;!WheelUp::
-WheelUp::Send {Up}
+WheelUp::Send("{Up}")
 ;!WheelDown::
-WheelDown::Send {Down}
+WheelDown::Send("{Down}")
 
 ; poe_include_flask_1 = true
 
@@ -127,8 +129,9 @@ WheelDown::Send {Down}
 ;SC029:: ; hyphon "`"
 ;!SC029:: ; alt-hyphon (alt may be pressed by mistake)
 tab:: ; tab
+{
   rndSleepSend(["1","2","3","4","5"], 5, 50)
-return
+}
 
 ;; LControl + MButton: auto-left-click until either LControl/MButton released
 ; <^MButton::
@@ -145,12 +148,11 @@ return
 ^+c::
   ;; copy, roughly check if clip content looks like an item description, if so
   ;; strip ranges and details (seems to cause issuse with PoB)
-  Send, ^c
-  ClipWait, 1
-  if (not ErrorLevel and InStr(Clipboard, "--------")) {
+{
+  Send("^c")
+  Errorlevel := !ClipWait(1)
+  if (not ErrorLevel and InStr(A_Clipboard, "--------")) {
     ; strip all number ranges and mod details
-    Clipboard := RegExReplace(Clipboard,"(\([0-9-]+\)|\{ [^{]+\ })\n?")
+    A_Clipboard := RegExReplace(A_Clipboard, "(\([0-9-]+\)|\{ [^{]+\ })\n?")
   }
-return
-
-return ; #IfWinActive, ahk_class POEWindowClass
+}

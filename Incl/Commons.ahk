@@ -2,14 +2,12 @@
 
 ; {{{ = Run == ===============================================================
 ;; focus existing instance or run if needed
-focusOrRun(target, workDir="", winSize=""){
-	SplitPath target, execFile
-	Process, Exist, %execFile%
-	PID = %ErrorLevel%
-	if (PID = 0) {
-		Run, %target%, %workDir%, %winSize%
+focusOrRun(target, workDir:="", winSize:=""){
+	SplitPath(target, &execFile)
+	if (PID := ProcessExist(execFile)) {
+		WinActivate("ahk_pid " PID)
 	} else {
-		WinActivate, ahk_pid %PID%
+		Run(target, workDir, winSize)
 	}
 }
 ; }}} = Run ==================================================================
@@ -18,20 +16,20 @@ focusOrRun(target, workDir="", winSize=""){
 ;; return: random array index (within the range of the given array)
 arrayRndIdx(array) {
   local rnd
-  local len := array.Length()
+  local len := array.Length
   if (len <= 0) {
     return -1
   }
-  Random, rnd, 1, len
+  rnd := Random(1, len)
   return rnd
 }
 
 ;; return a random entry from the array
 ;; if remove = true: remove entry from array, else: leave array unchanged
-arrayRndEntry(ByRef array, remove:=false) {
+arrayRndEntry(&array, remove:=false) {
   local idx
-  if (array.Length() <= 0) {
-    throw Exception("The array is empty", 1)
+  if (array.Length <= 0) {
+    throw Error("The array is empty", 1)
   }
   idx := arrayRndIdx(array)
   if remove {
@@ -46,15 +44,15 @@ arrayRndEntry(ByRef array, remove:=false) {
 ;; sleep a random amount of seconds (between min/max)
 rndSleep(min, max) {
   local rnd
-  Random, rnd, min, max
-  Sleep %rnd%
+  rnd := Random(min, max)
+  Sleep(rnd)
 }
 
 ;; send a random key (one from the given keyArray)
 rndSend(keyArray) {
   local rnd
-  Random, rnd, 1, keyArray.Length()
-  Send % keyArray[rnd]
+  rnd := Random(1, keyArray.Length)
+  Send(keyArray[rnd])
 }
 ;SC029::rndSend(["a", "b", "c"])
 
@@ -63,12 +61,12 @@ rndSend(keyArray) {
 rndSleepSend(keyArray, min, max) {
   local keysToSend := keyArray
   local isFirst := true
-  loop % keyArray.Length() {
+  Loop keyArray.Length {
       if (!isFirst) {
-        Random, rnd, %min%, %max%
-        Sleep %rnd%
+        rnd := Random(min, max)
+        Sleep(rnd)
       }
-      Send % arrayRndEntry(keysToSend, true)
+      Send(arrayRndEntry(keysToSend, true))
       isFirst := false
   }
 }
@@ -80,10 +78,10 @@ rndSleepSendSeq(keyArray, min, max) {
   local isFirst := true
   for idx, key in keyArray {
       if (!isFirst) {
-        Random, rnd, %min%, %max%
-        Sleep %rnd%
+        rnd := Random(min, max)
+        Sleep(rnd)
       }
-      Send % key
+      Send(key)
       isFirst := false
   }
 }
@@ -95,10 +93,10 @@ rndSleepSendSeq(keyArray, min, max) {
 ;ToolTip, "Some text ..." ; show a tooltip
 ;_removeToolTipDelay() ; hide tolltip after 5 sec
 removeToolTip() {
-  ToolTip
+  ToolTip()
 }
-removeToolTipDelay(sec=5) {
-  SetTimer, _removeToolTip, % sec * -1000 ; remove tooltip after delay
+removeToolTipDelay(sec:=5) {
+  SetTimer(_removeToolTip,sec * -1000) ; remove tooltip after delay
 }
 ; }}} = ToolTips =============================================================
 
@@ -106,10 +104,10 @@ removeToolTipDelay(sec=5) {
 ;; remove SplashImage after a given timeout in seconds (default 5), example:
 ;SplashImage, Image.png
 ;_removeToolTipDelay() ; hide tolltip after 5 sec
-removeSplashImage() {
-  SplashImage, Off
-}
-removeSplashImageDelay(sec=5) {
-  SetTimer, removeSplashImage, % sec * -1000 ; remove splashimage after delay
-}
+; REMOVED: removeSplashImage() {
+;  SplashImageGui := Gui("ToolWindow -Sysmenu Disabled"), SplashImageGui.MarginY := 0, SplashImageGui.MarginX := 0, SplashImageGui.AddPicture("w200 h-1", "Off"), SplashImageGui.Show()
+;}
+; REMOVED: removeSplashImageDelay(sec:=5) {
+;  SetTimer(removeSplashImage,sec * -1000) ; remove splashimage after delay
+;}
 ; }}} = SplashImage ==========================================================

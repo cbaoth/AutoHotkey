@@ -1,6 +1,6 @@
 ﻿; Diablo3.ahk: Diablo 3 scripts
 
-#IfWinActive, Diablo III
+#HotIf WinActive("Diablo III", )
 
 ; {{{ = HotKeys ==============================================================
 ; switch to broken crown, expected in inventory 10x1
@@ -16,86 +16,84 @@ f::_d3ClickInventory([[2509, 911]], false, "Diablo3_Nemesis.png", "Diablo3_Nemes
 ; }}} = HotKeys ==============================================================
 
 ; {{{ = Diablo 3 Functions ===================================================
-_d3ClickInventory(clip_pos, click_pylon, find_img_on, find_img_off, find_img_scan="", sleep_time=50, sleep_time_pylon=1000) {
+_d3ClickInventory(clip_pos, click_pylon, find_img_on, find_img_off, find_img_scan:="", sleep_time:=50, sleep_time_pylon:=1000) {
     local inv_item_found
     local inv_is_closed
     find_img_scan := find_img_scan = "" ? find_img_on : find_img_scan
     ;WinGetPos, WinX, WinY, WinW, WinH, A
 
     ; hide previous images (if existing)
-    SplashImage, Off
+    SplashImageGui := Gui("ToolWindow -Sysmenu Disabled"), SplashImageGui.MarginY := 0, SplashImageGui.MarginX := 0, SplashImageGui.AddPicture("w200 h-1", "Off"), SplashImageGui.Show()
 
     ; get current mouse position
-    MouseGetPos, MouseX, MouseY
+    MouseGetPos(&MouseX, &MouseY)
 
     ; check if inventory window is open
-    ImageSearch, ImgX, ImgY, 2000, 0, 2400, 200, *3 Games\Diablo3_Inventory.png
+    ErrorLevel := !ImageSearch(&ImgX, &ImgY, 2000, 0, 2400, 200, "*3 Games\Diablo3_Inventory.png")
     inv_is_closed := (ErrorLevel > 0)
 
     ; open inventory if it is not yet open
     if (inv_is_closed) {
-        Send, {c}
+        Send("{c}")
     }
-    Sleep, sleep_time
+    Sleep(sleep_time)
 
     ; check if item is in inventory
-    ImageSearch, ImgX, ImgY, x-70, y-140, x+70, y+140, *3 *TransBlack Games\%find_img_scan%
+    ErrorLevel := !ImageSearch(&ImgX, &ImgY, x-70, y-140, x+70, y+140, "*3 *TransBlack Games\" find_img_scan)
     inv_item_found := (ErrorLevel == 0)
 
     ; swap items
     for i, xy in clip_pos {
         x := xy[1]
         y := xy[2]
-        Click, %x%, %y%, Right, 1
-        Sleep, sleep_time
+        Click(x ", " y ", Right, 1")
+        Sleep(sleep_time)
     }
 
     ; close inventory if it was closed before
     if (inv_is_closed) {
-        Send, {c}
+        Send("{c}")
     }
 
     ; TODO: find and click pylon (or click current position if not found)
     ; click current position (expects mous hovering pylon)
     if (click_pylon & inv_item_found) {
-        Sleep, sleep_time
-        Click, %MouseX%, %MouseY%, 1
-        Sleep, sleep_time_pylon
+        Sleep(sleep_time)
+        Click(MouseX ", " MouseY ", 1")
+        Sleep(sleep_time_pylon)
 
         ; open inventory if it was closed before
         if (inv_is_closed) {
-            Send, {c}
+            Send("{c}")
         }
 
         ; swap items
         for i, xy in clip_pos {
             x := xy[1]
             y := xy[2]
-            Click, %x%, %y%, Right, 1
-            Sleep, sleep_time
+            Click(x ", " y ", Right, 1")
+            Sleep(sleep_time)
         }
 
         ; open inventory if it was closed before
         if (inv_is_closed) {
-            Send, {c}
+            Send("{c}")
         }
     }
 
     ; move mouse back to previous position
-    Click, %MouseX%, %MouseY%, 0
+    Click(MouseX ", " MouseY ", 0")
 
     ; show splash only if items stays changed, on pylon click it's only temp.
     if (!click_pylon) {
-        Sleep, sleep_time
+        Sleep(sleep_time)
         ; if item was found in inventory (before switching) show it as active
         if (inv_item_found) {
-            SplashImage, Games\%find_img_on%, B X1268 Y300
+            SplashImageGui := Gui("ToolWindow -Sysmenu Disabled"), SplashImageGui.MarginY := 0, SplashImageGui.MarginX := 0, SplashImageGui.AddPicture("w200 h-1", "Games\" find_img_on), SplashImageGui.Show()
         } else {
-            SplashImage, Games\%find_img_off%, B X1268 Y300
+            SplashImageGui := Gui("ToolWindow -Sysmenu Disabled"), SplashImageGui.MarginY := 0, SplashImageGui.MarginX := 0, SplashImageGui.AddPicture("w200 h-1", "Games\" find_img_off), SplashImageGui.Show()
         }
-        removeSplashImageDelay(1)
+; REMOVED:         removeSplashImageDelay(1)
     }
 }
 ; }}} = Diablo 3 Functions ===================================================
-
-return ; #IfWinActive, Diablo III

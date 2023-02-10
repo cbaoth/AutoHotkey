@@ -1,4 +1,4 @@
-; ConfineMouse.ahk: Confine mouse cursor to active window
+﻿; ConfineMouse.ahk: Confine mouse cursor to active window
 
 ; http://autohotkey.com/board/topic/61753-confining-mouse-to-a-window/
 
@@ -15,12 +15,13 @@
 ; {{{ = Mouse Confinement ====================================================
 ;; confine mouse cursor to the given screen area
 _confineMouseCursor(x:=0, y:=0, x2:=1, y2:=1) {
-  local rect
-
   ;; put window's screen area into rect and call windows ClipCursor function
-  VarSetCapacity(rect, 16, 0)
-  NumPut(x, &rect+0), NumPut(y, &rect+4), NumPut(x2, &rect+8), NumPut(y2, &rect+12)
-  return DllCall("ClipCursor", UInt, &rect)
+  local ga := DllCall("GlobalAlloc", "uint",0, "uptr",16, "ptr")
+  NumPut("UPtr", x, ga+0)
+  NumPut("UPtr", y, ga+4)
+  NumPut("UPtr", x2, ga+8)
+  NumPut("UPtr", y2, ga+12)
+  return DllCall("ClipCursor", "UInt", ga)
 }
 
 ;; confine mouse cursor to currently window below cursor / active window
@@ -39,7 +40,7 @@ _confineMouseCursorToActiveWindow(windowed:=false, active_window:=false) {
   static confine_mouse_x2_offset_windowed := -8
   static confine_mouse_y2_offset_windowed := -8
 
-  static active
+  static active := false
   local win_id, win_x, win_y, win_w, win_h, win_x2, win_y2
   local confine_x, confine_y, confine_x2, confine_y2
 
@@ -52,10 +53,10 @@ _confineMouseCursorToActiveWindow(windowed:=false, active_window:=false) {
 
   ;; get position and size of active window / window below cursor
   if active_window {
-    WinGetPos, win_x, win_y, win_w, win_h, A
+    WinGetPos(&win_x, &win_y, &win_w, &win_h, "A")
   } else {
-    MouseGetPos,,, win_id
-    WinGetPos, win_x, win_y, win_w, win_h, ahk_id %win_id%
+    MouseGetPos(, , &win_id)
+    WinGetPos(&win_x, &win_y, &win_w, &win_h, "ahk_id " win_id)
   }
   ;; calculate lower right corner coordinates
   win_x2 := win_x + win_w

@@ -1,4 +1,4 @@
-; SendToWindow.ahk: Send keys to a specific window (e.g. copy & paste)
+﻿; SendToWindow.ahk: Send keys to a specific window (e.g. copy & paste)
 
 ; {{{ = HotKeys ==============================================================
 ;; Win-Alt-e: copy selection (text) to code editor
@@ -32,37 +32,37 @@ _sendToWindow(target_window, source_keys:="^c", target_keys:="^v", clipboard_mod
 
   if (clipboard_mode > 0) {
     ;; clear clipboard
-    Clipboard =
+    A_Clipboard := ""
   }
 
   ;; remember currently active window and get target window
-  WinGet, win_id, ID, A
+  win_id := WinGetID("A")
 
   ;; send keys to source window
-  SendInput, % source_keys
+  SendInput(source_keys)
 
   ;; wait for the clipboard to be set
   if (clipboard_mode == 1) {
-    ClipWait, 2 ; wait up to 2sec for text only clipboard content
+    Errorlevel := !ClipWait(2) ; wait up to 2sec for text only clipboard content
     ;; skip whole process if clipboard contains non-text object
     if !DllCall("IsClipboardFormatAvailable", "uint", 1) {
       return
     }
   } else if (clipboard_mode > 1) {
-    ClipWait, 2, true ; wait up to 2sec for any clipboard content
+    Errorlevel := !ClipWait(2, true) ; wait up to 2sec for any clipboard content
   }
 
   ;; switch to target window (if existing), switch to, send keys, switch back
   if WinExist(target_window) {
     ;; activate taregt window
-    WinActivate
-    WinWaitActive
+    WinActivate()
+    WinWaitActive()
 
     ;; send keys to target window
-    SendInput, % target_keys
+    SendInput(target_keys)
 
     ;; switch back to previous window
-    WinActivate, ahk_id %win_id%
+    WinActivate("ahk_id " win_id)
   }
 }
 ; }}} = Copy and Paste to App ================================================

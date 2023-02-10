@@ -1,16 +1,16 @@
-; Diablo2Resurrected.ahk: Diablo II Resurrected scripts
+﻿; Diablo2Resurrected.ahk: Diablo II Resurrected scripts
 
 ;; Expected in-game keyboard shortcuts (assuming Colemak layout)
 ;;   QWFPARST: Skills 1-8 (default: F1-8)
 
-#IfWinActive, ahk_exe i)Diablo II Resurrected.*D2R\.exe$
+#HotIf WinActive("ahk_exe i)Diablo II Resurrected.*D2R\.exe$", )
 
 ;; select and execute skill (rapid fire on hold)
 d2rSkill(skillKey) {
-  loop {
-    Sendinput {Click Down Right}
+  Loop{
+    SendInput("{Click Down Right}")
     rndSleep(50, 100)
-    Sendinput {Click Up Right}
+    SendInput("{Click Up Right}")
     if (!GetKeyState(skillKey)) {
         break
     }
@@ -20,15 +20,16 @@ d2rSkill(skillKey) {
 
 ; {{{ - Hotkeys w/ Toggle ----------------------------------------------------
 ;; alt-F1: toggle skill hotkeys (disabled initially)
-d2rHKToggle := false
+global d2rHKToggle := false
 <!F1::
+{
   d2rHKToggle := !d2rHKToggle
-  ToolTip % "D2R Hotkeys: " . (d2rHKToggle ? "ON" : "OFF")
+  ToolTip("D2R Hotkeys: " . (d2rHKToggle ? "ON" : "OFF"))
   _removeToolTipDelay(1)
-return
+}
 
 ;; hotkeys to be toggled via ctrl-~ (combat/typing)
-#If d2rHKToggle and WinActive("ahk_exe i)Diablo II Resurrected.*D2R\.exe$")
+#HotIf d2rHKToggle and WinActive("ahk_exe i)Diablo II Resurrected.*D2R\.exe$")
 
 ;#UseHook ON
 
@@ -78,7 +79,5 @@ return
 
 ;#UseHook OFF
 
-#If
+;#HotIf
 ; }}} - Hotkeys w/ Toggle ----------------------------------------------------
-
-Return ; #IfWinActive, ahk_exe i)Diablo II Resurrected.*Game\.exe$

@@ -2,7 +2,7 @@
 
 ; https://autohotkey.com/board/topic/44064-copy-on-select-implementation
 
-SetTitleMatchMode, RegEx
+SetTitleMatchMode("RegEx")
 
 ; {{{ = HotKeys ==============================================================
 ; {{{ - Copy On Selection ----------------------------------------------------
@@ -35,32 +35,32 @@ SetTitleMatchMode, RegEx
 
 ;; enable feature for all but a few apps that e.g. already use middlemouse
 ;; paste (like some terminals) or that have other issues with this feature
-#IfWinNotActive ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty|PuttyNG|Qt5QWindowIcon|GxWindowClass)$
+#HotIf !WinActive("ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty|PuttyNG|Qt5QWindowIcon|GxWindowClass)$", )
   ;; w/o click-through (~). these apps already support middle-click paste
   ;; $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
   $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
-#IfWinNotActive
+#HotIf !WinActive(, )
 ;; we generally excluded Chrome_WidgetWin_1 in the default binings above due
 ;; since some electron apps requiring other keys, so we have to (re-)activate
 ;; the same default binings for all compatibl electron apps and chrome itself
-#IfWinActive ahk_exe i)(chrome|Code)\.exe$
+#HotIf WinActive("ahk_exe i)(chrome|Code)\.exe$", )
   $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
   $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
-#IfWinNotActive
+#HotIf !WinActive(, )
 
 ;; and some (partially electron based) terminals require Ctrl-Shift-v and no
 ;; click-throug {~}
-#IfWinActive ahk_exe i)(terminus|hyper)\.exe$
+#HotIf WinActive("ahk_exe i)(terminus|hyper)\.exe$", )
   $mbutton::_xPasteOnMiddleClick("^+v") ; Ctrl-Shift-v
   $+mbutton::_xPasteOnMiddleClick("^+v", "{ASC 34}") ; add double quotes ""
-#IfWinNotActive
+#HotIf !WinActive(, )
 
 ;; map ctrl-(shift-)v to middle-click for apps that natively support
 ;; middle-click pasting but don't support ctrl-v (like some terminals)
-#IfWinActive ahk_class i)(KiTTY|Putty|PuttyNG)$
+#HotIf WinActive("ahk_class i)(KiTTY|Putty|PuttyNG)$", )
   ^v::_xPasteOnMiddleClick("{MButton}")
   ^+v::_xPasteOnMiddleClick("{MButton}", "{ASC 34}")
-#IfWinActive
+#HotIf
 ; }}} - Paste On MiddleClick -------------------------------------------------
 ; }}} = HotKeys ==============================================================
 
@@ -73,9 +73,9 @@ _xCopyOnMouseSelection(copy_key:="^c", mouse_drag_threshold:=20) {
   local mouse_end_pos_x, mouse_end_pos_y
   local dist_x, dist_y, dist_travel
 
-  MouseGetPos, mouse_start_pos_x, mouse_start_pos_y ; start position
-  KeyWait LButton ; wait until LButton (drag) is released
-  MouseGetPos, mouse_end_pos_x, mouse_end_pos_y ; end position
+  MouseGetPos(&mouse_start_pos_x, &mouse_start_pos_y) ; start position
+  KeyWait("LButton") ; wait until LButton (drag) is released
+  MouseGetPos(&mouse_end_pos_x, &mouse_end_pos_y) ; end position
   ;; travel distance between the points
   dist_x := Abs(mouse_start_pos_x - mouse_end_pos_x) ; x axis distance
   dist_y := Abs(mouse_start_pos_y - mouse_end_pos_y) ; y axis distance
@@ -95,10 +95,10 @@ _xCopySelection(copy_key:="^c") {
   local win_class, win_procname
 
   ;; get current window details
-  WinGetClass, win_class, A
-  WinGet, win_procname, ProcessName, A
+  win_class := WinGetClass("A")
+  win_procname := WinGetProcessName("A")
 
-  SendInput, % copy_key ; copy selection to clipboard
+  SendInput(copy_key) ; copy selection to clipboard
   ; }
 }
 ; }}} = Copy Mouse Selection =================================================
@@ -116,15 +116,15 @@ _xPasteOnMiddleClick(paste_key:="^v", quote_key:="") {
 
   ;; add leading quote (if any)
   if quote_key { ; GetKeyState("Shift", "P") {
-    Send, % quote_key
+    Send(quote_key)
   }
 
   ;; paste using given key
-  SendInput, % paste_key
+  SendInput(paste_key)
 
   ;; add trailing quote (if any)
   if quote_key {
-    Send, % quote_key
+    Send(quote_key)
   }
 }
 ; }}} = Paste on Middle-Click ================================================

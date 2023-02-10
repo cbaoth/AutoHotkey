@@ -17,35 +17,35 @@
 
 ; {{{ = Environment ==========================================================
 ; currently active window (ignoring certain windows components and AHK)
-global active_id
-global active_title
-global active_class
-global active_pid
-global active_exe
+global active_id := ""
+global active_title := ""
+global active_class := ""
+global active_pid := ""
+global active_exe := ""
 
 ; previously active window (ignoring certain windows components and AHK)
-global previous_id
-global previous_title
-global previous_class
-global previous_pid
-global previous_exe
+global previous_id := ""
+global previous_title := ""
+global previous_class := ""
+global previous_pid := ""
+global previous_exe := ""
 
 ; last active blacklisted window (certain windows components and AHK)
-global last_blacklisted_id
-global last_blacklisted_title
-global last_blacklisted_class
-global last_blacklisted_pid
-global last_blacklisted_exe
+global last_blacklisted_id := ""
+global last_blacklisted_title := ""
+global last_blacklisted_class := ""
+global last_blacklisted_pid := ""
+global last_blacklisted_exe := ""
 
-global window_tracking_active
+global window_tracking_active := False
 
 ; continuously track windows updating global variables (without tooltip func.)
 ; loop {
 ;   _trackWindows()
 ; }
 
-#SingleInstance, Force ; only run one instance of this script (always)
-DetectHiddenWindows, On ; include hidden windows
+#SingleInstance Force ; only run one instance of this script (always)
+DetectHiddenWindows(true) ; include hidden windows
 ;#Warn ; activate warnings
 #MaxThreadsPerHotkey 2
 
@@ -74,10 +74,10 @@ DetectHiddenWindows, On ; include hidden windows
 ;ToolTip, "Some text ..." ; show a tooltip
 ;_removeToolTipDelay() ; hide tolltip after 5 sec
 _removeToolTip() {
-  ToolTip
+  ToolTip()
 }
-_removeToolTipDelay(sec=5) {
-  SetTimer, _removeToolTip, % sec * -1000 ; remove tooltip after 5sec
+_removeToolTipDelay(sec:=5) {
+  SetTimer(_removeToolTip,sec * -1000) ; remove tooltip after 5sec
 }
 ; }}} = Commons ==============================================================
 
@@ -94,34 +94,37 @@ _trackWindows(track_active, is_first_time:=false, interval:=.2) {
 
   ; get current window / mouseover details
   if track_active {
-    WinGet, win_id, ID, A
+    win_id := WinGetID("A")
   } else {
-    MouseGetPos,,, win_id
+    MouseGetPos(, , &win_id)
   }
 
-  WinGetTitle, win_title, ahk_id %win_id%
-  WinGetClass, win_class, ahk_id %win_id%
-  WinGet, win_pid, PID, ahk_id %win_id%
-  WinGet, win_exe, ProcessPath, ahk_id %win_id%
+  win_title := WinGetTitle("ahk_id " win_id)
+  win_class := WinGetClass("ahk_id " win_id)
+  win_pid := WinGetPID("ahk_id " win_id)
+  win_exe := WinGetProcessPath("ahk_id " win_id)
 
   ; first execution?
   if is_first_time {
     _updateWindowDetails(track_active) ; simply update window details without previous
   } else { ; else wait for window change or interrupt
-    loop {
-      if ! window_tracking_active { ; stop monitoring?
+    Loop
+    {
+      if (! window_tracking_active)
+      { ; stop monitoring?
         return ; interrupted, return
       }
-      if track_active {
+      if (track_active)
+      {
         ; continue until a new window is activated or interval is reached
-        WinWaitNotActive, ahk_id %win_id%,, interval
+        ErrorLevel := WinWaitNotActive("ahk_id " win_id, , interval) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
         if ! ErrorLevel { ; active window ha changed (no timeout)
           break ; stop and update details (below)
         }
       } else {
         ; continue until the window below the mouse cursor changes
-        sleep interval * 1000
-        MouseGetPos,,, new_id
+        Sleep(interval * 1000)
+        MouseGetPos(, , &new_id)
         if (new_id != win_id) { ; window below cursor has changed
           break ; stop and update details (below)
         }
@@ -141,14 +144,14 @@ _updateWindowDetails(track_active, prev_id:="", prev_title:="", prev_class:="", 
 
   ; get current window / mouseover details
   if track_active {
-    WinGet, win_id, ID, A
+    win_id := WinGetID("A")
   } else {
-    MouseGetPos,,, win_id
+    MouseGetPos(, , &win_id)
   }
-  WinGetTitle, win_title, ahk_id %win_id%
-  WinGetClass, win_class, ahk_id %win_id%
-  WinGet, win_pid, PID, ahk_id %win_id%
-  WinGet, win_exe, ProcessPath, ahk_id %win_id%
+  win_title := WinGetTitle("ahk_id " win_id)
+  win_class := WinGetClass("ahk_id " win_id)
+  win_pid := WinGetPID("ahk_id " win_id)
+  win_exe := WinGetProcessPath("ahk_id " win_id)
 
   ; completely ignore the tooltip itself (results in strange effects)
   if (win_class = "tooltips_class32") {
@@ -166,8 +169,8 @@ _updateWindowDetails(track_active, prev_id:="", prev_title:="", prev_class:="", 
   if Trim(prev_id) == "" {
     _setWindowVars("previous", "", "", "", "", "") ; -> blank
   } else if (!_isBlacklistedWindow(prev_id, prev_title, prev_class, prev_pid, prev_exe)
-             && ! (prev_id = active_id && prev_title = active_title
-                   && prev_class = active_class)) { ; proc shouldn't change for a window
+             && ! (prev_id == active_id && prev_title == active_title
+                   && prev_class == active_class)) { ; proc shouldn't change for a window
     ; previous window not blacklisted and not active/same? -> update previous
     _setWindowVars("previous", prev_id, prev_title, prev_class, prev_pid, prev_exe)
   }
@@ -175,11 +178,12 @@ _updateWindowDetails(track_active, prev_id:="", prev_title:="", prev_class:="", 
 
 ; set active window details
 _setWindowVars(prefix, win_id, win_title, win_class, win_pid, win_exe) {
-    %prefix%_id := win_id
-    %prefix%_title := win_title
-    %prefix%_class := win_class
-    %prefix%_pid := win_pid
-    %prefix%_exe := win_exe
+  global
+  %prefix%_id := win_id
+  %prefix%_title := win_title
+  %prefix%_class := win_class
+  %prefix%_pid := win_pid
+  %prefix%_exe := win_exe
 }
 ; }}} - Trackng --------------------------------------------------------------
 
@@ -188,29 +192,14 @@ _setWindowVars(prefix, win_id, win_title, win_class, win_pid, win_exe) {
 _getWindowData(include_previous:=true, include_blacklisted:=false) {
   local result
 
-  result := "ACTIVE WINDOW:"
-    . "`r`n- active_id:`t" . active_id
-    . "`r`n- active_title:`t" . active_title
-    . "`r`n- active_class:`t" . active_class
-    . "`r`n- active_pid:`t" . active_pid
-    . "`r`n- active_exe:`t" . active_exe
+  result := "ACTIVE WINDOW:"    . "`r`n- active_id:`t" . active_id    . "`r`n- active_title:`t" . active_title    . "`r`n- active_class:`t" . active_class    . "`r`n- active_pid:`t" . active_pid    . "`r`n- active_exe:`t" . active_exe
   ; include previous window data and previous window data existing?
   if include_previous && Trim(previous_id) != "" {
-    result := result . "`r`n`r`nPREVIOUS WINDOW:"
-    . "`r`n- previous_id:`t" . previous_id
-    . "`r`n- previous_title:`t" . previous_title
-    . "`r`n- previous_class:`t" . previous_class
-    . "`r`n- previous_pid:`t" . previous_pid
-    . "`r`n- previous_exe:`t" . previous_exe
+    result := result . "`r`n`r`nPREVIOUS WINDOW:"    . "`r`n- previous_id:`t" . previous_id    . "`r`n- previous_title:`t" . previous_title    . "`r`n- previous_class:`t" . previous_class    . "`r`n- previous_pid:`t" . previous_pid    . "`r`n- previous_exe:`t" . previous_exe
   }
   ; include blacklisted window data and blacklisted window data existing?
   if include_blacklisted && Trim(last_blacklisted_id) != "" {
-    result := result . "`r`n`r`nLAST BLACKLISTED WINDOW:"
-      . "`r`n- last_blacklisted_id:`t" . last_blacklisted_id
-      . "`r`n- last_blacklisted_title:`t" . last_blacklisted_title
-      . "`r`n- last_blacklisted_class:`t" . last_blacklisted_class
-      . "`r`n- last_blacklisted_pid:`t" . last_blacklisted_pid
-      . "`r`n- last_blacklisted_exe:`t" . last_blacklisted_exe
+    result := result . "`r`n`r`nLAST BLACKLISTED WINDOW:"      . "`r`n- last_blacklisted_id:`t" . last_blacklisted_id      . "`r`n- last_blacklisted_title:`t" . last_blacklisted_title      . "`r`n- last_blacklisted_class:`t" . last_blacklisted_class      . "`r`n- last_blacklisted_pid:`t" . last_blacklisted_pid      . "`r`n- last_blacklisted_exe:`t" . last_blacklisted_exe
   }
   return result
 }
@@ -251,9 +240,8 @@ _isBlacklistedWindow(win_id, win_title, win_class, win_pid, win_exe) {
 ; include_blacklisted: show blacklisted window details (else: tracked but hidden)
 ; clipboard_mode: 0: none, 1: only on close, 2: always (on window change)
 ; tt_timeout: tooltip timeout (hide with a delay, set 0 for immediate)
-_toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false
-                        , clipboard_mode:=1, tt_timeout:=5) {
-  static active
+_toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false                        , clipboard_mode:=1, tt_timeout:=5) {
+  static active := false
   static first_time := true
   static data
 
@@ -262,17 +250,17 @@ _toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false
 
   ; just activated?
   if active { ; cleanup previous tooltips (if existing)
-    SetTimer, _removeToolTip, Off, 0 ; delete existing tt_timeout
-    ToolTip ; and hide existing tt immediately
+    SetTimer(_removeToolTip,0) ; delete existing tt_timeout
+    ToolTip() ; and hide existing tt immediately
     first_time := true
   }
 
-  loop { ; tooltip update loop
+  Loop{ ; tooltip update loop
     if !active { ; stop monitoring?
       ; copy to clipboard (mode = on-close / always)?
       if (clipboard_mode >= 1) {
-        Clipboard := _prepareDataForClipboard(data)
-        ToolTip % _prepareDataForTootlip(data) . "`n`nCOPIED TO CLIPBOARD"
+        A_Clipboard := _prepareDataForClipboard(data)
+        ToolTip(_prepareDataForTootlip(data) . "`n`nCOPIED TO A_Clipboard")
       }
       ; hide tool-tip with given timeout (delay)
       _removeToolTipDelay(tt_timeout)
@@ -281,11 +269,11 @@ _toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false
     if first_time {
       _trackWindows(track_active, true) ; get active window and don't wait for win change
       data := _getWindowData(false, false)
-      ToolTip % _prepareDataForTootlip(data)
+      ToolTip(_prepareDataForTootlip(data))
       first_time := false
       ; copy to clipboard (mode = always)?
       if (clipboard_mode = 2) {
-        Clipboard := _prepareDataForClipboard(data)
+        A_Clipboard := _prepareDataForClipboard(data)
       }
     }
     ; waits for window change, then update window data
@@ -297,10 +285,10 @@ _toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false
     ; not interrupted, update data with new window information
     data := _getWindowData(, include_blacklisted)
     ; show tooltip, remove viriable type prefix (nicer formatting)
-    ToolTip % _prepareDataForTootlip(data)
+    ToolTip(_prepareDataForTootlip(data))
     ; copy to clipboard (mode = always)?
     if (clipboard_mode = 2) {
-      Clipboard := _prepareDataForClipboard(data)
+      A_Clipboard := _prepareDataForClipboard(data)
     }
   }
 }
