@@ -69,7 +69,7 @@ OnClipboardChange(clipChanged, -1)
 
 ; {{{ - If exists ------------------------------------------------------------
 ; Tweaks for Invoke-AI (Web)
-#Include "*i ..\AIMetaTools\InvokeAI.ahk"
+#Include "*i ..\AIMetaTools\AITools.ahk"
 
 ; Window drag and resize
 #Include "*i Incl\WinDrag.ahk"  ; include if exists (not in git repo, no OC)
