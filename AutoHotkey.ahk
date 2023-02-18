@@ -67,12 +67,13 @@ OnClipboardChange(clipChanged, -1)
 ;; Some send-to-window hotkeys (e.g. copy to editor)
 ;#Include SendToWindow.ahk
 
+; Window drag and resize
+#Include "Incl\WinDrag.ahk"  ; include if exists (not in git repo, no OC)
+
 ; {{{ - If exists ------------------------------------------------------------
 ; Tweaks for Invoke-AI (Web)
 #Include "*i ..\AIMetaTools\AITools.ahk"
 
-; Window drag and resize
-#Include "*i Incl\WinDrag.ahk"  ; include if exists (not in git repo, no OC)
 #LButton::WindowMouseDragMove()
 #RButton::WindowMouseDragResize()
 ; }}} - If exists ------------------------------------------------------------
@@ -165,9 +166,9 @@ OnClipboardChange(clipChanged, -1)
 ;; Win-Shift-q: Lenovo quick settings
 #+q::
 {
-    if FileExist("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe") {
-      focusOrRun("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe")
-    }
+  if FileExist("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe") {
+    focusOrRun("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe")
+  }
 }
 
 #HotIf
@@ -192,18 +193,18 @@ OnClipboardChange(clipChanged, -1)
 ; Win-F9: move current window (top left corner) to the mouse cursor position
 #F9::
 {
-    MouseGetPos(&mx, &my)
-    WinMove(mx, my, , , "A")
+  MouseGetPos(&mx, &my)
+  WinMove(mx, my, , , "A")
 }
 
 ; Win-Alt-F9: move current window (center) to the mouse cursor position
 #<!F9::
 {
-    MouseGetPos(&mx, &my)
-    WinGetPos(, , &ww, &wh, "A")
-    x := mx - ww/2
-    y := my - wh/2
-    WinMove(x, y, , , "A")
+  MouseGetPos(&mx, &my)
+  WinGetPos(, , &ww, &wh, "A")
+  x := mx - ww/2
+  y := my - wh/2
+  WinMove(x, y, , , "A")
 }
 
 ; Win-Alt-Shift-F9: move current window for games in windowed mode (center, hide bar)
@@ -286,17 +287,17 @@ global clipChangedUlrsOnly := false
 
 clipChanged(Type)
 {
-    ; clipboard monitoring is on AND clipboard contains text only
-    ; AND clipboard contains url (if url-only is enabled)?
-    if (clipChangedToggle
-        && Type == 1
-        && (!clipChangedUlrsOnly || InStr(A_Clipboard, "://")))
-    {
-        ToolTip("Saved: " SubStr(A_Clipboard, 1, 100) (StrLen(A_Clipboard) > 100 ? "..." : ""))
-        _removeToolTipDelay(1.5)
-        outFile := clipChangedUlrsOnly ? HOME . "\ahk_from_clipboard_urls.txt" : HOME . "\ahk_from_clipboard.txt"
-        FileAppend(A_Clipboard "`r`n", outFile)
-    }
+  ; clipboard monitoring is on AND clipboard contains text only
+  ; AND clipboard contains url (if url-only is enabled)?
+  if (clipChangedToggle
+      && Type == 1
+      && (!clipChangedUlrsOnly || InStr(A_Clipboard, "://")))
+  {
+    ToolTip("Saved: " SubStr(A_Clipboard, 1, 100) (StrLen(A_Clipboard) > 100 ? "..." : ""))
+    _removeToolTipDelay(1.5)
+    outFile := clipChangedUlrsOnly ? HOME . "\ahk_from_clipboard_urls.txt" : HOME . "\ahk_from_clipboard.txt"
+    FileAppend(A_Clipboard "`r`n", outFile)
+  }
 }
 
 ; Win-F6: Toggle clipboard monitoring for any text content
@@ -304,13 +305,13 @@ clipChanged(Type)
 ; whole clippoard to $HOME/ahk_from_clipboard.txt
 #F6::
 {
-    ;; togle only if same mode, else switch mode only
-    ;if !(clipChangedToggle and clipChangedUlrsOnly) {
-    global clipChangedToggle := !clipChangedToggle
-    ;}
-    clipChangedUlrsOnly := false
-    ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (All): On" : ": Off"))
-    _removeToolTipDelay(1.5)
+  ;; togle only if same mode, else switch mode only
+  ;if !(clipChangedToggle and clipChangedUlrsOnly) {
+  global clipChangedToggle := !clipChangedToggle
+  ;}
+  clipChangedUlrsOnly := false
+  ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (All): On" : ": Off"))
+  _removeToolTipDelay(1.5)
 }
 
 ; Win-Alt-F6: Toggle clipboard monitoring for URLs only
@@ -318,13 +319,13 @@ clipChanged(Type)
 ; appends the whole clippoard to $HOME/ahk_from_clipboard_urls.txt
 #<!F6::
 {
-    ;; togle only if same mode, else switch mode only
-    ;if !(clipChangedToggle and !clipChangedUlrsOnly) {
-    global clipChangedToggle := !clipChangedToggle
-    ;}
-    clipChangedUlrsOnly := true
-    ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (URL): On" : ": Off"))
-    _removeToolTipDelay(1.5)
+  ;; togle only if same mode, else switch mode only
+  ;if !(clipChangedToggle and !clipChangedUlrsOnly) {
+  global clipChangedToggle := !clipChangedToggle
+  ;}
+  clipChangedUlrsOnly := true
+  ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (URL): On" : ": Off"))
+  _removeToolTipDelay(1.5)
 }
 ; }}} - Misc -----------------------------------------------------------------
 ; }}} = Additional HotKeys ===================================================
