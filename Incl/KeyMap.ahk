@@ -288,10 +288,30 @@ ts-profiles [1: utra perf, 2: high perf, 3: balanced, 4: power save]
     case "h": DllCall("PowrProf\SetSuspendState", "int", 1, "int", 0, "int", 0)
     ; 1: switch to power plane "Power Save"
     ; use "powercfg -list" to get uuid
-    case "1": SendInput "^!{Numpad" Key "}" ; asuming ThrottleStop hotkeys
-    case "2": SendInput "^!{Numpad" Key "}" ; ctrl-alt-Numpad1/2/3/4
-    case "3": SendInput "^!{Numpad" Key "}"
-    case "4": SendInput "^!{Numpad" Key "}"
+    case "1", "2", "3", "4": set_power_level(Key)
+  }
+}
+
+set_power_level(lvl)
+{
+  if (A_ComputerName == "MOTOKO")
+  {
+    switch lvl
+    {
+      ; use "powercfg -list" to get uuid
+      case "1": Run("powercfg -setactive `"38156909-5918-4777-864e-fbf99c75df8b`"")
+      case "2": Run("powercfg -setactive `"8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c`"")
+      case "3": Run("powercfg -setactive `"381b4222-f694-41f0-9685-ff5bb260df2e`"")
+      case "4": Run("powercfg -setactive `"a1841308-3541-4fab-bc81-f71556f20b4a`"")
+    }
+  }
+  else
+  {
+    switch lvl
+    {
+      ; assuming ThrottleStop hotkeys: ctrl-alt-Numpad1/2/3/4
+      case "1", "2", "3", "4": SendInput "^!{Numpad" lvl "}"
+    }
   }
 }
 ; }}} = Win-X, [Key] control sequences =======================================
