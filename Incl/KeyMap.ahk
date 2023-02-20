@@ -259,11 +259,11 @@ SC056::Control  ; -> Control (less distance)
 ;; Win-X, [Key] - Emacs/Screen/Tmux-like control sequence
 #x::
 {
-  tt_text := "
+  local tt_text := "
   (
 window [k: kill, c: close]
 power [s: sleep, h: hibernate]
-power plans [1: power save, 2: balanced, 3: high perf., 4: ultimate perf.]
+ts-profiles [1: utra perf, 2: high perf, 3: balanced, 4: power save]
   )"
   ToolTip(tt_text)
   try
@@ -288,34 +288,10 @@ power plans [1: power save, 2: balanced, 3: high perf., 4: ultimate perf.]
     case "h": DllCall("PowrProf\SetSuspendState", "int", 1, "int", 0, "int", 0)
     ; 1: switch to power plane "Power Save"
     ; use "powercfg -list" to get uuid
-    case "1":
-      if (A_ComputerName == "MOTOKO")
-      {
-        Run("powercfg -setactive `"a1841308-3541-4fab-bc81-f71556f20b4a`"")
-        return
-      }
-    ; 2: switch to power plane "Balanced"
-    case "2":
-      if (A_ComputerName == "MOTOKO")
-      {
-        Run("powercfg -setactive `"381b4222-f694-41f0-9685-ff5bb260df2e`"")
-        return
-      }
-    ; 3: switch to power plane "High Performance"
-    case "3":
-      if (A_ComputerName == "MOTOKO")
-      {
-        Run("powercfg -setactive `"8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c`"")
-        return
-      }
-    ; 4: switch to power plane "Ultimate Performance"
-    case "4":
-      if (A_ComputerName == "MOTOKO")
-      {
-        Run("powercfg -setactive `"38156909-5918-4777-864e-fbf99c75df8b`"")
-        return
-      }
-
+    case "1": SendInput "^!{Numpad" Key "}" ; asuming ThrottleStop hotkeys
+    case "2": SendInput "^!{Numpad" Key "}" ; ctrl-alt-Numpad1/2/3/4
+    case "3": SendInput "^!{Numpad" Key "}"
+    case "4": SendInput "^!{Numpad" Key "}"
   }
 }
 ; }}} = Win-X, [Key] control sequences =======================================
