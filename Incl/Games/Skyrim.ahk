@@ -2,8 +2,7 @@
 
 #HotIf WinActive("ahk_exe TESV.exe || ahk_exe SkyrimSE.exe", )
 
-#[::
-{
+#[::{
   SetKeyDelay(25)
   ;Send {ASC 0096}
   ;Send {ASC 0126}
@@ -14,8 +13,7 @@
   SetKeyDelay(-1)
 }
 
-#]::
-{
+#]::{
   SetKeyDelay(25)
   ;Send {ASC 0096}
   ;Send {ASC 0126}

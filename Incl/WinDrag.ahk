@@ -32,7 +32,7 @@ Example usage, add the following three lines to your AHK script:
 ;
 ; Parameters 2 and 3 are the desired width and height of cursor. Omit these to use the default size, e.g. loading a 48x48 cursor will display as 48x48.
 
-SetSystemCursor(Cursor:="", cx:=0, cy:=0){
+SetSystemCursor(Cursor:="", cx:=0, cy:=0) {
 	local BlankCursor := 0, SystemCursor := 0, FileCursor := 0 ; init
 	local SystemCursors := ["32512IDC_ARROW", "32513IDC_IBEAM", "32514IDC_WAIT", "32515IDC_CROSS", "32516IDC_UPARROW", "32640IDC_SIZE",   "32641IDC_ICON", "32642IDC_SIZENWSE", "32643IDC_SIZENESW", "32644IDC_SIZEWE", "32645IDC_SIZENS", "32646IDC_SIZEALL", "32648IDC_NO", "32649IDC_HAND", "32650IDC_APPSTARTING", "32651IDC_HELP"]
   local CursorHandle

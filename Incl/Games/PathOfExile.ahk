@@ -76,15 +76,16 @@ XButton1::poeRndSleepSendSeq(["q","w","f","p"]) ; mouse4: w,f,p (skill seq.)
 !=::NumpadAdd
 
 ;; ctrl-h: go to hideout
-^h::
-{
-  ErrorLevel := !KeyWait("Control")
-  Send("{Return}/hideout{Return}")
+<^h::{
+  KeyWait("LCtrl", "T1")
+  Send("{Return}")
+  Sleep(100)
+  SendText("/hideout")
+  SendInput("{Return}")
 }
 
 ;; alt-esc: exit to character selection (panic button)
-!ESC::
-{
+!ESC::{
   Critical()
   BlockInput("On")
   ErrorLevel := !KeyWait("Alt")
@@ -128,8 +129,7 @@ WheelDown::Send("{Down}")
 ;; https://www.pathofexile.com/forum/view-thread/473902/page/6#p4197749
 ;SC029:: ; hyphon "`"
 ;!SC029:: ; alt-hyphon (alt may be pressed by mistake)
-tab:: ; tab
-{
+tab::{ ; tab
   rndSleepSend(["1","2","3","4","5"], 5, 50)
 }
 
@@ -145,10 +145,9 @@ tab:: ; tab
 ; return
 
 ;; ctrl-shift-c: copy item description w/o ranges (PoB import issue)
-^+c::
+^+c::{
   ;; copy, roughly check if clip content looks like an item description, if so
   ;; strip ranges and details (seems to cause issuse with PoB)
-{
   Send("^c")
   Errorlevel := !ClipWait(1)
   if (not ErrorLevel and InStr(A_Clipboard, "--------")) {

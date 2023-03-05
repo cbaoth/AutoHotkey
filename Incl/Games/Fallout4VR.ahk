@@ -5,7 +5,7 @@
 ; SetKeyDelay,1,50
 ;
 ; enable auto save loop
-; F8::
+; F8::{
 ;     ToolTip % "F4 Autosave ON."
 ;     removeToolTipDelay(2)
 ;     f4vrsave_stop := 0
@@ -17,7 +17,7 @@
 ;     } until f4vrsave_stop
 ;     ToolTip % "F4 Autosave OFF."
 ;     removeToolTipDelay(2)
-; return
+; }
 ;
 ; F9::f4vrsave_stop := 1
 ;
