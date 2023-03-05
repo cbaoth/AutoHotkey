@@ -90,7 +90,7 @@ rndSleepSendSeq(keyArray, min, max) {
 
 ; {{{ = ToolTips =============================================================
 ;; remove ToolTip after a given timeout in seconds (default 5), example:
-;ToolTip, "Some text ..." ; show a tooltip
+;ToolTip("Some text ...") ; show a tooltip
 ;_removeToolTipDelay() ; hide tolltip after 5 sec
 removeToolTip() {
   ToolTip()

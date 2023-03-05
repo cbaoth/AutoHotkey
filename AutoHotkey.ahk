@@ -36,8 +36,7 @@ SetTitleMatchMode("RegEx") ; https://autohotkey.com/docs/commands/SetTitleMatchM
 ; register on-clipboard-change event (defied below), must be befor hotkeys
 OnClipboardChange(clipChanged, -1)
 
-#F12::
-{
+#F12::{
   ToolTip("Restarting ..")
   Sleep(250)
   Reload() ; Win-F12: reload this script
@@ -57,6 +56,9 @@ OnClipboardChange(clipChanged, -1)
 
 ;; bind *#F8 hotkeys to window detail tracking tooltip
 #Include "Incl\WindowTracking.ahk"
+
+;; virtual desktop stuff
+#Include "Incl\VirtualDesktop.ahk"
 
 ;; bin *F10 hotkeys to confine mouse to active window
 #Include "Incl\ConfineMouse.ahk"
@@ -80,7 +82,7 @@ OnClipboardChange(clipChanged, -1)
 
 ; {{{ - Games ----------------------------------------------------------------
 ; include if exists (maybe deleted on non-gaming hosts)
-;#Include "*i Incl\Games\PathOfExile.ahk"
+#Include "*i Incl\Games\PathOfExile.ahk"
 ;#Include "*i Incl\Games\Skyrim.ahk"
 ;#Include "*i Incl\Games\Diablo3.ahk"
 ;#Include "*i Incl\Games\Diablo2Resurrected.ahk"
@@ -128,18 +130,15 @@ OnClipboardChange(clipChanged, -1)
 
 ; {{{ - Win-R, [Key] control sequences ---------------------------------------
 ;; Win-R, [Key] - Emacs/Screen/Tmux-like control sequence
-#r::
-{
+#r::{
   ToolTip("r: run, e: code, (+)p: ps, (+)c: cmd")
   ihKey := InputHook("C L1 T2"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
   removeToolTip()
-  if (ihKey.EndReason == "Timeout")
-  {
+  if (ihKey.EndReason == "Timeout") {
     return
   }
   ;REMOVED StringCaseSense, On ; parse case sensitive (in this context only)
-  switch Key
-  {
+  switch Key {
     ; r: run run-dialog
     case "r": FileDlg := ComObject("Shell.Application").FileRun, FileDlg := ""
     ; e: run windows explorer
@@ -164,8 +163,7 @@ OnClipboardChange(clipChanged, -1)
 #HotIf A_ComputerName = "PUPPET" ; puppet (lenove notebook) only
 
 ;; Win-Shift-q: Lenovo quick settings
-#+q::
-{
+#+q::{
   if FileExist("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe") {
     focusOrRun("C:\ProgramData\Lenovo\ImController\Plugins\LenovoBatteryGaugePackage\x64\QuickSettingEx.exe")
   }
@@ -191,15 +189,13 @@ OnClipboardChange(clipChanged, -1)
 ; {{{ - Window Move ----------------------------------------------------------
 ; http://www.autohotkey.com/docs/commands/WinMove.htm
 ; Win-F9: move current window (top left corner) to the mouse cursor position
-#F9::
-{
+#F9::{
   MouseGetPos(&mx, &my)
   WinMove(mx, my, , , "A")
 }
 
 ; Win-Alt-F9: move current window (center) to the mouse cursor position
-#<!F9::
-{
+#<!F9::{
   MouseGetPos(&mx, &my)
   WinGetPos(, , &ww, &wh, "A")
   x := mx - ww/2
@@ -212,40 +208,24 @@ OnClipboardChange(clipChanged, -1)
 
 ; }}} - Window Move ----------------------------------------------------------
 
-; {{{ - Window/Desktop States/Styles -----------------------------------------
+; {{{ - Window States --------------------------------------------------------
 ; Win-Alt-t: Toggle window's always-on-top state
-#!t::WinSetAlwaysOnTop(-1, "A")
+;#!t::WinSetAlwaysOnTop(-1, "A")
+; DISABLED, part of powertoys
 
-; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
-; https://www.autohotkey.com/boards/viewtopic.php?t=74849
-#!s::
-{
-	ExStyle := WinGetExStyle("A")  ; "A" means the active window
-	If !(ExStyle & 0x00000080)  ; visible on all desktops
-		WinSetExStyle(128, "A")
-	else
-		WinSetExStyle(-128, "A")
-}
-
-; Win-Ctrl-q/w: Desktop previous/next
-#^q::Send("#^{Left}")
-#^w::Send("#^{Right}")
-; }}} - Window/Desktop States/Styles -----------------------------------------
+; }}} - Window States --------------------------------------------------------
 
 ; {{{ - Stay Awake -----------------------------------------------------------
 ; Win-F5: Toggle timer to keep PC awake (dummy mouse event every 4 min)
 #F5::stayAwakeToggle()
 
-stayAwakeToggle()
-{
+stayAwakeToggle(){
   static counter := StayAwakeTimer()
   counter.Toggle
 }
 
-class StayAwakeTimer
-{
-  __New()
-  {
+class StayAwakeTimer{
+  __New() {
     this.idleMin := 240000 ; only trigger when idle for at least 4min
     this.intervalMin := 30000 ; wait at least 0.5 min
     this.intervalMax := 270000 ; repeat max every 4.5min
@@ -254,8 +234,7 @@ class StayAwakeTimer
     this.timer := ObjBindMethod(this, "Tick")
   }
 
-  Toggle()
-  {
+  Toggle() {
     timer := this.timer
     this.isActive := !this.isActive
     SetTimer(timer, (this.isActive ? 1 : 0))
@@ -263,8 +242,7 @@ class StayAwakeTimer
     _removeToolTipDelay(1.5)
   }
 
-  Tick()
-  {
+  Tick() {
     if (A_TimeIdle > this.idleMin) { ; idle long enough?
       timer := this.timer
       this.DummyMouseEvent()
@@ -273,8 +251,7 @@ class StayAwakeTimer
     } ; not idle long enough -> do nothing
   }
 
-  DummyMouseEvent()
-  {
+  DummyMouseEvent() {
     MouseMove(0, 0, 0, "R") ; mouse pointer stays in place but sends a mouse event
   }
 }
@@ -285,14 +262,12 @@ class StayAwakeTimer
 global clipChangedToggle := false
 global clipChangedUlrsOnly := false
 
-clipChanged(Type)
-{
+clipChanged(Type) {
   ; clipboard monitoring is on AND clipboard contains text only
   ; AND clipboard contains url (if url-only is enabled)?
   if (clipChangedToggle
       && Type == 1
-      && (!clipChangedUlrsOnly || InStr(A_Clipboard, "://")))
-  {
+      && (!clipChangedUlrsOnly || InStr(A_Clipboard, "://"))) {
     ToolTip("Saved: " SubStr(A_Clipboard, 1, 100) (StrLen(A_Clipboard) > 100 ? "..." : ""))
     _removeToolTipDelay(1.5)
     outFile := clipChangedUlrsOnly ? HOME . "\ahk_from_clipboard_urls.txt" : HOME . "\ahk_from_clipboard.txt"
@@ -303,8 +278,7 @@ clipChanged(Type)
 ; Win-F6: Toggle clipboard monitoring for any text content
 ; If enabled monitor the clipboard for any new text and when found appends the
 ; whole clippoard to $HOME/ahk_from_clipboard.txt
-#F6::
-{
+#F6::{
   ;; togle only if same mode, else switch mode only
   ;if !(clipChangedToggle and clipChangedUlrsOnly) {
   global clipChangedToggle := !clipChangedToggle
@@ -317,8 +291,7 @@ clipChanged(Type)
 ; Win-Alt-F6: Toggle clipboard monitoring for URLs only
 ; If enabled monitor the clipboard for URLs (any .*:// schema) and when found
 ; appends the whole clippoard to $HOME/ahk_from_clipboard_urls.txt
-#<!F6::
-{
+#<!F6::{
   ;; togle only if same mode, else switch mode only
   ;if !(clipChangedToggle and !clipChangedUlrsOnly) {
   global clipChangedToggle := !clipChangedToggle

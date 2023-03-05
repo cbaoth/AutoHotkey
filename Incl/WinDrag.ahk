@@ -24,7 +24,7 @@ Example usage, add the following three lines to your AHK script:
 ;    +---------------------+
 ; from: https://autohotkey.com/board/topic/32608-changing-the-system-cursor/
 
-; Parameter 1 is file path or cursor name, e.g. IDC_SIZEALL. If this is omitted it will hide the cursor.
+; Parameter 1 is file path or cursor name, e.g. IDC_SIZEALL. if this is omitted it will hide the cursor.
 ;   IDC_ARROW     IDC_UPARROW      IDC_SIZENESW      IDC_NO
 ;   IDC_IBEAM     IDC_SIZE         IDC_SIZEWE        IDC_HAND
 ;   IDC_WAIT      IDC_ICON         IDC_SIZENS        IDC_APPSTARTING
@@ -32,81 +32,58 @@ Example usage, add the following three lines to your AHK script:
 ;
 ; Parameters 2 and 3 are the desired width and height of cursor. Omit these to use the default size, e.g. loading a 48x48 cursor will display as 48x48.
 
-SetSystemCursor(Cursor:="", cx:=0, cy:=0)
-{
+SetSystemCursor(Cursor:="", cx:=0, cy:=0){
 	local BlankCursor := 0, SystemCursor := 0, FileCursor := 0 ; init
 	local SystemCursors := ["32512IDC_ARROW", "32513IDC_IBEAM", "32514IDC_WAIT", "32515IDC_CROSS", "32516IDC_UPARROW", "32640IDC_SIZE",   "32641IDC_ICON", "32642IDC_SIZENWSE", "32643IDC_SIZENESW", "32644IDC_SIZEWE", "32645IDC_SIZENS", "32646IDC_SIZEALL", "32648IDC_NO", "32649IDC_HAND", "32650IDC_APPSTARTING", "32651IDC_HELP"]
   local CursorHandle
 
-	if (Cursor == "") ; empty, so create blank cursor
-	{
+	if (Cursor == "") { ; empty, so create blank cursor
 		AndMask := Buffer(32*4, 0xFF), XorMask := Buffer(32*4, 0) ; V1toV2: if 'XorMask' is a UTF-16 strng, use 'VarSetStrCapacity(&XorMask, 32*4)'
 		BlankCursor := "1" ; flag for later
-	}
-	Else If SubStr(Cursor, 1, 4) = "IDC_" ; load system cursor
-	{
+	} else if SubStr(Cursor, 1, 4) = "IDC_" { ; load system cursor
     CursorHandle := ""
-		Loop SystemCursors.Length
-		{
+		Loop SystemCursors.Length {
 			CursorName := SubStr(SystemCursors[A_Index], 6, 15) ; get the cursor name, no trailing space with substr
 			CursorID := SubStr(SystemCursors[A_Index], 1, 5) ; get the cursor id
 			SystemCursor := "1"
-			If (CursorName == Cursor)
-			{
+			if (CursorName == Cursor) {
 				CursorHandle := DllCall("LoadCursor", "Uint", 0, "Int", CursorID)
 				Break
 			}
 		}
-		if (CursorHandle == "") ; invalid cursor name given
-		{
+		if (CursorHandle == "") { ; invalid cursor name given
 			MsgBox("Error: Invalid cursor [Name=" Cursor "]", "SetCursor", "")
 			CursorHandle := "Error"
 		}
-	}
-	Else If FileExist(Cursor)
-	{
+	} else if FileExist(Cursor) {
 		SplitPath(Cursor, , , &Ext) ; auto-detect type
-		if (Ext = "ico")
-    {
+		if (Ext = "ico") {
 			uType := 0x1
-    }
-    else if (Ext ~= "^(?i:cur|ani)$")
-    {
+    } else if (Ext ~= "^(?i:cur|ani)$") {
 			uType := 0x2
-    }
-    else ; invalid file ext
-		{
+    } else { ; invalid file ext
 			MsgBox("Error: Invalid file type", "SetCursor", "")
 			CursorHandle := "Error"
 		}
 		FileCursor := "1"
-	}
-	Else
-	{
+	}	else {
 		MsgBox("Error: Invalid file path or cursor name", "SetCursor", "")
 		CursorHandle := "Error" ; raise for later
 	}
   local Cursors := Array()
   Cursors.Length := SystemCursors.Length
-	if (CursorHandle != "Error")
-	{
-		Loop SystemCursors.Length
-		{
-			if (BlankCursor == 1)
-			{
+	if (CursorHandle != "Error") {
+		Loop SystemCursors.Length {
+			if (BlankCursor == 1) {
 				Cursors[A_Index] := DllCall("CreateCursor", "Uint",0, "Int",0, "Int",0, "Int",32, "Int",32, "Uint",&AndMask, "Uint",&XorMask)
 				CursorHandle := DllCall("CopyImage", "Uint", Cursors[A_Index], "Uint", 0x2, "Int", 0, "Int", 0, "Int", 0)
 				DllCall("SetSystemCursor", "Uint", CursorHandle, "Int", SubStr(SystemCursors[A_Index], 1, 5))
-			}
-      Else if (SystemCursor == 1)
-			{
+			} else if (SystemCursor == 1) {
 				CursorHandle := DllCall("LoadCursor", "Uint", 0, "Int", CursorID)
 				Cursors[A_Index] := DllCall("CopyImage", "Uint",CursorHandle, "Uint",0x2, "Int",cx, "Int",cy, "Uint",0)
 				CursorHandle := DllCall("CopyImage", "Uint", Cursors[A_Index], "Uint", 0x2, "Int", 0, "Int", 0, "Int", 0)
 				DllCall("SetSystemCursor", "Uint", CursorHandle, "Int", SubStr(SystemCursors[A_Index], 1, 5))
-			}
-      Else if (FileCursor == 1)
-			{
+			} else if (FileCursor == 1) {
 				Cursors[A_Index] := DllCall("LoadImageA", "UInt",0, "Str",Cursor, "UInt",uType, "Int",cx, "Int",cy, "UInt",0x10)
 				DllCall("SetSystemCursor", "Uint", Cursors[A_Index], "Int", SubStr(SystemCursors[A_Index], 1, 5))
 			}
@@ -114,8 +91,7 @@ SetSystemCursor(Cursor:="", cx:=0, cy:=0)
 	}
 }
 
-RestoreCursors()
-{
+RestoreCursors() {
 	SPI_SETCURSORS := 0x57
 	DllCall("SystemParametersInfo", "UInt", SPI_SETCURSORS, "UInt", 0, "UInt", 0, "UInt", 0)
 }
@@ -124,8 +100,7 @@ RestoreCursors()
 ;          +-----------------------------------------+
 ;          |          SetWindowPosNoFlicker          |
 ;          +-----------------------------------------+
-SetWindowPosNoFlicker(handle, wx, wy, ww, wh)
-{
+SetWindowPosNoFlicker(handle, wx, wy, ww, wh) {
   ;WinMove ahk_id %handle%,, wx, wy, ww, wh
 
   DllCall("user32\SetWindowPos", "Ptr", handle, "Ptr", 0, "Int", wx, "Int", wy, "Int", ww, "Int", wh, "UInt", 0)
@@ -183,47 +158,41 @@ For example, assign to ctrl+alt while mouse drag
 @remark based on: https://autohotkey.com/board/topic/25106-altlbutton-window-dragging/
 Fixed a few things here and there
 */
-WindowMouseDragMove()
-{
-MouseButton := DetermineMouseButton()
+WindowMouseDragMove() {
+  MouseButton := DetermineMouseButton()
 
-CoordMode("Mouse", "Screen")
-MouseGetPos(&x0, &y0, &window_id)
-window_minmax := WinGetMinMax("ahk_id " window_id)
-WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " window_id)
+  CoordMode("Mouse", "Screen")
+  MouseGetPos(&x0, &y0, &window_id)
+  window_minmax := WinGetMinMax("ahk_id " window_id)
+  WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " window_id)
 
-; Return if the window is maximized or minimized
-if (window_minmax != 0)
-{
-  return
-}
-init := 1
-SetWinDelay(0)
-while(GetKeyState(MouseButton, "P"))
-{
-  MouseGetPos(&x, &y)
-
-  if (x == x0 && y == y0)
-  {
-    continue
+  ; Return if the window is maximized or minimized
+  if (window_minmax != 0) {
+    return
   }
+  init := 1
+  SetWinDelay(0)
+  while(GetKeyState(MouseButton, "P")) {
+    MouseGetPos(&x, &y)
 
-  if (init == 1)
-  {
-    SetSystemCursor("IDC_SIZEALL")
-    init := 0
+    if (x == x0 && y == y0) {
+      continue
+    }
+
+    if (init == 1) {
+      SetSystemCursor("IDC_SIZEALL")
+      init := 0
+    }
+
+    wx += x - x0
+    wy += y - y0
+    x0 := x
+    y0 := y
+
+    WinMove(wx, wy, , , "ahk_id " window_id)
   }
-
-  wx += x - x0
-  wy += y - y0
-  x0 := x
-  y0 := y
-
-  WinMove(wx, wy, , , "ahk_id " window_id)
-}
-SetWinDelay(-1)
-RestoreCursors()
-return
+  SetWinDelay(-1)
+  RestoreCursors()
 }
 
 
@@ -249,8 +218,7 @@ Use in combination with WindowMouseDragMove for best effect.
 @remark based on: https://autohotkey.com/board/topic/25106-altlbutton-window-dragging/
 Fixed a few things here and there
 */
-WindowMouseDragResize0()
-{
+WindowMouseDragResize0() {
   MouseButton := DetermineMouseButton()
   CoordMode("Mouse", "Screen")
   MouseGetPos(&mx0, &my0, &window_id)
@@ -265,8 +233,7 @@ WindowMouseDragResize0()
   SetWinDelay(0)
 
   ; Resore if maximized
-  if (window_minmax > 0)
-  {
+  if (window_minmax > 0) {
     WinRestore("ahk_id " window_id)
 
     ; Restore the window if maximized or minimized and set the position as seen
@@ -291,24 +258,19 @@ WindowMouseDragResize0()
   firstDeltaX := "init"
   firstDeltaY := "init"
   cursorInit := 1
-  while(GetKeyState(MouseButton, "P"))
-  {
+  while(GetKeyState(MouseButton, "P")) {
     ; resize the window based on cursor position
     MouseGetPos(&mx, &my)
-    if (mx == mx0 && my == my0)
-    {
+    if (mx == mx0 && my == my0) {
       continue
     }
-    if (firstDeltaX == "init" && (mx-mx0) != 0)
-    {
+    if (firstDeltaX == "init" && (mx-mx0) != 0) {
       firstDeltaX := mx-mx0
     }
-    if (firstDeltaY == "init" && (my-my0) != 0)
-    {
+    if (firstDeltaY == "init" && (my-my0) != 0) {
       firstDeltaY := my-my0
     }
-    if (cursorInit == 1 &&  firstDeltaX != "init"  &&  firstDeltaY != "init")
-    {
+    if (cursorInit == 1 &&  firstDeltaX != "init"  &&  firstDeltaY != "init") {
       SetSystemCursor(firstDeltaX*firstDeltaY > 0 ? "IDC_SIZENWSE" : "IDC_SIZENESW")
       cursorInit := 0
     }
@@ -316,21 +278,15 @@ WindowMouseDragResize0()
     deltaX := mx - mx0
     deltaY := my - my0
 
-    if (firstDeltaX < 0)
-    {
+    if (firstDeltaX < 0) {
       ww += deltaX
-    }
-    else
-    {
+    } else {
       wx += deltaX
       ww -= deltaX
     }
-    if (firstDeltaY < 0)
-    {
+    if (firstDeltaY < 0) {
       wh += deltaY
-    }
-    else
-    {
+    } else {
       wy += deltaY
       wh -= deltaY
     }
@@ -341,7 +297,6 @@ WindowMouseDragResize0()
     WinMove(wx, wy, ww, wh, "ahk_id " window_id)
   }
   RestoreCursors()
-  return
 }
 
 ;          +--------------------------------------------+
@@ -367,8 +322,7 @@ Use in combination with WindowMouseDragMove for best effect.
 Fixed a few things here and there
 */
 
-WindowMouseDragResize()
-{
+WindowMouseDragResize() {
   MouseButton := DetermineMouseButton()
   ; determine corner drag if mouse is this many percent points away from the center
   cornerTolerance := 20
@@ -385,8 +339,7 @@ WindowMouseDragResize()
   SetWinDelay(0)
 
   ; Restore if maximized [??]
-  if (window_minmax > 0)
-  {
+  if (window_minmax > 0) {
     WinRestore("ahk_id " window_id)
   }
 
@@ -407,22 +360,14 @@ WindowMouseDragResize()
   ; OutputDebug, slyutil: wxCenter %wxCenter% wyCenter %wyCenter%  xNoCornerZoneHalfSize %xNoCornerZoneHalfSize% yNoCornerZoneHalfSize %yNoCornerZoneHalfSize%
   ; OutputDebug, slyutil: xCorner %xCorner% yCorner %yCorner%
 
-  if (xCorner*yCorner > 0)
-  {
+  if (xCorner*yCorner > 0) {
     SetSystemCursor("IDC_SIZENWSE")
-  }
-  else if (xCorner*yCorner < 0)
-  {
+  } else if (xCorner*yCorner < 0) {
     SetSystemCursor("IDC_SIZENESW")
-  }
-  else
-  {
-    if (xCorner == 0 && yCorner == 0)
-    {
+  } else {
+    if (xCorner == 0 && yCorner == 0) {
       SetSystemCursor("IDC_SIZEALL")
-    }
-    else
-    {
+    } else {
       SetSystemCursor(xCorner==0 ? "IDC_SIZENS" : "IDC_SIZEWE")
     }
   }
@@ -432,35 +377,26 @@ WindowMouseDragResize()
 
   while(GetKeyState(MouseButton, "P")) {
     MouseGetPos(&mx, &my)
-    if (mx == mx0 && my == my0)
-    {
+    if (mx == mx0 && my == my0) {
       continue
     }
 
     deltaX := mx - mx0
     deltaY := my - my0
 
-    if (xCorner == 0 && yCorner == 0)
-    {
+    if (xCorner == 0 && yCorner == 0) {
       ; move
       wx += mx - mx0
       wy += my - my0
-    }
-    else if (xCorner>0)
-    {
+    } else if (xCorner>0) {
       ww += deltaX
-    }
-    else if (xCorner<0)
-    {
+    } else if (xCorner<0) {
       wx += deltaX
       ww -= deltaX
     }
-    if (yCorner>0)
-    {
+    if (yCorner>0) {
       wh += deltaY
-    }
-    else if (yCorner<0)
-    {
+    } else if (yCorner<0) {
       wy += deltaY
       wh -= deltaY
     }
@@ -476,28 +412,22 @@ WindowMouseDragResize()
   return
 }
 
-DetermineMouseButton()
-{
+DetermineMouseButton() {
   ; Author: 	Cyberklabauter
   ; Forum:   https://www.autohotkey.com/boards/viewtopic.php?f=6&t=57703&p=378638#p378638
-	If (InStr(a_thisHotkey, "LButton"))
-  {
+	if (InStr(a_thisHotkey, "LButton")) {
 		return "LButton"
   }
-	If (InStr(a_thisHotkey, "MButton"))
-  {
+	if (InStr(a_thisHotkey, "MButton")) {
 		return "MButton"
   }
-	If (InStr(a_thisHotkey, "RButton"))
-  {
+	if (InStr(a_thisHotkey, "RButton")) {
 		return "RButton"
   }
-	If (InStr(a_thisHotkey, "XButton1"))
-  {
+	if (InStr(a_thisHotkey, "XButton1")) {
 		return "XButton1"
   }
-	If (InStr(a_thisHotkey, "XButton2"))
-  {
+	if (InStr(a_thisHotkey, "XButton2")) {
 		return "XButton2"
   }
 }
