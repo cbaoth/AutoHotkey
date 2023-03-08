@@ -59,6 +59,13 @@ OnClipboardChange(clipChanged, -1)
 
 ;; virtual desktop stuff
 #Include "Incl\VirtualDesktop.ahk"
+;; temporarily disable annoying win-1+ hotkeys until vd selection is impl.
+#1::return
+#2::return
+#3::return
+#4::return
+#5::return
+#6::return
 
 ;; bin *F10 hotkeys to confine mouse to active window
 #Include "Incl\ConfineMouse.ahk"
