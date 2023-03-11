@@ -119,6 +119,10 @@ OnClipboardChange(clipChanged, -1)
 
 ;; (Shift-)Win+r (on Colemak) -> Run-dialog
 ;#+r::Run explorer.exe shell:::{2559a1f3-21d7-11d4-bdaf-00c04f60b9f0}
+
+;; Win+return -> Terminal
+;; full app list: "Get-AppxPackage | findstr -i terminal" / "shell:AppsFolder"
+#Enter::Run("shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App")
 ; }}} - Windows commands + SHIFT (if deactivated) ----------------------------
 
 ; {{{ - Putty ----------------------------------------------------------------
