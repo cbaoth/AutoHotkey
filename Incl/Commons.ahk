@@ -66,7 +66,7 @@ rndSleepSend(keyArray, min, max) {
         rnd := Random(min, max)
         Sleep(rnd)
       }
-      Send(arrayRndEntry(keysToSend, true))
+      Send(arrayRndEntry(&keysToSend, true))
       isFirst := false
   }
 }
