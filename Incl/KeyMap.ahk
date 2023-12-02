@@ -55,28 +55,26 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;Return
 
 ;; LWin-Backspace -> Toggle CapsLock (use if re-mapped via AHK)
-<#BackSpace::CapsLock
+;;<#BackSpace::CapsLock
 
 ;; LWin-Alt-Backspace -> Toggle ScrollLock
-<#!BackSpace::ScrollLock
+;;<#!BackSpace::ScrollLock
+
+;; ~Ctrl-Win-X -> Delete, ~Ctrl-Win-v -> Insert
+~^#x::Delete
+~^#v::Insert
 
 ; {{{ - ISO/ANSI/Mini Tweaks -------------------------------------------------
 ;; Some improvements for the Logitech MX Mecahnical Mini (US Intl. ISO, non-ANSI)
 ;#If A_ComputerName = MOTOKO ; only on hosts using this keyboard
-;; LWin+Del -> Insert
->#Del::Insert
+;; Win+Del -> Insert
+#Del::Insert
 
 ;; (Shift-)\ -> Enter, extend the Enter key (simulate ANSI Enter key size)
 ;*\::Enter
 ;; But allow regular key \| input while LWin is pressed
 ;<#\::\
 ;<#+\::|
-
-;; (AllMods)LWin-Home/End/PageUp/PageDown -> (AllMods)CapsLock/ScrollLock/NumLock/PrintScreen
-*<#Home::CapsLock
-*<#End::ScrollLock
-*<#PgUp::NumLock
-*<#PgDn::PrintScreen
 ;#If
 ; }}} - ISO/ANSI/Mini --------------------------------------------------------
 
@@ -255,7 +253,41 @@ SC056::Control  ; -> Control (less distance)
 #<!0::SendInput("{Volume_Mute}") ; Win-LeftAlt-0
 ; }}} = Media Keys ===========================================================
 
-; {{{ = Win-X, [Key] control sequences =======================================
+; {{{ = Control Sequences ====================================================
+;; Win-X, [Key] - Toggle caps/scroll/num-lock, Print screen, etc.
+#/::
+{
+  local tt_text := "
+  (
+c: toggle caps lock
+s: toggle scroll lock
+n: toggle num lock
+p: print screen
+  )"
+  ToolTip(tt_text)
+  try
+    ihKey := InputHook("C L1 T5"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+  removeToolTip()
+  if (ihKey.EndReason = "Timeout")
+  {
+    return
+  }
+  ;REMOVED StringCaseSense, On ; parse case sensitive (in this context only)
+  switch Key {
+    ; c/C: toggle caps lockCapsLockc
+    case "c": SendInput("{CapsLock On}")
+    case "C": SendInput("{CapsLock Off}")
+    ; s/S: toggle scroll lock
+    case "s": SendInput("{ScrollLock On}")
+    case "S": SendInput("{ScrollLock Off}")
+    ; n/N: toggle num lock
+    case "n": SendInput("{NumLock On}")
+    case "N": SendInput("{NumLock Off}")
+    ; p: print screen
+    case "p": SendInput("{PrintScreen}")
+  }
+}
+
 ;; Win-X, [Key] - Emacs/Screen/Tmux-like control sequence
 #x::
 {
@@ -308,7 +340,7 @@ set_power_level(lvl) {
     }
   }
 }
-; }}} = Win-X, [Key] control sequences =======================================
+; }}} = Control Sequences ====================================================
 
 ; {{{ = Current KB Layout ====================================================
 ;#NoEnv
