@@ -57,15 +57,27 @@ OnClipboardChange(clipChanged, -1)
 ;; bind *#F8 hotkeys to window detail tracking tooltip
 #Include "Incl\WindowTracking.ahk"
 
-;; virtual desktop stuff
-#Include "Incl\VirtualDesktop.ahk"
+;; Virtual Desktop stuff (advanced)
+; #Include "Incl\VirtualDesktop.ahk"
 ;; temporarily disable annoying win-1+ hotkeys until vd selection is impl.
-#1::return
-#2::return
-#3::return
-#4::return
-#5::return
-#6::return
+; #1::return
+; #2::return
+; #3::return
+; #4::return
+; #5::return
+; #6::return
+
+; Win-Ctrl-q/w: Desktop previous/next
+#^q::{
+  Send("#^{Left}")
+  ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
+  ;removeToolTipDelay(0.35)
+}
+#^w::{
+  Send("#^{Right}")
+  ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
+  ;removeToolTipDelay(0.35)
+}
 
 ;; bin *F10 hotkeys to confine mouse to active window
 #Include "Incl\ConfineMouse.ahk"
@@ -224,6 +236,15 @@ OnClipboardChange(clipChanged, -1)
 ;#!t::WinSetAlwaysOnTop(-1, "A")
 ; DISABLED, part of powertoys
 
+; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
+; https://www.autohotkey.com/boards/viewtopic.php?t=74849
+#!s::{
+  ExStyle := WinGetExStyle("A")  ; "A" means the active window
+  If !(ExStyle & 0x00000080)  ; visible on all desktops
+    WinSetExStyle(128, "A")
+  else
+    WinSetExStyle(-128, "A")
+}
 ; }}} - Window States --------------------------------------------------------
 
 ; {{{ - Stay Awake -----------------------------------------------------------
