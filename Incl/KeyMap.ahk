@@ -64,6 +64,9 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ~^#x::Delete
 ~^#v::Insert
 
+;; Win-Backspace (incl. CapsLock on Colemak)
+#BackSpace::Delete
+
 ; {{{ - ISO/ANSI/Mini Tweaks -------------------------------------------------
 ;; Some improvements for the Logitech MX Mecahnical Mini (US Intl. ISO, non-ANSI)
 ;#If A_ComputerName = MOTOKO ; only on hosts using this keyboard
