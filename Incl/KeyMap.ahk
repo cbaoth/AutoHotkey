@@ -263,7 +263,7 @@ SC056::Control  ; -> Control (less distance)
   local tt_text := "
   (
 c: toggle caps lock
-s: toggle scroll lock
+s: toggle scroll lock (alternative keys)
 n: toggle num lock
 p: print screen
   )"
