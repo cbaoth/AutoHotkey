@@ -1,3 +1,4 @@
 Incl/Local/*
 .sonarlint
 .vscode
+*.log
