@@ -1,28 +1,5 @@
 ; VirtualDesktop.ahk: Some virtual desktop related stuff
 
-; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
-; https://www.autohotkey.com/boards/viewtopic.php?t=74849
-#!s::{
-  ExStyle := WinGetExStyle("A")  ; "A" means the active window
-  If !(ExStyle & 0x00000080)  ; visible on all desktops
-    WinSetExStyle(128, "A")
-  else
-    WinSetExStyle(-128, "A")
-}
-
-;; Win-Ctrl-q/w: Desktop previous/next
-#^q::{
-  Send("#^{Left}")
-  ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
-  removeToolTipDelay(0.35)
-}
-#^w::{
-  Send("#^{Right}")
-  ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
-  removeToolTipDelay(0.35)
-}
-
-
 ; {{{ = VirtualDesktops ======================================================
 ; source: https://www.autohotkey.com/boards/search.php?author_id=62433&sr=posts&sid=6f09025b599d8b3e27c87861373d7f9f
 ;MsgBox VirtualDesktops.GetCurrentVirtualDesktopName()
