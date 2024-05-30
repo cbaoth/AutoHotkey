@@ -100,6 +100,19 @@ removeToolTipDelay(sec:=5) {
 }
 ; }}} = ToolTips =============================================================
 
+; {{{ = Input ================================================================
+readKeySequence(length:=1, timeout:=5) {
+  try
+    ihKey := InputHook("C L" length " T" timeout), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+  removeToolTip()
+  if (ihKey.EndReason = "Timeout")
+  {
+    return ""
+  }
+  return ihKey
+}
+; }}} = Input ================================================================
+
 ; {{{ = SplashImage ==========================================================
 ;; remove SplashImage after a given timeout in seconds (default 5), example:
 ;SplashImage, Image.png

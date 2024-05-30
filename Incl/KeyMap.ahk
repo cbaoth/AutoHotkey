@@ -57,8 +57,8 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;; LWin-Backspace -> Toggle CapsLock (use if re-mapped via AHK)
 ;;<#BackSpace::CapsLock
 
-;; LWin-Alt-Backspace -> Toggle ScrollLock
-;;<#!BackSpace::ScrollLock
+;; Win-Home -> Toggle ScrollLock
+#Home::ScrollLock
 
 ;; ~Ctrl-Win-X -> Delete, ~Ctrl-Win-v -> Insert
 ~^#x::Delete

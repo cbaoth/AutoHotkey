@@ -88,15 +88,18 @@ OnClipboardChange(clipChanged, -1)
 ;; Some send-to-window hotkeys (e.g. copy to editor)
 ;#Include SendToWindow.ahk
 
-; Window drag and resize
-#Include "Incl\WinDrag.ahk"  ; include if exists (not in git repo, no OC)
+;; Some display & graphics related hotkeys
+#Include "Incl\\Display.ahk"
 
 ; {{{ - If exists ------------------------------------------------------------
-; Tweaks for Invoke-AI (Web)
-#Include "*i ..\AIMetaTools\AITools.ahk"
-
+; Window drag and resize
+#Include "*i Incl\WinDrag.ahk"  ; include if exists (not in git repo, no OC)
 #LButton::WindowMouseDragMove()
 #RButton::WindowMouseDragResize()
+
+; Tweaks for Invoke-AI (Web)
+;#Include "*i ..\AIMetaTools\AITools.ahk"
+
 ; }}} - If exists ------------------------------------------------------------
 
 ; {{{ - Games ----------------------------------------------------------------
