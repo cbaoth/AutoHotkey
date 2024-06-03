@@ -9,7 +9,8 @@
 ;; If window is switched or rezised window confiement is lost (intentional)
 ;; while taskbar mode is kept alive by a timer
 
-isConfineMouseTaskbarModeActive := False
+;; Enable taskbar move on startup, change if needed
+isConfineMouseTaskbarModeActive := True
 
 ; {{{ = Hotkeys ==============================================================
 ;; Win-Shift-F10: toggle mouse cursor confinement to avoid auto-hide taskbar
