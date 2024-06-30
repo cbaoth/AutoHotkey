@@ -41,6 +41,13 @@ OnClipboardChange(clipChanged, -1)
   Sleep(250)
   Reload() ; Win-F12: reload this script
 }
+
+#!F12::{
+  ToolTip("Pause toggle ..")
+  Sleep(500)
+  ToolTip()
+  Pause(-1) ; Win-Alt-F12: toggle pause for this script
+}
 ; }}} - General Settings -----------------------------------------------------
 ; }}} = Core =================================================================
 
@@ -89,7 +96,10 @@ OnClipboardChange(clipChanged, -1)
 ;#Include SendToWindow.ahk
 
 ;; Some display & graphics related hotkeys
-#Include "Incl\\Display.ahk"
+#Include "Incl\Display.ahk"
+
+;; Auto confirm/close dialoges etc.
+#Include "Incl\AutoConfirm.ahk"
 
 ; {{{ - If exists ------------------------------------------------------------
 ; Window drag and resize
@@ -294,10 +304,10 @@ class StayAwakeTimer{
 
 ; {{{ - Misc -----------------------------------------------------------------
 ; OnClipboardChange("clipChanged", -1) events, see above
-global clipChangedToggle := false
-global clipChangedUlrsOnly := false
 
 clipChanged(Type) {
+  global clipChangedToggle := false
+  global clipChangedUlrsOnly := false
   ; clipboard monitoring is on AND clipboard contains text only
   ; AND clipboard contains url (if url-only is enabled)?
   if (clipChangedToggle
