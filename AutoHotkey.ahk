@@ -87,7 +87,9 @@ OnClipboardChange(clipChanged, -1)
 }
 
 ;; bin *F10 hotkeys to confine mouse to active window
-#Include "Incl\ConfineMouse.ahk"
+If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
+  #Include "Incl\ConfineMouse.ahk"
+}
 
 ;; X like paste on middle-click
 #Include "Incl\XMouseClipboard.ahk"
@@ -105,7 +107,9 @@ OnClipboardChange(clipChanged, -1)
 ; Window drag and resize
 #Include "*i Incl\WinDrag.ahk"  ; include if exists (not in git repo, no OC)
 #LButton::WindowMouseDragMove()
+#LButton Up::RestoreCursors() ; unsere reset, e.g. glitch with elevated proc.
 #RButton::WindowMouseDragResize()
+#RButton Up::RestoreCursors() ; unsere reset, e.g. glitch with elevated proc.
 
 ; Tweaks for Invoke-AI (Web)
 ;#Include "*i ..\AIMetaTools\AITools.ahk"
