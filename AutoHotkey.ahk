@@ -103,17 +103,16 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 ;; Auto confirm/close dialoges etc.
 #Include "Incl\AutoConfirm.ahk"
 
-; {{{ - If exists ------------------------------------------------------------
 ; Window drag and resize
-#Include "*i Incl\WinDrag.ahk"  ; include if exists (not in git repo, no OC)
+#Include "Incl\WinDrag.ahk"
 #LButton::WindowMouseDragMove()
 #LButton Up::RestoreCursors() ; unsere reset, e.g. glitch with elevated proc.
 #RButton::WindowMouseDragResize()
 #RButton Up::RestoreCursors() ; unsere reset, e.g. glitch with elevated proc.
 
+; {{{ - If exists ------------------------------------------------------------
 ; Tweaks for Invoke-AI (Web)
 ;#Include "*i ..\AIMetaTools\AITools.ahk"
-
 ; }}} - If exists ------------------------------------------------------------
 
 ; {{{ - Games ----------------------------------------------------------------
