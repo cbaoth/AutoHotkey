@@ -268,8 +268,12 @@ n: toggle num lock
 p: print screen
   )"
   ToolTip(tt_text)
-  try
+  try {
     ihKey := InputHook("C L1 T5"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+  } catch { 
+    removeToolTip()
+    return
+  }
   removeToolTip()
   if (ihKey.EndReason = "Timeout")
   {
@@ -301,8 +305,12 @@ power [s: sleep, h: hibernate]
 ts-profiles [1: utra perf, 2: high perf, 3: balanced, 4: power save]
   )"
   ToolTip(tt_text)
-  try
+  try {
     ihKey := InputHook("C L1 T5"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+  } catch { 
+    removeToolTip()
+    return
+  }
   removeToolTip()
   if (ihKey.EndReason = "Timeout")
   {
@@ -343,6 +351,41 @@ set_power_level(lvl) {
     }
   }
 }
+
+; {{{ - Apps -----------------------------------------------------------------
+;; Win-Alt-T, [Key] - General start sequence for all (covered) apps
+
+;; Microsoft OneNote control sequence
+#HotIf InStr(WinGetProcessName("A"), "onenote.exe")
+;; Win-Alt-T, [Key] - Use the general "App" control sequence
+#<!t::
+{
+  local tt_text := "
+  (
+p: Copy link to paragraph
+  )"
+  ToolTip(tt_text)
+  try {
+    ihKey := InputHook("C L1 T5"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+  } catch {
+    removeToolTip()
+    return
+  }
+  removeToolTip()
+  if (ihKey.EndReason = "Timeout")
+  {
+    return
+  }
+  switch Key {
+    ; p: Copy link to paragraph
+    case "p":
+      Send("+{F10}") ; Shift + F10 to open context menu
+      Sleep(100)
+      Send("p") ; Assuming 'p' is the underlined letter for "Paragraph"
+  }
+}
+#HotIf !WinActive(, )
+; }}} - Apps -----------------------------------------------------------------
 ; }}} = Control Sequences ====================================================
 
 ; {{{ = Current KB Layout ====================================================
