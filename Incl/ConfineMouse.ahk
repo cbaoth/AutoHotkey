@@ -4,18 +4,22 @@
 
 ;; Toggle mouse cursor confinement for active window, window below mouse
 ;; cursor or full screen except 2 lowest most pixel rows to avoid auto-hide
-;; taskbar being triggerd by the mouse cursor (keyboard only).
+;; taskbar being triggered by the mouse cursor (keyboard only).
 ;;
-;; If window is switched or rezised window confiement is lost (intentional)
+;; If window is switched or resized window confinement is lost (intentional)
 ;; while taskbar mode is kept alive by a timer
 
-;; Enable taskbar move on startup, change if needed
-isConfineMouseTaskbarModeActive := True
+;; Default: Disabled on startup (toggle with Win-Shift-F10)
+isConfineMouseTaskbarModeActive := False
+;; Enable on startup for certain hosts only (e.g. smaller screen, less precise cursor)
+If RegExMatch(A_ComputerName, "i)^puppet$") {
+  isConfineMouseTaskbarModeActive := True
+}
 
 ; {{{ = Hotkeys ==============================================================
 ;; Win-Shift-F10: toggle mouse cursor confinement to avoid auto-hide taskbar
 ;;   triggering by blocking the 2 lowest most pixel rows
-;; #SC029 ; Win-`
+;; Win-Alt-Shift-F10: toggle mouse cursor confinement to exclude the auto-hide taskbar
 #+F10::ConfineMouseTaskbarModeToggle()
 ;; Win-F10: toggle mouse cursor confinement to active window dimensions w/o decoration
 #F10::ConfineMouseCursorByMode(, true)
@@ -33,6 +37,8 @@ ConfineMouseTaskbarMode() {
   }
 }
 
+;; confine mouse cursor to the full screen except the lowest vertical 2 pixel
+;; rows to prevent auto-hide taskbar from being triggered by the mouse cursor
 ConfineMouseTaskbarModeToggle() {
   global isConfineMouseTaskbarModeActive := ! isConfineMouseTaskbarModeActive
   if ! isConfineMouseTaskbarModeActive {
