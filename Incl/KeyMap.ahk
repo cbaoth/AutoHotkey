@@ -1,13 +1,13 @@
 ﻿; KeyMap.ahk: My custom key map (Colemak, hacking, etc.)
 
-; All (active) mappings asume Colemak keyboard layout (incl. capslock -> backspace)
+; All (active) mappings assume Colemak keyboard layout (incl. capslock -> backspace)
 
 ;; In case Win-Shift-Alt(-Ctrl) conflicts with the Office hotkey(s) execute this in PS
 ;; to disable the Office (hot) Key:
 ;; REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32
 
 ; {{{ = Mouse ================================================================
-;; Remoap thumb mouse buttons to page up/down (instead of prev./next)
+;; Remap thumb mouse buttons to page up/down (instead of prev./next)
 
 XButton1::PgDn ; Mouse 4 (usually thumb1) -> Page Down
 XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
@@ -16,9 +16,9 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 
 ; {{{ = Umlaute ==============================================================
 ; {{{ - International Layout Position ----------------------------------------
-;; Access Umlauts like on Int. Colemak layout (via AltGr). Should be availlable
+;; Access Umlauts like on Int. Colemak layout (via AltGr). Should be available
 ;; per default, if not enable this:
-;; availlable for some reason
+;; available for some reason
 ;<^>!a::SendInput("ä")  ; RightAlt-a
 ;<^>!+a::SendInput("Ä") ; RightAlt-A
 ;<^>!o::SendInput("ö")  ; RightAlt-o
@@ -68,7 +68,7 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 #BackSpace::Delete
 
 ; {{{ - ISO/ANSI/Mini Tweaks -------------------------------------------------
-;; Some improvements for the Logitech MX Mecahnical Mini (US Intl. ISO, non-ANSI)
+;; Some improvements for the Logitech MX Mechanical Mini (US Intl. ISO, non-ANSI)
 ;#If A_ComputerName = MOTOKO ; only on hosts using this keyboard
 ;; Win+Del -> Insert
 #Del::Insert
@@ -179,7 +179,7 @@ SC056::Control  ; -> Control (less distance)
 <#i::  MouseMove(1, 0, 0, "R")    ; LWin-i -> mouse cursor right 1px
 *i::  MouseMove(20, 0, 0, "R")     ; (AnyMod)i -> mouse cursor right 20px
 *o::  Click("right")               ; (AnyMod)h -> (AnyMod) mouse right click
-;; Left mouse button somulation with option to drag on key down (hold)
+;; Left mouse button simulation with option to drag on key down (hold)
 ;; source: https://autohotkey.com/board/topic/59665-key-press-and-hold-emulates-mouse-click-and-hold-win7/
 *h::                          ; (AnyMod)o -> (AnyMod) mouse left click and hold
 {
@@ -302,11 +302,11 @@ p: print screen
   (
 window [k: kill, c: close]
 power [s: sleep, h: hibernate]
-ts-profiles [1: utra perf, 2: high perf, 3: balanced, 4: power save]
+ts-profiles [1: ultra perf, 2: high perf, 3: balanced, 4: power save]
   )"
   ToolTip(tt_text)
   try {
-    ihKey := InputHook("C L1 T5"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+    ihKey := InputHook("C L1 T5"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; Read case-sens. length 1 w/ 2sec timeout
   } catch { 
     removeToolTip()
     return
@@ -323,14 +323,14 @@ ts-profiles [1: utra perf, 2: high perf, 3: balanced, 4: power save]
     ; c: close active window
     case "c": WinClose "A"
     ; s: send computer to sleep
-    ; args: bHibernate, bForce, WakeupEventsDisabled
+    ; Args: bHibernate, bForce, WakeupEventsDisabled
     ; https://learn.microsoft.com/en-us/windows/win32/api/powrprof/nf-powrprof-setsuspendstate
     case "s": DllCall("PowrProf\SetSuspendState", "int", 0, "int", 0, "int", 0)
     ; h: send computer to hibernation
-    ; might need one time enabling via: powercfg.exe /hibernate on
+    ; Might need one time enabling via: powercfg.exe /hibernate on
     case "h": DllCall("PowrProf\SetSuspendState", "int", 1, "int", 0, "int", 0)
     ; 1: switch to power plane "Power Save"
-    ; use "powercfg -list" to get uuid
+    ; Use "powercfg -list" to get UUIDs
     case "1", "2", "3", "4": set_power_level(Key)
   }
 }
@@ -338,7 +338,7 @@ ts-profiles [1: utra perf, 2: high perf, 3: balanced, 4: power save]
 set_power_level(lvl) {
   if (A_ComputerName == "MOTOKO") {
     switch lvl {
-      ; use "powercfg -list" to get uuid
+      ; Use "powercfg -list" to get UUIDs
       case "1": Run("powercfg -setactive `"38156909-5918-4777-864e-fbf99c75df8b`"")
       case "2": Run("powercfg -setactive `"8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c`"")
       case "3": Run("powercfg -setactive `"381b4222-f694-41f0-9685-ff5bb260df2e`"")
@@ -346,18 +346,18 @@ set_power_level(lvl) {
     }
   } else {
     switch lvl {
-      ; assuming ThrottleStop hotkeys: ctrl-alt-Numpad1/2/3/4
+      ; Assuming ThrottleStop hotkeys: ctrl-alt-Numpad1/2/3/4
       case "1", "2", "3", "4": SendInput "^!{Numpad" lvl "}"
     }
   }
 }
 
 ; {{{ - Apps -----------------------------------------------------------------
-;; Win-Alt-T, [Key] - General start sequence for all (covered) apps
+;; Win-LAlt-T, [Key] - General start sequence for all (covered) apps
 
 ;; Microsoft OneNote control sequence
-#HotIf InStr(WinGetProcessName("A"), "onenote.exe")
-;; Win-Alt-T, [Key] - Use the general "App" control sequence
+#HotIf InStr(WinGetProcessName("A"), "ONENOTE.exe")
+;; Win-LAlt-T, [Key] - Use the general "App" control sequence
 #<!t::
 {
   local tt_text := "
@@ -366,7 +366,7 @@ p: Copy link to paragraph
   )"
   ToolTip(tt_text)
   try {
-    ihKey := InputHook("C L1 T5"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+    ihKey := InputHook("C L1 T5"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; Read case-sens. length 1 w/ 2sec timeout
   } catch {
     removeToolTip()
     return

@@ -1,7 +1,7 @@
 ﻿; Commons.ahk: Some common functions to be used in other scripts
 
 ; {{{ = Run == ===============================================================
-;; focus existing instance or run if needed
+;; Focus existing instance or run if needed
 focusOrRun(target, workDir:="", winSize:=""){
 	SplitPath(target, &execFile)
 	if (PID := ProcessExist(execFile)) {
@@ -13,7 +13,7 @@ focusOrRun(target, workDir:="", winSize:=""){
 ; }}} = Run ==================================================================
 
 ; {{{ = Arrays ===============================================================
-;; return: random array index (within the range of the given array)
+;; Return: random array index (within the range of the given array)
 arrayRndIdx(array) {
   local rnd
   local len := array.Length
@@ -24,8 +24,8 @@ arrayRndIdx(array) {
   return rnd
 }
 
-;; return a random entry from the array
-;; if remove = true: remove entry from array, else: leave array unchanged
+;; Return a random entry from the array
+;; If remove = true: remove entry from array, else: leave array unchanged
 arrayRndEntry(&array, remove:=false) {
   local idx
   if (array.Length <= 0) {
@@ -33,22 +33,22 @@ arrayRndEntry(&array, remove:=false) {
   }
   idx := arrayRndIdx(array)
   if remove {
-    return array.RemoveAt(idx) ; remove entry from array and return it
+    return array.RemoveAt(idx) ; Remove entry from array and return it
   }
-  return array[idx] ; return without modifying array
+  return array[idx] ; Return without modifying array
 }
 ;SC029::tst(["a", "b", "c"])
 ; }}} = Arrays ===============================================================
 
 ; {{{ = Random ===============================================================
-;; sleep a random amount of seconds (between min/max)
+;; Sleep a random amount of seconds (between min/max)
 rndSleep(min, max) {
   local rnd
   rnd := Random(min, max)
   Sleep(rnd)
 }
 
-;; send a random key (one from the given keyArray)
+;; Send a random key (one from the given keyArray)
 rndSend(keyArray) {
   local rnd
   rnd := Random(1, keyArray.Length)
@@ -56,8 +56,8 @@ rndSend(keyArray) {
 }
 ;SC029::rndSend(["a", "b", "c"])
 
-;; send given keys (keyArray) in random sequence, sleep random amount of
-;; milliseconds (min/max) beween each key press
+;; Send given keys (keyArray) in random sequence, sleep random amount of
+;; milliseconds (min/max) between each key press
 rndSleepSend(keyArray, min, max) {
   local keysToSend := keyArray
   local isFirst := true
@@ -72,8 +72,8 @@ rndSleepSend(keyArray, min, max) {
 }
 ;SC029::rndSleepSend(["a", "b", "c"], 100, 200)
 
-;; send given keys (keyArray) in the given sequence, sleep random amount of
-;; milliseconds (min/max) beween each key press
+;; Send given keys (keyArray) in the given sequence, sleep random amount of
+;; milliseconds (min/max) between each key press
 rndSleepSendSeq(keyArray, min, max) {
   local isFirst := true
   for idx, key in keyArray {
@@ -89,21 +89,21 @@ rndSleepSendSeq(keyArray, min, max) {
 ; }}} = Random ===============================================================
 
 ; {{{ = ToolTips =============================================================
-;; remove ToolTip after a given timeout in seconds (default 5), example:
-;ToolTip("Some text ...") ; show a tooltip
-;_removeToolTipDelay() ; hide tolltip after 5 sec
+;; Remove ToolTip after a given timeout in seconds (default 5), example:
+;ToolTip("Some text ...") ; Show a tooltip
+;_removeToolTipDelay() ; Hide tooltip after 5 sec
 removeToolTip() {
   ToolTip()
 }
 removeToolTipDelay(sec:=5) {
-  SetTimer(_removeToolTip,sec * -1000) ; remove tooltip after delay
+  SetTimer(_removeToolTip,sec * -1000) ; Remove tooltip after delay
 }
 ; }}} = ToolTips =============================================================
 
 ; {{{ = Input ================================================================
 readKeySequence(length:=1, timeout:=5) {
   try
-    ihKey := InputHook("C L" length " T" timeout), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+    ihKey := InputHook("C L" length " T" timeout), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; Read case-sens. length 1 w/ 2sec timeout
   removeToolTip()
   if (ihKey.EndReason = "Timeout")
   {
@@ -114,13 +114,13 @@ readKeySequence(length:=1, timeout:=5) {
 ; }}} = Input ================================================================
 
 ; {{{ = SplashImage ==========================================================
-;; remove SplashImage after a given timeout in seconds (default 5), example:
+;; Remove SplashImage after a given timeout in seconds (default 5), example:
 ;SplashImage, Image.png
-;_removeToolTipDelay() ; hide tolltip after 5 sec
+;_removeToolTipDelay() ; Hide tooltip after 5 sec
 ; REMOVED: removeSplashImage() {
 ;  SplashImageGui := Gui("ToolWindow -Sysmenu Disabled"), SplashImageGui.MarginY := 0, SplashImageGui.MarginX := 0, SplashImageGui.AddPicture("w200 h-1", "Off"), SplashImageGui.Show()
 ;}
 ; REMOVED: removeSplashImageDelay(sec:=5) {
-;  SetTimer(removeSplashImage,sec * -1000) ; remove splashimage after delay
+;  SetTimer(removeSplashImage,sec * -1000) ; Remove SplashImage after delay
 ;}
 ; }}} = SplashImage ==========================================================

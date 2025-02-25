@@ -1,13 +1,13 @@
 ﻿; AutoHotkey.ahk: Core AutoHotkey script
 
 ; {{{ = Help =================================================================
-;; doc: http://ahkscript.org/docs/KeyList.htm
-;; key mods: ! alt, + shift, ^ ctrl, </>[mod] left/right[mod], # win
+;; Doc: http://ahkscript.org/docs/KeyList.htm
+;; Key mods: ! alt, + shift, ^ ctrl, </>[mod] left/right[mod], # win
 ;;           <^>! altgr, * no/any mod, ~ don't block, $ don't trigger self
 ; }}} = Help -----------------------------------------------------------------
 
 ; {{{ = Environment ----------------------------------------------------------
-;; global variables (must come first)
+;; Global variables (must come first)
 global HOME
 HOME := EnvGet("HOMEPATH")
 global HOME_DRIVE
@@ -21,19 +21,19 @@ global PUTTY := "putty.exe"
 
 ; {{{ - General Settings -----------------------------------------------------
 ; REMOVED: #NoEnv
-#SingleInstance Force ; only run one instance (always)
+#SingleInstance Force ; Only run one instance (always)
 Persistent
-#MaxThreads 20 ; allow the use of additional threads
+#MaxThreads 20 ; Allow the use of additional threads
 #MaxThreadsPerHotkey 2
-;#Warn ; activate warnings
+;#Warn ; Activate warnings
 ;#InstallKeybdHook ; https://autohotkey.com/docs/commands/_InstallKeybdHook.htm
 ;#InstallMouseHook ; https://autohotkey.com/docs/commands/_InstallMouseHook.htm
 ;#KeyHistory 100 ; 40 shown per default (key history window), no more than 500
 
-DetectHiddenWindows(true) ; include hidden windows
+DetectHiddenWindows(true) ; Include hidden windows
 SetTitleMatchMode("RegEx") ; https://autohotkey.com/docs/commands/SetTitleMatchMode.htm#RegEx
 
-; register on-clipboard-change event (defied below), must be befor hotkeys
+; Register on-clipboard-change event (defined below), must be before hotkeys
 OnClipboardChange(clipChanged, -1)
 
 #F12::{
@@ -52,21 +52,21 @@ OnClipboardChange(clipChanged, -1)
 ; }}} = Core =================================================================
 
 ; {{{ = Include Additional Scripts ===========================================
-;; look in main script dir for all following includes
+;; Look in main script dir for all following includes
 ;#Include "%A_ScriptDir%" "Incl\"
 
-;; some common functions
+;; Some common functions
 #Include "Incl\Commons.ahk"
 
-;; some key (re-)maps (colemak, hacking, etc.)
+;; Some key (re-)maps (Colemak, hacking, etc.)
 #Include "Incl\KeyMap.ahk"
 
-;; bind *#F8 hotkeys to window detail tracking tooltip
+;; Bind *#F8 hotkeys to window detail tracking tooltip
 #Include "Incl\WindowTracking.ahk"
 
 ;; Virtual Desktop stuff (advanced)
 ; #Include "Incl\VirtualDesktop.ahk"
-;; temporarily disable annoying win-1+ hotkeys until vd selection is impl.
+;; Temporarily disable annoying win-1+ hotkeys until vd selection is impl.
 ; #1::return
 ; #2::return
 ; #3::return
@@ -86,8 +86,8 @@ OnClipboardChange(clipChanged, -1)
   ;removeToolTipDelay(0.35)
 }
 
-;; bin *F10 hotkeys to confine mouse to active window
-If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
+;; Bin *F10 hotkeys to confine mouse to active window
+If !(InStr(A_ComputerName, "motoko") = 1) { ; No workstation (large display)?
   #Include "Incl\ConfineMouse.ahk"
 }
 
@@ -100,15 +100,15 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 ;; Some display & graphics related hotkeys
 #Include "Incl\Display.ahk"
 
-;; Auto confirm/close dialoges etc.
+;; Auto confirm/close dialogs etc.
 #Include "Incl\AutoConfirm.ahk"
 
 ; Window drag and resize
 #Include "Incl\WinDrag.ahk"
 #LButton::WindowMouseDragMove()
-#LButton Up::RestoreCursors() ; unsere reset, e.g. glitch with elevated proc.
+#LButton Up::RestoreCursors() ; Ensure reset, e.g. glitch with elevated proc.
 #RButton::WindowMouseDragResize()
-#RButton Up::RestoreCursors() ; unsere reset, e.g. glitch with elevated proc.
+#RButton Up::RestoreCursors() ; Ensure reset, e.g. glitch with elevated proc.
 
 ; {{{ - If exists ------------------------------------------------------------
 ; Tweaks for Invoke-AI (Web)
@@ -116,7 +116,7 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 ; }}} - If exists ------------------------------------------------------------
 
 ; {{{ - Games ----------------------------------------------------------------
-; include if exists (maybe deleted on non-gaming hosts)
+; Include if exists (maybe deleted on non-gaming hosts)
 #Include "*i Incl\Games\PathOfExile.ahk"
 ;#Include "*i Incl\Games\Skyrim.ahk"
 ;#Include "*i Incl\Games\Diablo3.ahk"
@@ -132,14 +132,15 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 ;::btw::by the way
 ; }}} = Hot Strings ==========================================================
 
+;; TODO move launchers and control sequences to separate file (see KeyMap as well)
 ; {{{ = App Launcher =========================================================
 ; {{{ - Windows commands + SHIFT (if deactivated) ----------------------------
-;; re-enable some basic windows key-bindings, but with additional Shift mod
-;; can be used if windows default keybindings are disabled (done to avoid
+;; Re-enable some basic windows key-bindings, but with additional Shift mod
+;; Can be used if windows default keybindings are disabled (done to avoid
 ;; unnecessary mappings like Win-1/2/3/...)
-;; shell commands: https://www.softwareok.com/?seite=faq-Windows-10&faq=41
+;; Shell commands: https://www.softwareok.com/?seite=faq-Windows-10&faq=41
 
-;; (Alt-)Win+e (f on Colemak) -> Exlorer
+;; (Alt-)Win+e (f on Colemak) -> Explorer
 ;#!f::Run, explorer.exe
 
 ;; (Shift-)Win+d (on Colemak) -> Show Desktop
@@ -149,17 +150,17 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 ;#+r::Run explorer.exe shell:::{2559a1f3-21d7-11d4-bdaf-00c04f60b9f0}
 
 ;; Win+return -> Terminal
-;; full app list: "Get-AppxPackage | findstr -i terminal" / "shell:AppsFolder"
+;; Full app list: "Get-AppxPackage | findstr -i terminal" / "shell:AppsFolder"
 #Enter::Run("shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App")
 ; }}} - Windows commands + SHIFT (if deactivated) ----------------------------
 
 ; {{{ - Putty ----------------------------------------------------------------
-;; define ssh hotkeys based on current host (map Win-F* to putty profiles)
-#HotIf InStr(A_ComputerName, "weyera0") = 1 ; work host?
+;; Define ssh hotkeys based on current host (map Win-F* to putty profiles)
+#HotIf RegExMatch(A_ComputerName, "i)^de\d+") ; Work host?
 #F2::Run(PUTTY " -load `"saito (remote)`"")
 #HotIf
 
-#HotIf ! InStr(A_ComputerName, "weyera0") = 1 ; non-work host?
+#HotIf !RegExMatch(A_ComputerName, "i)^de\d+") ; Non-work host?
 #F2::Run(PUTTY " -load `"saito`"")
 #HotIf
 
@@ -171,12 +172,12 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 ;; Win-R, [Key] - Emacs/Screen/Tmux-like control sequence
 #r::{
   ToolTip("r: run, e: code, (+)p: ps, (+)c: cmd")
-  ihKey := InputHook("C L1 T2"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; read case-sens. length 1 w/ 2sec timeout
+  ihKey := InputHook("C L1 T2"), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; Read case-sens. length 1 w/ 2sec timeout
   removeToolTip()
   if (ihKey.EndReason == "Timeout") {
     return
   }
-  ;REMOVED StringCaseSense, On ; parse case sensitive (in this context only)
+  ;REMOVED StringCaseSense, On ; Parse case sensitive (in this context only)
   switch Key {
     ; r: run run-dialog
     case "r": FileDlg := ComObject("Shell.Application").FileRun, FileDlg := ""
@@ -199,7 +200,7 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 ; }}} - Win-R, [Key] control sequences ---------------------------------------
 
 ; {{{ - Others ---------------------------------------------------------------
-#HotIf A_ComputerName = "PUPPET" ; puppet (lenove notebook) only
+#HotIf A_ComputerName = "PUPPET" ; Puppet (Lenovo notebook) only
 
 ;; Win-Shift-q: Lenovo quick settings
 #+q::{
@@ -218,13 +219,14 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 ;#+w::
 ;    Send, ^c
 ;    ClipWait
-;    ;; search only if clipboard contains object of type text
+;    ;; Search only if clipboard contains object of type text
 ;    if DllCall("IsClipboardFormatAvailable", "uint", 1) {
-;        Run, % "https://startpage.com/do/search?query=" . A_Clipboard ; may need encoding
+;        Run, % "https://startpage.com/do/search?query=" . A_Clipboard ; May need encoding
 ;    }
 ;return
 ; }}} - Quick Web Search -----------------------------------------------------
 
+; TODO move window/desktop related hotkeys to separate file
 ; {{{ - Window Move ----------------------------------------------------------
 ; http://www.autohotkey.com/docs/commands/WinMove.htm
 ; Win-F9: move current window (top left corner) to the mouse cursor position
@@ -244,19 +246,18 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; no workstation (large display)?
 
 ; Win-Alt-Shift-F9: move current window for games in windowed mode (center, hide bar)
 #<!+F9::WinMove(-1, -22, , , "A")
-
 ; }}} - Window Move ----------------------------------------------------------
 
 ; {{{ - Window States --------------------------------------------------------
 ; Win-Alt-t: Toggle window's always-on-top state
 ;#!t::WinSetAlwaysOnTop(-1, "A")
-; DISABLED, part of powertoys
+; DISABLED, part of Microsoft PowerToys
 
 ; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
 ; https://www.autohotkey.com/boards/viewtopic.php?t=74849
 #!s::{
   ExStyle := WinGetExStyle("A")  ; "A" means the active window
-  If !(ExStyle & 0x00000080)  ; visible on all desktops
+  If !(ExStyle & 0x00000080)  ; Visible on all desktops
     WinSetExStyle(128, "A")
   else
     WinSetExStyle(-128, "A")
@@ -274,9 +275,9 @@ stayAwakeToggle(){
 
 class StayAwakeTimer{
   __New() {
-    this.idleMin := 240000 ; only trigger when idle for at least 4min
-    this.intervalMin := 30000 ; wait at least 0.5 min
-    this.intervalMax := 270000 ; repeat max every 4.5min
+    this.idleMin := 240000 ; Only trigger when idle for at least 4min
+    this.intervalMin := 30000 ; Wait at least 0.5 min
+    this.intervalMax := 270000 ; Repeat max every 4.5min
     this.isActive := false
     ;this.count := 0
     this.timer := ObjBindMethod(this, "Tick")
@@ -291,16 +292,16 @@ class StayAwakeTimer{
   }
 
   Tick() {
-    if (A_TimeIdle > this.idleMin) { ; idle long enough?
+    if (A_TimeIdle > this.idleMin) { ; Idle long enough?
       timer := this.timer
       this.DummyMouseEvent()
       interval := Random(this.intervalMin, this.intervalMax)
-      SetTimer(timer, interval) ; start timer with new random interval
-    } ; not idle long enough -> do nothing
+      SetTimer(timer, interval) ; Start timer with new random interval
+    } ; Not idle long enough -> do nothing
   }
 
   DummyMouseEvent() {
-    MouseMove(0, 0, 0, "R") ; mouse pointer stays in place but sends a mouse event
+    MouseMove(0, 0, 0, "R") ; Mouse pointer stays in place but sends a mouse event
   }
 }
 ; }}} - Stay Awake -----------------------------------------------------------
@@ -310,41 +311,41 @@ class StayAwakeTimer{
 
 clipChanged(Type) {
   global clipChangedToggle := false
-  global clipChangedUlrsOnly := false
-  ; clipboard monitoring is on AND clipboard contains text only
+  global clipChangedUrlsOnly := false
+  ; Clipboard monitoring is on AND clipboard contains text only
   ; AND clipboard contains url (if url-only is enabled)?
   if (clipChangedToggle
       && Type == 1
-      && (!clipChangedUlrsOnly || InStr(A_Clipboard, "://"))) {
+      && (!clipChangedUrlsOnly || InStr(A_Clipboard, "://"))) {
     ToolTip("Saved: " SubStr(A_Clipboard, 1, 100) (StrLen(A_Clipboard) > 100 ? "..." : ""))
     _removeToolTipDelay(1.5)
-    outFile := clipChangedUlrsOnly ? HOME . "\ahk_from_clipboard_urls.txt" : HOME . "\ahk_from_clipboard.txt"
+    outFile := clipChangedUrlsOnly ? HOME . "\ahk_from_clipboard_urls.txt" : HOME . "\ahk_from_clipboard.txt"
     FileAppend(A_Clipboard "`r`n", outFile)
   }
 }
 
 ; Win-F6: Toggle clipboard monitoring for any text content
 ; If enabled monitor the clipboard for any new text and when found appends the
-; whole clippoard to $HOME/ahk_from_clipboard.txt
+; whole clipboard to $HOME/ahk_from_clipboard.txt
 #F6::{
-  ;; togle only if same mode, else switch mode only
-  ;if !(clipChangedToggle and clipChangedUlrsOnly) {
+  ;; Toggle only if same mode, else switch mode only
+  ;if !(clipChangedToggle and clipChangedUrlsOnly) {
   global clipChangedToggle := !clipChangedToggle
   ;}
-  clipChangedUlrsOnly := false
+  clipChangedUrlsOnly := false
   ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (All): On" : ": Off"))
   _removeToolTipDelay(1.5)
 }
 
 ; Win-Alt-F6: Toggle clipboard monitoring for URLs only
 ; If enabled monitor the clipboard for URLs (any .*:// schema) and when found
-; appends the whole clippoard to $HOME/ahk_from_clipboard_urls.txt
+; appends the whole clipboard to $HOME/ahk_from_clipboard_urls.txt
 #<!F6::{
-  ;; togle only if same mode, else switch mode only
-  ;if !(clipChangedToggle and !clipChangedUlrsOnly) {
+  ;; Toggle only if same mode, else switch mode only
+  ;if !(clipChangedToggle and !clipChangedUrlsOnly) {
   global clipChangedToggle := !clipChangedToggle
   ;}
-  clipChangedUlrsOnly := true
+  clipChangedUrlsOnly := true
   ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (URL): On" : ": Off"))
   _removeToolTipDelay(1.5)
 }
