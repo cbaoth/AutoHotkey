@@ -13,7 +13,24 @@ focusOrRun(target, workDir:="", winSize:=""){
 ; }}} = Run ==================================================================
 
 ; {{{ = Arrays ===============================================================
-;; Return: random array index (within the range of the given array)
+;; Return the index of a given value in the given array, -1 if not found
+arrayIndexOf(value, array*) {
+  for idx, elem in array
+    if (elem = value)
+      return idx
+  return -1
+}
+
+;; Return a joined string from the given array with the given delimiter
+arrayJoin(delim, array*)
+{
+  result := ""
+	for idx, elem in array
+		result .= elem . (idx < array.Length ? delim : "")
+	return result
+}
+
+;; Return a random array index within the range of the given array
 arrayRndIdx(array) {
   local rnd
   local len := array.Length
@@ -37,7 +54,6 @@ arrayRndEntry(&array, remove:=false) {
   }
   return array[idx] ; Return without modifying array
 }
-;SC029::tst(["a", "b", "c"])
 ; }}} = Arrays ===============================================================
 
 ; {{{ = Random ===============================================================

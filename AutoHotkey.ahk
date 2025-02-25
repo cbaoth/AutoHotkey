@@ -61,6 +61,9 @@ OnClipboardChange(clipChanged, -1)
 ;; Some key (re-)maps (Colemak, hacking, etc.)
 #Include "Incl\KeyMap.ahk"
 
+;; Some hotkeys for window management
+#Include "Incl\WindowManagement.ahk"
+
 ;; Bind *#F8 hotkeys to window detail tracking tooltip
 #Include "Incl\WindowTracking.ahk"
 
