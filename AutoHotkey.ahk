@@ -36,17 +36,19 @@ SetTitleMatchMode("RegEx") ; https://autohotkey.com/docs/commands/SetTitleMatchM
 ; Register on-clipboard-change event (defined below), must be before hotkeys
 OnClipboardChange(clipChanged, -1)
 
+;; Win-F12: reload this script
 #F12::{
   ToolTip("Restarting ..")
   Sleep(250)
-  Reload() ; Win-F12: reload this script
+  Reload()
 }
 
+;; Win-Alt-F12: toggle pause for this scrip
 #!F12::{
   ToolTip("Pause toggle ..")
   Sleep(500)
   ToolTip()
-  Pause(-1) ; Win-Alt-F12: toggle pause for this script
+  Pause(-1)
 }
 ; }}} - General Settings -----------------------------------------------------
 ; }}} = Core =================================================================
@@ -105,6 +107,9 @@ If !(InStr(A_ComputerName, "motoko") = 1) { ; No workstation (large display)?
 
 ;; Auto confirm/close dialogs etc.
 #Include "Incl\AutoConfirm.ahk"
+
+;; Digital detox features surrounding Cold Turkey and custom scripts
+#Include "Incl\DigitalDetox.ahk"
 
 ; Window drag and resize
 #Include "Incl\WinDrag.ahk"
