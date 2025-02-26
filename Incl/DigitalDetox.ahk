@@ -28,7 +28,7 @@ ScheduleLockScreen(timeout:=3) {
   ;; TODO define seprate time ranges for work (currently not active on work PC)
   if RegExMatch(A_ComputerName, "i)^de\d+") {
     return ; skip lock screen on work pc (for now)
-  } else
+  }
   ; Lock screen during specific hours
   if (isCurrentTimeInRange("21:15", "05:00"))
     || (isCurrentTimeInRange("16:30", "17:30"))
