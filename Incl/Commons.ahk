@@ -3,14 +3,14 @@
 ; {{{ = Run == ===============================================================
 ;; Focus existing instance or run if needed
 focusOrRun(target, workDir:="", winSize:=""){
-	SplitPath(target, &execFile)
-	if (PID := ProcessExist(execFile)) {
-		WinActivate("ahk_pid " PID)
-	} else {
-		Run(target, workDir, winSize)
-	}
+  SplitPath(target, &execFile)
+  if (PID := ProcessExist(execFile)) {
+    WinActivate("ahk_pid " PID)
+  } else {
+    Run(target, workDir, winSize)
+  }
 }
-; }}} = Run ==================================================================
+; }}} = END: Run =============================================================
 
 ; {{{ = Arrays ===============================================================
 ;; Return the index of a given value in the given array, -1 if not found
@@ -25,9 +25,9 @@ arrayIndexOf(value, array*) {
 arrayJoin(delim, array*)
 {
   result := ""
-	for idx, elem in array
-		result .= elem . (idx < array.Length ? delim : "")
-	return result
+  for idx, elem in array
+    result .= elem . (idx < array.Length ? delim : "")
+  return result
 }
 
 ;; Return a random array index within the range of the given array
@@ -54,7 +54,7 @@ arrayRndEntry(&array, remove:=false) {
   }
   return array[idx] ; Return without modifying array
 }
-; }}} = Arrays ===============================================================
+; }}} = END: Arrays ==========================================================
 
 ; {{{ = Random ===============================================================
 ;; Sleep a random amount of seconds (between min/max)
@@ -102,7 +102,7 @@ rndSleepSendSeq(keyArray, min, max) {
   }
 }
 ;SC029::rndSleepSendSeq(["a", "b", "c"], 100, 200)
-; }}} = Random ===============================================================
+; }}} = END: Random ==========================================================
 
 ; {{{ = ToolTips =============================================================
 ;; Remove ToolTip after a given timeout in seconds (default 5), example:
@@ -114,7 +114,17 @@ removeToolTip() {
 removeToolTipDelay(sec:=5) {
   SetTimer(_removeToolTip,sec * -1000) ; Remove tooltip after delay
 }
-; }}} = ToolTips =============================================================
+;; Show a tooltip with the given message(s) that counts down every second
+;; while using sleep
+timeoutToolTip(msg_prefix, sec, msg_suffix:="...") {
+  Loop sec {
+      Tooltip(msg_prefix (sec+1 - A_Index) msg_suffix)
+      Sleep(1000)
+  }
+  Tooltip()
+}
+;timeoutToolTip(A_Now " Time to take a break, locking screen in ", 3)
+; }}} = END: ToolTips ========================================================
 
 ; {{{ = Input ================================================================
 readKeySequence(length:=1, timeout:=5) {
@@ -129,6 +139,25 @@ readKeySequence(length:=1, timeout:=5) {
 }
 ; }}} = Input ================================================================
 
+; {{{ = Date/Time ============================================================
+; Check if the current time is within a specified range, where arguments are in the format "HH:mm"
+isCurrentTimeInRange(startTime, endTime) {
+  startHour := Integer(StrSplit(startTime, ":")[1]), startMin := Integer(StrSplit(startTime, ":")[2])
+  endHour := Integer(StrSplit(endTime, ":")[1]), endMin := Integer(StrSplit(endTime, ":")[2])
+  startTimeMin := startHour * 60 + startMin
+  endTimeMin := endHour * 60 + endMin
+  currentTimeMin := A_Hour * 60 + A_Min
+  if (endTimeMin < startTimeMin) { ; Handle overnight range
+      return (currentTimeMin >= startTimeMin || currentTimeMin < endTimeMin)
+  } else {
+      return (currentTimeMin >= startTimeMin && currentTimeMin < endTimeMin)
+  }
+}
+
+;; TODO consider adding dateParse function
+;; https://www.autohotkey.com/board/topic/18760-date-parser-convert-any-date-format-to-yyyymmddhh24miss/?p=605062
+; }}} = END: Date/Time =======================================================
+
 ; {{{ = SplashImage ==========================================================
 ;; Remove SplashImage after a given timeout in seconds (default 5), example:
 ;SplashImage, Image.png
@@ -139,4 +168,4 @@ readKeySequence(length:=1, timeout:=5) {
 ; REMOVED: removeSplashImageDelay(sec:=5) {
 ;  SetTimer(removeSplashImage,sec * -1000) ; Remove SplashImage after delay
 ;}
-; }}} = SplashImage ==========================================================
+; }}} = END: SplashImage =====================================================

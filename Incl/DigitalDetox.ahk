@@ -11,22 +11,29 @@
 ;; - some basics should be enough, there are always ways to circumvent these things including reboot, raising
 ;;   the bar is enough
 
-; Enforce lock screen during specific hours, as fallback in case Cold Turkey
-; fails which happens every other month or so (e.g. service stuck)
+;; Lock screen after a short timeout, unless locked already
+LockScreen(timeout:=3) {
+  ; Check if the screen is already locked
+  if !DllCall("User32\OpenInputDesktop", "int",0*0, "int",0*0, "int",0x0001*1) {
+    return
+  }
+  timeoutToolTip(A_Now " Time to take a break, locking screen in ", timeout) ; Show tooltip and wait for timeout
+  Tooltip("Locking screen ..."), removeToolTipDelay(3) ; Final tooltip before locking (may be barely visible)
+  DllCall("LockWorkStation") ; Lock the screen
+}
+
+; Enforce lock screen during specific hours, as fallback in case Cold Turkey doen't work as expected
+; and for work PC (no Cold Turkey) to enforce breaks and avoid extreme overwork due to hyperfocus etc.
 ScheduleLockScreen(timeout:=3) {
+  ;; TODO define seprate time ranges for work (currently not active on work PC)
+  if RegExMatch(A_ComputerName, "i)^de\d+") {
+    return ; skip lock screen on work pc (for now)
+  } else
   ; Lock screen during specific hours
-  ;; TODO consider make the schedules an argument or include a host check here (e.g. different hours for work pc)
   if (isCurrentTimeInRange("21:15", "05:00"))
     || (isCurrentTimeInRange("16:30", "17:30"))
     || (isCurrentTimeInRange("12:00", "13:00")) {
-      ; Check if lock screen is active
-      if DllCall("User32\OpenInputDesktop", "int",0*0, "int",0*0, "int",0x0001*1) {
-          timeoutToolTip(A_Now " Time to take a break, locking screen in ", timeout)
-          Tooltip("Locking screen ..."), removeToolTipDelay(1)
-          ;; TODO consider checking the time again, but a few seconds shouldn't matter
-          ;FileAppend(%A_Now% locked`n, lockstate.txt)
-          DllCall("LockWorkStation") ; Lock the screen
-      }
+    LockScreen(timeout) ; Lock screen after a short timeout
   }
 }
 SetTimer(ScheduleLockScreen, 1000) ; Check every second
