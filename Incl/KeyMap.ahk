@@ -351,7 +351,7 @@ service-restart [t: Cold Turkey]
         RunWait(A_ComSpec ' /c powercfg /list & timeout 5')
         Goto('begin')
     ; 1-n: switch to power scheme x
-    case "1", "2", "3", "4": set_power_level(Key)
+    case "1", "2", "3", "4": activatePowerSchemeByLevel(Key)
     ; s1[sar]: start/stop/restart Cold Turkey service (e.g. in case WMI Provider Host is eating all CPU)
     ;   restart will always start no matter if stopping faild (may already be stopped)
     ;; TODO complete ro remove prototype
@@ -359,42 +359,6 @@ service-restart [t: Cold Turkey]
     ;case "ta": sc("stop", "Power_a17007")
     ;case "tr": sc("stop", "Power_a17007"), sc("start", "Power_a17007")
     case "t": sc("stop", "Power_a17007"), sc("start", "Power_a17007")
-  }
-}
-
-set_power_level(lvl) {
-
-  activatePowerScheme(guid) {
-    ;; TODO improve feedback, plus error handling not working (presumably since comannd exists but fails)
-    try {
-      ;Run(A_ComSpec ' /c powercfg -setactive "' . guid . '" && echo done ... || echo Faild! & timeout 3') ; ,, "Hidden")
-      RunWait('powercfg -setactive "' . guid . '"' ,, "Hidden")
-    } catch as e {
-      MsgBox("Activation of power schemen #1 has failed:`n`n"
-        . type(e) " in " e.What ", which was called at line " e.Line)
-    }
-  }
-  if (A_ComputerName == "MOTOKO") {
-    /* > powercfg /l
-     * Existing Power Schemes (* Active)
-     * -----------------------------------
-     * Power Scheme GUID: 38156909-5918-4777-864e-fbf99c75df8b  (Ultimate Performance) *
-     * Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)
-     * Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)
-     * Power Scheme GUID: a1841308-3541-4fab-bc81-f71556f20b4a  (Power saver)
-     */
-    switch lvl {
-      ; use "powercfg -list" to get uuid
-      case "1": activatePowerScheme("38156909-5918-4777-864e-fbf99c75df8b")
-      case "2": activatePowerScheme("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c")
-      case "3": activatePowerScheme("381b4222-f694-41f0-9685-ff5bb260df2e")
-      case "4": activatePowerScheme("a1841308-3541-4fab-bc81-f71556f20b4a")
-    }
-  } else {
-    switch lvl {
-      ; Assuming ThrottleStop hotkeys: ctrl-alt-Numpad1/2/3/4
-      case "1", "2", "3", "4": SendInput "^!{Numpad" lvl "}"
-    }
   }
 }
 

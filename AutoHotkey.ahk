@@ -359,3 +359,28 @@ clipChanged(Type) {
 }
 ; }}} - Misc -----------------------------------------------------------------
 ; }}} = Additional HotKeys ===================================================
+
+; {{{ = Session Monitor ======================================================
+; {{{ - Switch Power Scheme by Session State ---------------------------------
+;; On session lock activate power schemen Power saver
+;; Best effort (host/level may be unknown, see POWER_SCHEMES for details)
+registerSessionLockListener(activatePowerSchemeByLevel.Bind("4", false))
+
+;; On session unlock activate power schemen Ultra Performance
+;; Best effort (host/level may be unknown, see POWER_SCHEMES for details)
+registerSessionUnLockListener(activatePowerSchemeByLevel.Bind("1", false))
+;; TODO consider using a timer, e.g. switch scheme only after 5min of continuous lock
+;; TODO add hotkey to toggle switching on/off, e.g. to run high performance tasks while locked
+;; When continuously locked for at least 5 minutes, set power profile to Balanced
+;; while remembering the previous power profile
+; SetTimer(activatePowerSchemeByLevel, 300000, 3)
+
+;; TODO keep track of previous power scheme, vs. fixed schemes
+; global POWER_SCHEME_PREV := ""
+;; After unlocking the screen, restore the previous power profile (if any)
+; if (POWER_SCHEME_PREV != "") {
+;   ActivatePowerSchemeByGUID(POWER_SCHEME_PREV)
+;   POWER_SCHEME_PREV := ""
+; }
+; }}} - END: Switch Power Scheme by Session State ----------------------------
+; }}} = END: Session Monitor =================================================
