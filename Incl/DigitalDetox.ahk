@@ -30,9 +30,9 @@ ScheduleLockScreen(timeout:=3) {
     return ; skip lock screen on work pc (for now)
   }
   ; Lock screen during specific hours
-  if (isCurrentTimeInRange("21:15", "05:00"))
-    || (isCurrentTimeInRange("16:30", "17:30"))
-    || (isCurrentTimeInRange("12:00", "13:00")) {
+  if (isCurrentTimeInRange("21:20", "04:40"))
+  || (isCurrentTimeInRange("16:50", "17:10"))
+  || (isCurrentTimeInRange("12:50", "13:10")) {
     LockScreen(timeout) ; Lock screen after a short timeout
   }
 }
