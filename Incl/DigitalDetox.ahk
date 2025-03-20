@@ -6,6 +6,7 @@
 ;; TODO consider allowance (e.g. allow 15min of activite anywhere inside the "frozen zone"
 ;; TODO consider anti-cheat features that reduce chances of / making it harde to tamper with the system
 ;; TODO consider blocking certain features while in a "frozen zone"
+;; TODO consider pause button to add (one time only) e.g. 5 minutes to the reemaining session
 ;; - e.g. a global variable that can be checked by other scripts to see if the system is in a "frozen zone"
 ;; - e.g. overwrite/disable certain hotkeys (pause autohotkey for example)
 ;; - some basics should be enough, there are always ways to circumvent these things including reboot, raising
@@ -30,9 +31,9 @@ ScheduleLockScreen(timeout:=3) {
     return ; skip lock screen on work pc (for now)
   }
   ; Lock screen during specific hours
-  if (isCurrentTimeInRange("21:20", "04:40"))
-  || (isCurrentTimeInRange("16:50", "17:10"))
-  || (isCurrentTimeInRange("12:50", "13:10")) {
+  if (isCurrentTimeInRange("12:20", "12:40"))
+    || (isCurrentTimeInRange("16:50", "17:10"))
+    || (isCurrentTimeInRange("21:30", "04:30")) {
     LockScreen(timeout) ; Lock screen after a short timeout
   }
 }
