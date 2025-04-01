@@ -39,17 +39,17 @@ Example usage, add the following three lines to your AHK script:
 SetSystemCursor(Cursor:="", cx:=0, cy:=0) {
 	local BlankCursor := 0, SystemCursor := 0, FileCursor := 0 ; init
 	local SystemCursors := ["32512IDC_ARROW", "32513IDC_IBEAM", "32514IDC_WAIT", "32515IDC_CROSS", "32516IDC_UPARROW", "32640IDC_SIZE",   "32641IDC_ICON", "32642IDC_SIZENWSE", "32643IDC_SIZENESW", "32644IDC_SIZEWE", "32645IDC_SIZENS", "32646IDC_SIZEALL", "32648IDC_NO", "32649IDC_HAND", "32650IDC_APPSTARTING", "32651IDC_HELP"]
-  local CursorHandle
+  local CursorHandle := ""
 
 	if (Cursor == "") { ; empty, so create blank cursor
 		AndMask := Buffer(32*4, 0xFF), XorMask := Buffer(32*4, 0) ; V1toV2: if 'XorMask' is a UTF-16 strng, use 'VarSetStrCapacity(&XorMask, 32*4)'
-		BlankCursor := "1" ; flag for later
+		BlankCursor := 1 ; flag for later
 	} else if SubStr(Cursor, 1, 4) = "IDC_" { ; load system cursor
     CursorHandle := ""
 		Loop SystemCursors.Length {
 			CursorName := SubStr(SystemCursors[A_Index], 6, 15) ; get the cursor name, no trailing space with substr
 			CursorID := SubStr(SystemCursors[A_Index], 1, 5) ; get the cursor id
-			SystemCursor := "1"
+			SystemCursor := 1
 			if (CursorName == Cursor) {
 				CursorHandle := DllCall("LoadCursor", "Uint", 0, "Int", CursorID)
 				Break
@@ -69,7 +69,7 @@ SetSystemCursor(Cursor:="", cx:=0, cy:=0) {
 			MsgBox("Error: Invalid file type", "SetCursor", "")
 			CursorHandle := "Error"
 		}
-		FileCursor := "1"
+		FileCursor := 1
 	}	else {
 		MsgBox("Error: Invalid file path or cursor name", "SetCursor", "")
 		CursorHandle := "Error" ; raise for later
@@ -79,7 +79,7 @@ SetSystemCursor(Cursor:="", cx:=0, cy:=0) {
 	if (CursorHandle != "Error") {
 		Loop SystemCursors.Length {
 			if (BlankCursor == 1) {
-				Cursors[A_Index] := DllCall("CreateCursor", "Uint",0, "Int",0, "Int",0, "Int",32, "Int",32, "Uint",&AndMask, "Uint",&XorMask)
+				Cursors[A_Index] := DllCall("CreateCursor", "Uint",0, "Int",0, "Int",0, "Int",32, "Int",32, "ptr",AndMask, "ptr",XorMask)
 				CursorHandle := DllCall("CopyImage", "Uint", Cursors[A_Index], "Uint", 0x2, "Int", 0, "Int", 0, "Int", 0)
 				DllCall("SetSystemCursor", "Uint", CursorHandle, "Int", SubStr(SystemCursors[A_Index], 1, 5))
 			} else if (SystemCursor == 1) {

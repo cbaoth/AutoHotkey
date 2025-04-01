@@ -154,7 +154,7 @@ readKeySequence(length:=1, timeout:=5) {
   }
   return ihKey
 }
-; }}} = END: Input ================================================================
+; }}} = END: Input ===========================================================
 
 ; {{{ = Date/Time ============================================================
 ; Check if the current time is within a specified range, where arguments are in the format "HH:mm"

@@ -398,6 +398,19 @@ p: Copy link to paragraph
 ; }}} - Apps -----------------------------------------------------------------
 ; }}} = Control Sequences ====================================================
 
+; {{{ = Mouse ================================================================
+global mouseCursorVisibilityState := 0 ; 0 = shown, 1 = hidden
+;; Win-LAlt-F10 - Toggle cursor visibility
+#<!F10:: {
+  global mouseCursorVisibilityState
+  SetSystemCursor()
+  if (mouseCursorVisibilityState) {
+    RestoreCursors()
+  }
+  mouseCursorVisibilityState := !mouseCursorVisibilityState
+}
+; }}} = END: Mouse ===========================================================
+
 ; {{{ = Current KB Layout ====================================================
 ;#NoEnv
 ;#F7::
