@@ -244,17 +244,25 @@ SC056::Control  ; -> Control (less distance)
 ;; Simulate Media Keys (alternative shortcuts)
 #<!Space::SendInput("{Media_Play_Pause}") ; Win-LeftAlt-SpaceArrow
 #<!Right::SendInput("{Media_Play_Pause}") ; Win-LeftAlt-RightArrow
-#<!Up::SendInput("{Media_Prev}")       ; Win-LeftAlt-upArrow
-#<!Down::SendInput("{Media_Next}")       ; Win-LeftAlt-DownArrow
-#<!Left::SendInput("{Media_Stop}")       ; Win-LeftAlt-LeftArrow
-#<!,::SendInput("{Media_Prev}")       ; Win-LeftAlt-,
-#<!.::SendInput("{Media_Next}")       ; Win-LeftAlt-.
+#<!Up::SendInput("{Media_Prev}")          ; Win-LeftAlt-upArrow
+#<!Down::SendInput("{Media_Next}")        ; Win-LeftAlt-DownArrow
+#<!Left::SendInput("{Media_Stop}")        ; Win-LeftAlt-LeftArrow
+#<!,::SendInput("{Media_Prev}")           ; Win-LeftAlt-,
+#<!.::SendInput("{Media_Next}")           ; Win-LeftAlt-.
 
 ;; Simulate Volume Keys (alternative shortcuts)
-#<!=::SendInput("{Volume_Up}")   ; Win-LeftAlt-Equal
-#<!-::SendInput("{Volume_Down}") ; Win-LeftAlt-Dash
-#<!0::SendInput("{Volume_Mute}") ; Win-LeftAlt-0
+#<!=::SendInput("{Volume_Up}")            ; Win-LeftAlt-Equal
+#<!-::SendInput("{Volume_Down}")          ; Win-LeftAlt-Dash
+#<!0::SendInput("{Volume_Mute}")          ; Win-LeftAlt-0
 ; }}} = Media Keys ===========================================================
+
+; {{{ = Custom Input =========================================================
+;; Special characters/glyphs (AltGr + [Key])
+<^>!.::SendInput("→")                     ; AltGr-.       -> →
+<^>!+.::SendInput("{U+21D2}")             ; AltGr-Shift-. -> ⇒
+<^>!,::SendInput("←")                     ; AltGr-,       -> ←
+<^>!+,::SendInput("{U+21D0}")             ; AltGr-Shift-, -> ⇐
+; }}} = Custom Input =========================================================
 
 ; {{{ = Control Sequences ====================================================
 ;; Win-X, [Key] - Toggle caps/scroll/num-lock, Print screen, etc.
