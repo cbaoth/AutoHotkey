@@ -10,10 +10,10 @@
 ;; while taskbar mode is kept alive by a timer
 
 ;; Default: Disabled on startup (toggle with Win-Shift-F10)
-isConfineMouseTaskbarModeActive := False
+global isConfineMouseTaskbarModeActive := False
 ;; Enable on startup for certain hosts only (e.g. smaller screen, less precise cursor)
 If RegExMatch(A_ComputerName, "i)^puppet$") {
-  isConfineMouseTaskbarModeActive := True
+  global isConfineMouseTaskbarModeActive := True
 }
 
 ; {{{ = Hotkeys ==============================================================
@@ -32,6 +32,7 @@ If RegExMatch(A_ComputerName, "i)^puppet$") {
 SetTimer(ConfineMouseTaskbarMode, 100)
 
 ConfineMouseTaskbarMode() {
+  global isConfineMouseTaskbarModeActive
   if isConfineMouseTaskbarModeActive {
     ConfineMouseCursorByMode(True)
   }

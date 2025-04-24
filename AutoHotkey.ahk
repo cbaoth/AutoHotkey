@@ -92,9 +92,9 @@ OnClipboardChange(clipChanged, -1)
 }
 
 ;; Bin *F10 hotkeys to confine mouse to active window
-If !(InStr(A_ComputerName, "motoko") = 1) { ; No workstation (large display)?
-  #Include "Incl\ConfineMouse.ahk"
-}
+;If !(InStr(A_ComputerName, "motoko") = 1) { ; No workstation (large display)?
+#Include "Incl\ConfineMouse.ahk"  ; host include list in file
+;}
 
 ;; X like paste on middle-click
 #Include "Incl\XMouseClipboard.ahk"
