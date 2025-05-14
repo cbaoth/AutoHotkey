@@ -109,7 +109,7 @@ OnClipboardChange(clipChanged, -1)
 #Include "Incl\AutoConfirm.ahk"
 
 ;; Digital detox features surrounding Cold Turkey and custom scripts
-#Include "Incl\DigitalDetox.ahk"
+;#Include "Incl\DigitalDetox.ahk"
 
 ; Window drag and resize
 #Include "Incl\WinDrag.ahk"
