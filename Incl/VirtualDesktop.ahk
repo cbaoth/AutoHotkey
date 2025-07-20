@@ -1,11 +1,12 @@
 ; VirtualDesktop.ahk: Some virtual desktop related stuff
 
-; {{{ = VirtualDesktops ======================================================
+;; {{{ = VirtualDesktops =====================================================
 ; source: https://www.autohotkey.com/boards/search.php?author_id=62433&sr=posts&sid=6f09025b599d8b3e27c87861373d7f9f
 ;MsgBox VirtualDesktops.GetCurrentVirtualDesktopName()
 ; All names:
 ;for name in VirtualDesktops.GetVirtualDesktopNames()
 ;    MsgBox name
+; TODO consider looking at https://github.com/pmb6tz/windows-desktop-switcher
 
 class VirtualDesktops {
 
@@ -228,4 +229,4 @@ class VirtualDesktops {
   }
 }
 
-; }}} = VirtualDesktops ======================================================
+;; }}} = END: VirtualDesktops ================================================

@@ -1,6 +1,6 @@
 ﻿; SendToWindow.ahk: Send keys to a specific window (e.g. copy & paste)
 
-; {{{ = HotKeys ==============================================================
+;; {{{ = HotKeys =============================================================
 ;; Win-Alt-e: copy selection (text) to code editor
 #!e::_sendToWindow("ahk_class i)^Notepad\+\+$")
 #!+e::_sendToWindow("ahk_class i)^Notepad\+\+$", "^c", "{End}{Return}{Home}^v", 1)
@@ -15,9 +15,9 @@
 ;#!e::_sendToWindow("i)10.0.23.12.*ssh.*Kitty",, "+{Insert}{Return}")
 ;; Copy to WordPad into a new line and add newline after pasting, copy non-text too (e.g. images)
 ;#!e::_sendToWindow("ahk_class WordPadClass",, "{End}{Return}^v{Return}", 2)
-; }}} = HotKeys ==============================================================
+;; }}} = END: HotKeys ========================================================
 
-; {{{ = Copy and Paste to App ================================================
+;; {{{ = Copy and Paste to App ===============================================
 ;; copies current selection (text-only per default), switch to the given app,
 ;; paste the clipboard content, and switch back to the previous window
 ;; target_window = target window
@@ -65,4 +65,4 @@ _sendToWindow(target_window, source_keys:="^c", target_keys:="^v", clipboard_mod
     WinActivate("ahk_id " win_id)
   }
 }
-; }}} = Copy and Paste to App ================================================
+;; }}} = END: Copy and Paste to App ==========================================

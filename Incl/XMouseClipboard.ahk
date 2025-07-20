@@ -4,8 +4,8 @@
 
 SetTitleMatchMode("RegEx")
 
-; {{{ = HotKeys ==============================================================
-; {{{ - Copy On Selection ----------------------------------------------------
+;; {{{ = HotKeys =============================================================
+;; {{{ - Copy On Selection ---------------------------------------------------
 ;; only use this in text-only windows (e.g. terminals), would trigger ctrl-c for
 ;; any mouse drag (e.g. drag files, icons, tabs, etc.) and copying of selection
 ;; not always intended (e.g. select and override something in an editor)
@@ -25,9 +25,9 @@ SetTitleMatchMode("RegEx")
 ;    _xCopyOnMouseSelection(, 20) ; using given mouse_drag_threshold (pixels)
 ;return
 ;return
-; }}} - Copy On Selection ----------------------------------------------------
+;; }}} - END: Copy On Selection ----------------------------------------------
 
-; {{{ - Paste On MiddleClick -------------------------------------------------
+;; {{{ - Paste On MiddleClick ------------------------------------------------
 ;; bind middleclick to paste clipboard, bind shift-middleclick to paste
 ;; quoted "" clipboard
 ;; (~) middleclick is still performed
@@ -61,10 +61,10 @@ SetTitleMatchMode("RegEx")
   ^v::_xPasteOnMiddleClick("{MButton}")
   ^+v::_xPasteOnMiddleClick("{MButton}", "{ASC 34}")
 #HotIf
-; }}} - Paste On MiddleClick -------------------------------------------------
-; }}} = HotKeys ==============================================================
+;; }}} - END: Paste On MiddleClick -------------------------------------------
+;; }}} = END: HotKeys ========================================================
 
-; {{{ = Copy Mouse Selection =================================================
+;; {{{ = Copy Mouse Selection ================================================
 ;; copy newly (mouse) selected text to the clipboard
 ;; mouse_drag_threshold = min drag distance, if actual distance lower -> do nothing
 ;; lower values will work with shorter selections but may trigger in unwanted cases
@@ -101,9 +101,9 @@ _xCopySelection(copy_key:="^c") {
   SendInput(copy_key) ; copy selection to clipboard
   ; }
 }
-; }}} = Copy Mouse Selection =================================================
+;; }}} = END: Copy Mouse Selection ===========================================
 
-; {{{ = Paste on Middle-Click ================================================
+;; {{{ = Paste on MiddleClick ================================================
 ;; x-like paste on mouse middle-click with special handling for some apps
 ;; and added quotes "[Clipboard]" when Shift is pressed
 ;; paste_key = keybinding for pasting clipboard content (default: Ctrl-v)
@@ -127,4 +127,4 @@ _xPasteOnMiddleClick(paste_key:="^v", quote_key:="") {
     Send(quote_key)
   }
 }
-; }}} = Paste on Middle-Click ================================================
+;; }}} = END: Paste on MiddleClick ===========================================

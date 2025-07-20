@@ -2,7 +2,7 @@
 
 #HotIf WinActive("Diablo III", )
 
-; {{{ = HotKeys ==============================================================
+;; {{{ = HotKeys =============================================================
 ; switch to broken crown, expected in inventory 10x1
 p::_d3ClickInventory([[2509, 778]], false, "Diablo3_Broken.png", "Diablo3_Broken_No.png", "Diablo3_Broken_Scan.png")
 ;; switch to nemesis bracers click pylon and switch back, expected in inventory 10x3
@@ -13,9 +13,9 @@ f::_d3ClickInventory([[2509, 911]], false, "Diablo3_Nemesis.png", "Diablo3_Nemes
 ; use this in case your head item is part of a set and by switching you would
 ; lose your 6-set bounus, by temporarily adding an additional set item
 ^p::_d3ClickInventory([[2509, 778], [2442, 778]], false, "Diablo3_Broken.png", "Diablo3_Broken_No.png")
-; }}} = HotKeys ==============================================================
+;; }}} = END: HotKeys ========================================================
 
-; {{{ = Diablo 3 Functions ===================================================
+;; {{{ = Diablo 3 Functions ==================================================
 _d3ClickInventory(clip_pos, click_pylon, find_img_on, find_img_off, find_img_scan:="", sleep_time:=50, sleep_time_pylon:=1000) {
     local inv_item_found
     local inv_is_closed
@@ -96,6 +96,6 @@ _d3ClickInventory(clip_pos, click_pylon, find_img_on, find_img_off, find_img_sca
 ; REMOVED:         removeSplashImageDelay(1)
     }
 }
-; }}} = Diablo 3 Functions ===================================================
+;; }}} = END: Diablo 3 Functions =============================================
 
 #HotIf

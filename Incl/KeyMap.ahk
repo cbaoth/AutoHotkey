@@ -6,16 +6,16 @@
 ;; to disable the Office (hot) Key:
 ;; REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32
 
-; {{{ = Mouse ================================================================
+;; {{{ = Mouse ===============================================================
 ;; Remap thumb mouse buttons to page up/down (instead of prev./next)
 
 XButton1::PgDn ; Mouse 4 (usually thumb1) -> Page Down
 XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 
-; }}} = Mouse ================================================================
+;; }}} = END: Mouse ==========================================================
 
-; {{{ = Umlaute ==============================================================
-; {{{ - International Layout Position ----------------------------------------
+;; {{{ = Umlaute =============================================================
+;; {{{ - International Layout Position ---------------------------------------
 ;; Access Umlauts like on Int. Colemak layout (via AltGr). Should be available
 ;; per default, if not enable this:
 ;; available for some reason
@@ -26,8 +26,8 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;<^>!u::SendInput("ü")  ; RightAlt-u
 ;<^>!+u::SendInput("Ü") ; RightAlt-U
 ;<^>!s::SendInput("ß")  ; RightAlt-s
-; }}} - International Layout Position ----------------------------------------
-; {{{ - German Keyboard Position ---------------------------------------------
+;; }}} - END: International Layout Position ----------------------------------
+;; {{{ - German Keyboard Position --------------------------------------------
 ;; Access Umlauts (like) on a German keyboard when using US layout (+ AltGr)
 ;<^>!'::SendInput("ä")  ; RightAlt-'
 ;<^>!+'::SendInput("Ä") ; RightAlt-"
@@ -36,14 +36,14 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;<^>![::SendInput("ü")  ; RightAlt-[
 ;<^>!+[::SendInput("Ü") ; RightAlt-{
 ;<^>!-::SendInput("ß")  ; RightAlt-Dash
-; }}} - German Keyboard Position ---------------------------------------------
-; }}} = Umlaute ==============================================================
+;; }}} - END: German Keyboard Position ---------------------------------------
+;; }}} = END: Umlaute ========================================================
 
-; {{{ = Hacker Remapping & Special Keys ======================================
+;; {{{ = Hacker Remapping & Special Keys =====================================
 ;; CapsLock -> Control
 ;CapsLock::Control
 
-;; CapsLock -> BackSpace
+;; CapsLock -> BackSpac
 ;CapsLock::BackSpace ; already part of windows Colemak layout
 
 ;; Shift CapsLock -> Toggle CapsLock
@@ -67,7 +67,7 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;; Win-Backspace (incl. CapsLock on Colemak)
 #BackSpace::Delete
 
-; {{{ - ISO/ANSI/Mini Tweaks -------------------------------------------------
+;; {{{ - ISO/ANSI/Mini Tweaks ------------------------------------------------
 ;; Some improvements for the Logitech MX Mechanical Mini (US Intl. ISO, non-ANSI)
 ;#If A_ComputerName = MOTOKO ; only on hosts using this keyboard
 ;; Win+Del -> Insert
@@ -79,7 +79,7 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;<#\::\
 ;<#+\::|
 ;#If
-; }}} - ISO/ANSI/Mini --------------------------------------------------------
+;; }}} - END: ISO/ANSI/Mini --------------------------------------------------
 
 ;; Unused key #105 (redundant <>| or similar on ISO kb) -> Control
 ;; Key not used at all on ISO keyboards when using Colemak/ANSI layout
@@ -132,9 +132,9 @@ SC056::Control  ; -> Control (less distance)
 ;#^m::Numpad2
 ;#^,::Numpad3
 ;#^/::NumpadDot
-; }}} = Hacker Remapping & Special Keys ======================================e
+;; }}} = END: Hacker Remapping & Special Keys ================================e
 
-; {{{ = ScrollLock Alternative Keys ==========================================
+;; {{{ = ScrollLock Alternative Keys =========================================
 ;; ScrollLock toggles the following alternative keys
 #HotIf GetKeyState("ScrollLock", "T")
 
@@ -210,9 +210,9 @@ SC056::Control  ; -> Control (less distance)
   ;; do nothing
 
 #HotIf
-; }}} = ScrollLock Alternative Keys ==========================================
+;; }}} = END: ScrollLock Alternative Keys ====================================
 
-; {{{ = CapsLock + [Key] =====================================================
+;; {{{ = CapsLock + [Key] ====================================================
 ;; http://www.autohotkey.com/board/topic/113783-hand-friendly-text-navigation-help/
 ;CapsLock & w::
 ;  if getKeyState("alt") = 0
@@ -238,9 +238,9 @@ SC056::Control  ; -> Control (less distance)
 ;  else
 ;    SendInput, {End}
 ;return
-; }}} = CapsLock + [KEY] =====================================================
+;; }}} = END: CapsLock + [KEY] ===============================================
 
-; {{{ = Media Keys ===========================================================
+;; {{{ = Media Keys ==========================================================
 ;; Simulate Media Keys (alternative shortcuts)
 #<!Space::SendInput("{Media_Play_Pause}") ; Win-LeftAlt-SpaceArrow
 #<!Right::SendInput("{Media_Play_Pause}") ; Win-LeftAlt-RightArrow
@@ -254,17 +254,17 @@ SC056::Control  ; -> Control (less distance)
 #<!=::SendInput("{Volume_Up}")            ; Win-LeftAlt-Equal
 #<!-::SendInput("{Volume_Down}")          ; Win-LeftAlt-Dash
 #<!0::SendInput("{Volume_Mute}")          ; Win-LeftAlt-0
-; }}} = Media Keys ===========================================================
+;; }}} = END: Media Keys =====================================================
 
-; {{{ = Custom Input =========================================================
+;; {{{ = Custom Input ========================================================
 ;; Special characters/glyphs (AltGr + [Key])
 <^>!.::SendInput("→")                     ; AltGr-.       -> →
 <^>!+.::SendInput("{U+21D2}")             ; AltGr-Shift-. -> ⇒
 <^>!,::SendInput("←")                     ; AltGr-,       -> ←
 <^>!+,::SendInput("{U+21D0}")             ; AltGr-Shift-, -> ⇐
-; }}} = Custom Input =========================================================
+;; }}} = END: Custom Input ===================================================
 
-; {{{ = Control Sequences ====================================================
+;; {{{ = Control Sequences ===================================================
 ;; Win-X, [Key] - Toggle caps/scroll/num-lock, Print screen, etc.
 #/::
 {
@@ -370,7 +370,7 @@ service-restart [t: Cold Turkey]
   }
 }
 
-; {{{ - Apps -----------------------------------------------------------------
+;; {{{ - Apps ----------------------------------------------------------------
 ;; Win-LAlt-T, [Key] - General start sequence for all (covered) apps
 
 ;; Microsoft OneNote control sequence
@@ -403,10 +403,10 @@ p: Copy link to paragraph
   }
 }
 #HotIf !WinActive(, )
-; }}} - Apps -----------------------------------------------------------------
-; }}} = Control Sequences ====================================================
+;; }}} - END: Apps -----------------------------------------------------------
+;; }}} = END: Control Sequences ==============================================
 
-; {{{ = Mouse ================================================================
+;; {{{ = Mouse ===============================================================
 global mouseCursorVisibilityState := 0 ; 0 = shown, 1 = hidden
 ;; Win-LAlt-F10 - Toggle cursor visibility
 #<!F10:: {
@@ -417,9 +417,9 @@ global mouseCursorVisibilityState := 0 ; 0 = shown, 1 = hidden
   }
   mouseCursorVisibilityState := !mouseCursorVisibilityState
 }
-; }}} = END: Mouse ===========================================================
+;; }}} = END: Mouse ==========================================================
 
-; {{{ = Current KB Layout ====================================================
+;; {{{ = Current KB Layout ===================================================
 ;#NoEnv
 ;#F7::
 ;  VarSetCapacity(kbd, 9)
@@ -432,4 +432,4 @@ global mouseCursorVisibilityState := 0 ; 0 = shown, 1 = hidden
 ; A0010409 ; Colemak
 ; 00000407 ; US International
 ; 00020409 ; German
-; }}} = Current KB Layout ====================================================
+;; }}} = END: Current KB Layout ==============================================

@@ -18,7 +18,7 @@ d2rSkill(skillKey) {
   }
 }
 
-; {{{ - Hotkeys w/ Toggle ----------------------------------------------------
+;; {{{ - Hotkeys w/ Toggle ---------------------------------------------------
 ;; alt-F1: toggle skill hotkeys (disabled initially)
 global d2rHKToggle := false
 <!F1::
@@ -81,6 +81,6 @@ global d2rHKToggle := false
 
 ;#UseHook OFF
 
-; }}} - Hotkeys w/ Toggle ----------------------------------------------------
+;; }}} - END: Hotkeys w/ Toggle ----------------------------------------------
 
 #HotIf

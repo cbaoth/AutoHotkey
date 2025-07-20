@@ -1,7 +1,7 @@
 ; DigitalDetox.ahk: Some digital detox tools and hacks for Cold Turkey
 
-; {{{ = Digital Detox Tools ==================================================
-; {{{ - Scheduled Lock Screen ------------------------------------------------
+;; {{{ = Digital Detox Tools =================================================
+;; {{{ - Scheduled Lock Screen -----------------------------------------------
 ;; TODO consider a grace period (notify user X minutes before lock is triggered)
 ;; TODO consider allowance (e.g. allow 15min of activite anywhere inside the "frozen zone"
 ;; TODO consider anti-cheat features that reduce chances of / making it harde to tamper with the system
@@ -39,13 +39,13 @@ ScheduleLockScreen(timeout:=3) {
 }
 SetTimer(ScheduleLockScreen, 1000) ; Check every second
 
-; }}} - END: Scheduled Lock Screen -------------------------------------------
+;; }}} - END: Scheduled Lock Screen ------------------------------------------
 
 ;; TODO consider mechanism that kills certain processes if they run too long (while logged-in, or always) if a certain amount of daily allowance is exceeded
-; }}} = END: Digital Detox Tools =============================================
+;; }}} = END: Digital Detox Tools ============================================
 
-; {{{ = Cold Turkey ==========================================================
-; {{{ - Auto Restart Service -------------------------------------------------
+;; {{{ = Cold Turkey =========================================================
+;; {{{ - Auto Restart Service ------------------------------------------------
 ; TODO just a rough prototype that is not yet working
 ; ; Constants for notifications
 ; SHOW_WARNING := true
@@ -126,5 +126,5 @@ SetTimer(ScheduleLockScreen, 1000) ; Check every second
 
 ; ; Set a timer to run the MonitorCpuUsage function every minute
 ; SetTimer(MonitorCpuUsage, 60000)
-; }}} - END: Auto Restart Service --------------------------------------------
-; }}} = END: Cold Turkey =====================================================
+;; }}} - END: Auto Restart Service -------------------------------------------
+;; }}} = END: Cold Turkey ====================================================

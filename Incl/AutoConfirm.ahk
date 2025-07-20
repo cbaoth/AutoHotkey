@@ -1,6 +1,6 @@
 ; AutoConfirm.ahk: Auto confirm/close some known annoying dialogs
 
-; {{{ = Auto Confirm/Close ==================================================
+;; {{{ = Auto Confirm/Close =================================================
 
 _AutoConfirmWindowActions := Map(
   ; Confirm all network share error dialogs
@@ -25,4 +25,4 @@ AutoConfirmClose() {
 ; Set a timer to run the AutoConfirmClose function every 2.5 seconds
 SetTimer(AutoConfirmClose, 2500)
 
-; }}} = END: Auto Confirm/Close =============================================
+;; }}} = END: Auto Confirm/Close ============================================

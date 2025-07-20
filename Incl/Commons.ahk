@@ -1,6 +1,6 @@
 ﻿; Commons.ahk: Some common functions, constants, etc. to be used in other scripts
 
-; {{{ = Run == ===============================================================
+;; {{{ = Run == ==============================================================
 ;; Focus existing instance or run if needed
 focusOrRun(target, workDir:="", winSize:=""){
   SplitPath(target, &execFile)
@@ -10,9 +10,9 @@ focusOrRun(target, workDir:="", winSize:=""){
     Run(target, workDir, winSize)
   }
 }
-; }}} = END: Run =============================================================
+;; }}} = END: Run ============================================================
 
-; {{{ = Arrays ===============================================================
+;; {{{ = Arrays ==============================================================
 ;; Return the index of a given value in the given array, -1 if not found
 arrayIndexOf(value, array*) {
   for idx, elem in array
@@ -54,9 +54,9 @@ arrayRndEntry(&array, remove:=false) {
   }
   return array[idx] ; Return without modifying array
 }
-; }}} = END: Arrays ==========================================================
+;; }}} = END: Arrays =========================================================
 
-; {{{ = Maps =================================================================
+;; {{{ = Maps ================================================================
 ;; Source: https://www.autohotkey.com/boards/viewtopic.php?p=500507#p500507
 MakeMapMultiDimensional() {
     static _ := (() => (
@@ -71,9 +71,9 @@ MakeMapMultiDimensional() {
     })))()
 }
 MakeMapMultiDimensional()
-; }}} = END: Maps ==============================================================
+;; }}} = END: Maps =============================================================
 
-; {{{ = Random ===============================================================
+;; {{{ = Random ==============================================================
 ;; Sleep a random amount of seconds (between min/max)
 rndSleep(min, max) {
   local rnd
@@ -119,9 +119,9 @@ rndSleepSendSeq(keyArray, min, max) {
   }
 }
 ;SC029::rndSleepSendSeq(["a", "b", "c"], 100, 200)
-; }}} = END: Random ==========================================================
+;; }}} = END: Random =========================================================
 
-; {{{ = ToolTips =============================================================
+;; {{{ = ToolTips ============================================================
 ;; Remove ToolTip after a given timeout in seconds (default 5), example:
 ;ToolTip("Some text ...") ; Show a tooltip
 ;_removeToolTipDelay() ; Hide tooltip after 5 sec
@@ -141,9 +141,9 @@ timeoutToolTip(msg_prefix, sec, msg_suffix:="...") {
   Tooltip()
 }
 ;timeoutToolTip(A_Now " Time to take a break, locking screen in ", 3)
-; }}} = END: ToolTips ========================================================
+;; }}} = END: ToolTips =======================================================
 
-; {{{ = Input ================================================================
+;; {{{ = Input ===============================================================
 readKeySequence(length:=1, timeout:=5) {
   try
     ihKey := InputHook("C L" length " T" timeout), ihKey.Start(), ihKey.Wait(), Key := ihKey.Input ; Read case-sens. length 1 w/ 2sec timeout
@@ -154,9 +154,9 @@ readKeySequence(length:=1, timeout:=5) {
   }
   return ihKey
 }
-; }}} = END: Input ===========================================================
+;; }}} = END: Input ==========================================================
 
-; {{{ = Date/Time ============================================================
+;; {{{ = Date/Time ===========================================================
 ; Check if the current time is within a specified range, where arguments are in the format "HH:mm"
 isCurrentTimeInRange(startTime, endTime) {
   startHour := Integer(StrSplit(startTime, ":")[1]), startMin := Integer(StrSplit(startTime, ":")[2])
@@ -173,9 +173,9 @@ isCurrentTimeInRange(startTime, endTime) {
 
 ;; TODO consider adding dateParse function
 ;; https://www.autohotkey.com/board/topic/18760-date-parser-convert-any-date-format-to-yyyymmddhh24miss/?p=605062
-; }}} = END: Date/Time =======================================================
+;; }}} = END: Date/Time ======================================================
 
-; {{{ = SplashImage ==========================================================
+;; {{{ = SplashImage =========================================================
 ;; Remove SplashImage after a given timeout in seconds (default 5), example:
 ;SplashImage, Image.png
 ;_removeToolTipDelay() ; Hide tooltip after 5 sec
@@ -185,9 +185,9 @@ isCurrentTimeInRange(startTime, endTime) {
 ; REMOVED: removeSplashImageDelay(sec:=5) {
 ;  SetTimer(removeSplashImage,sec * -1000) ; Remove SplashImage after delay
 ;}
-; }}} = END: SplashImage =====================================================
+;; }}} = END: SplashImage ====================================================
 
-; {{{ = Power Profiles =======================================================
+;; {{{ = Power Profiles ======================================================
 ;; Known power pofiles per host from highest to lowest power consumption / performance
 ;; Use `powercfg /l` to list available profiles
 global POWER_SCHEMES := Map()
@@ -248,9 +248,9 @@ activatePowerSchemeByLevel(level, showErrorMessage := true, throwOnError := fals
   }
 }
 ;ActivatePowerSchemeByLevel("1")
-; }}} = END: Power Profiles ==================================================
+;; }}} = END: Power Profiles =================================================
 
-; {{{ = Session Monitor ======================================================
+;; {{{ = Session Monitor =====================================================
 ; Source: https://www.autohotkey.com/boards/viewtopic.php?p=542126#p542126
 Global isSessionUnlocked := true
 Global sessionLockListeners := []
@@ -344,4 +344,4 @@ registerSessionUnlockListener(listener) {
 ; OnSessionUnlock() {
 ;     MsgBox("Session Unlocked")
 ; }
-; }}} = END: Session Monitor =================================================
+;; }}} = END: Session Monitor ================================================

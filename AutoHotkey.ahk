@@ -1,12 +1,12 @@
 ﻿; AutoHotkey.ahk: Core AutoHotkey script
 
-; {{{ = Help =================================================================
+;; {{{ = Help ================================================================
 ;; Doc: http://ahkscript.org/docs/KeyList.htm
 ;; Key mods: ! alt, + shift, ^ ctrl, </>[mod] left/right[mod], # win
 ;;           <^>! altgr, * no/any mod, ~ don't block, $ don't trigger self
-; }}} = Help -----------------------------------------------------------------
+;; }}} = Help ----------------------------------------------------------------
 
-; {{{ = Environment ----------------------------------------------------------
+;; {{{  Environment ----------------------------------------------------------
 ;; Global variables (must come first)
 global HOME
 HOME := EnvGet("HOMEPATH")
@@ -19,8 +19,8 @@ global JAVA_HOME
 JAVA_HOME := EnvGet("JAVA_HOME")
 global PUTTY := "putty.exe"
 
-; {{{ - General Settings -----------------------------------------------------
-; REMOVED: #NoEnv
+;; {{{ - General Settings ----------------------------------------------------
+;; REMOVED: #NoEnv
 #SingleInstance Force ; Only run one instance (always)
 Persistent
 #MaxThreads 20 ; Allow the use of additional threads
@@ -30,10 +30,11 @@ Persistent
 ;#InstallMouseHook ; https://autohotkey.com/docs/commands/_InstallMouseHook.htm
 ;#KeyHistory 100 ; 40 shown per default (key history window), no more than 500
 
+SetWorkingDir(A_ScriptDir)
 DetectHiddenWindows(true) ; Include hidden windows
 SetTitleMatchMode("RegEx") ; https://autohotkey.com/docs/commands/SetTitleMatchMode.htm#RegEx
 
-; Register on-clipboard-change event (defined below), must be before hotkeys
+;; Register on-clipboard-change event (defined below), must be before hotkeys
 OnClipboardChange(clipChanged, -1)
 
 ;; Win-F12: reload this script
@@ -50,10 +51,10 @@ OnClipboardChange(clipChanged, -1)
   ToolTip()
   Pause(-1)
 }
-; }}} - General Settings -----------------------------------------------------
-; }}} = Core =================================================================
+;; }}} - END: General Settings -----------------------------------------------
+;; }}} = END: Core ===========================================================
 
-; {{{ = Include Additional Scripts ===========================================
+;; {{{ = Include Additional Scripts ==========================================
 ;; Look in main script dir for all following includes
 ;#Include "%A_ScriptDir%" "Incl\"
 
@@ -69,27 +70,56 @@ OnClipboardChange(clipChanged, -1)
 ;; Bind *#F8 hotkeys to window detail tracking tooltip
 #Include "Incl\WindowTracking.ahk"
 
+;; FIXME or remove
 ;; Virtual Desktop stuff (advanced)
-; #Include "Incl\VirtualDesktop.ahk"
-;; Temporarily disable annoying win-1+ hotkeys until vd selection is impl.
-; #1::return
-; #2::return
-; #3::return
-; #4::return
-; #5::return
-; #6::return
+;#Include "Incl\VirtualDesktop.ahk"
+;; TODO Temporarily disable annoying win-1+ hotkeys until vd selection is impl.
+;#1::return
+;#2::return
+;#3::return
+;#4::return
+;#5::return
+;#6::return
 
-; Win-Ctrl-q/w: Desktop previous/next
+;; TODO consider all non-core mappings from the main file to separate file(s)
+;; Simple solution for virtual desktop navigation and window management
+;; Win-Ctrl-q/w: Desktop previous/next
 #^q::{
   Send("#^{Left}")
+  ;; FIXME or remove
   ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
   ;removeToolTipDelay(0.35)
 }
 #^w::{
   Send("#^{Right}")
+  ;; FIXME or remove
   ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
   ;removeToolTipDelay(0.35)
 }
+
+;; Win-Ctrl-Shift-q/w: Desktop previous/next moving currently active window to target desktop
+#^+q:: {
+  WinSetSticky(1) ; Set sticky state for current window
+  ;; TODO check if sleep is acutally needed, added as a precaution
+  Sleep(50) ; Wait a bit to ensure the sticky state is set
+  Send("#^{Left}")
+  Sleep(50) ; Wait a bit to ensure we are on the new desktop
+  WinSetSticky(0) ; Remove sticky state from current window
+}
+#^+w::{
+  WinSetSticky(1) ; Set sticky state for current window
+  ;; TODO check if sleep is acutally needed, added as a precaution
+  Sleep(50) ; Wait a bit to ensure the sticky state is set
+  Send("#^{Right}")
+  Sleep(50) ; Wait a bit to ensure we are on the new desktop
+  WinSetSticky(0) ; Remove sticky state from current window
+}
+
+;; FIXRME or remove
+; ;; Destop Switcher
+; ;; Original version by pmb6tz: https://github.com/pmb6tz/windows-desktop-switcher
+; #Include "Incl\DesktopSwitcher.ahk"  ; Desktop Switcher
+; ;; See Config/DesktopSwitcherConfig.ahk for user configuration
 
 ;; Bin *F10 hotkeys to confine mouse to active window
 ;If !(InStr(A_ComputerName, "motoko") = 1) { ; No workstation (large display)?
@@ -99,6 +129,7 @@ OnClipboardChange(clipChanged, -1)
 ;; X like paste on middle-click
 #Include "Incl\XMouseClipboard.ahk"
 
+;; TODO consider removing
 ;; Some send-to-window hotkeys (e.g. copy to editor)
 ;#Include SendToWindow.ahk
 
@@ -108,6 +139,7 @@ OnClipboardChange(clipChanged, -1)
 ;; Auto confirm/close dialogs etc.
 #Include "Incl\AutoConfirm.ahk"
 
+;; TODO consider removing
 ;; Digital detox features surrounding Cold Turkey and custom scripts
 ;#Include "Incl\DigitalDetox.ahk"
 
@@ -118,31 +150,28 @@ OnClipboardChange(clipChanged, -1)
 #RButton::WindowMouseDragResize()
 #RButton Up::RestoreCursors() ; Ensure reset, e.g. glitch with elevated proc.
 
-; {{{ - If exists ------------------------------------------------------------
-; Tweaks for Invoke-AI (Web)
-;#Include "*i ..\AIMetaTools\AITools.ahk"
-; }}} - If exists ------------------------------------------------------------
-
-; {{{ - Games ----------------------------------------------------------------
-; Include if exists (maybe deleted on non-gaming hosts)
+;; {{{ - Games ---------------------------------------------------------------
+;; TODO check which of those are actually (potentially) usable, remove unused and incomplete
+;; Include if exists (maybe deleted on non-gaming hosts)
 #Include "*i Incl\Games\PathOfExile.ahk"
 ;#Include "*i Incl\Games\Skyrim.ahk"
 ;#Include "*i Incl\Games\Diablo3.ahk"
 ;#Include "*i Incl\Games\Diablo2Resurrected.ahk"
 ;#Include "*i Incl\Games\GrimDawn.ahk"
 ;#Include "*i Incl\Games\Fallout4VR.ahk"
-; }}} - Games ----------------------------------------------------------------
-; }}} = Include Additional Scripts ===========================================
+;#Include "*i Incl\Games\OblivionRM.ahk" ; TODO WIP
+;; }}} - END: Games ----------------------------------------------------------
+;; }}} = END: Include Additional Scripts =====================================
 
-; {{{ = Hot Strings ==========================================================
+;; {{{ = Hot Strings =========================================================
 ;#Hotstring EndChars -()[]{}:;'"/\,.?!`n `t
 ; ... none yet ...
 ;::btw::by the way
-; }}} = Hot Strings ==========================================================
+;; }}} = END: Hot Strings ====================================================
 
 ;; TODO move launchers and control sequences to separate file (see KeyMap as well)
-; {{{ = App Launcher =========================================================
-; {{{ - Windows commands + SHIFT (if deactivated) ----------------------------
+;; {{{ = App Launcher ========================================================
+;; {{{ - Windows commands + SHIFT (if deactivated) ---------------------------
 ;; Re-enable some basic windows key-bindings, but with additional Shift mod
 ;; Can be used if windows default keybindings are disabled (done to avoid
 ;; unnecessary mappings like Win-1/2/3/...)
@@ -160,9 +189,9 @@ OnClipboardChange(clipChanged, -1)
 ;; Win+return -> Terminal
 ;; Full app list: "Get-AppxPackage | findstr -i terminal" / "shell:AppsFolder"
 #Enter::Run("shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App")
-; }}} - Windows commands + SHIFT (if deactivated) ----------------------------
+;; }}} - END: Windows commands + SHIFT (if deactivated) ----------------------
 
-; {{{ - Putty ----------------------------------------------------------------
+;; {{{ - Putty ---------------------------------------------------------------
 ;; Define ssh hotkeys based on current host (map Win-F* to putty profiles)
 #HotIf RegExMatch(A_ComputerName, "i)^de\d+") ; Work host?
 #F2::Run(PUTTY " -load `"saito (remote)`"")
@@ -174,9 +203,9 @@ OnClipboardChange(clipChanged, -1)
 
 #F1::Run(PUTTY " -load `"11001001.org`"")  ; Win-F1 -> SSH to 11001001.org
 #!F1::Run(PUTTY) ; Win-Alt-F1 -> open Putty
-; }}} - Putty ----------------------------------------------------------------
+;; }}} - END: Putty ----------------------------------------------------------
 
-; {{{ - Win-R, [Key] control sequences ---------------------------------------
+;; {{{ - Win-R, [Key] control sequences --------------------------------------
 ;; Win-R, [Key] - Emacs/Screen/Tmux-like control sequence
 #r::{
   ToolTip("r: run, e: code, (+)p: ps, (+)c: cmd")
@@ -205,9 +234,9 @@ OnClipboardChange(clipChanged, -1)
     ;case "b": focusOrRun("firefox.exe")
   }
 }
-; }}} - Win-R, [Key] control sequences ---------------------------------------
+;; }}} - END: Win-R, [Key] control sequences ---------------------------------
 
-; {{{ - Others ---------------------------------------------------------------
+;; {{{ - Others --------------------------------------------------------------
 #HotIf A_ComputerName = "PUPPET" ; Puppet (Lenovo notebook) only
 
 ;; Win-Shift-q: Lenovo quick settings
@@ -218,11 +247,11 @@ OnClipboardChange(clipChanged, -1)
 }
 
 #HotIf
-; }}} - Others ---------------------------------------------------------------
-; }}} = App Launcher =========================================================
+;; }}} - END: Others ---------------------------------------------------------
+;; }}} = END: App Launcher ===================================================
 
-; {{{ = Additional HotKeys ===================================================
-; {{{ - Quick Web Search -----------------------------------------------------
+;; {{{ = Additional HotKeys ==================================================
+;; {{{ - Quick Web Search ----------------------------------------------------
 ;; Win-Shift-w: copy selection and web search
 ;#+w::
 ;    Send, ^c
@@ -232,18 +261,18 @@ OnClipboardChange(clipChanged, -1)
 ;        Run, % "https://startpage.com/do/search?query=" . A_Clipboard ; May need encoding
 ;    }
 ;return
-; }}} - Quick Web Search -----------------------------------------------------
+;; }}} - END: Quick Web Search -----------------------------------------------
 
 ; TODO move window/desktop related hotkeys to separate file
-; {{{ - Window Move ----------------------------------------------------------
+;; {{{ - Window Move ---------------------------------------------------------
 ; http://www.autohotkey.com/docs/commands/WinMove.htm
-; Win-F9: move current window (top left corner) to the mouse cursor position
+;; Win-F9: move current window (top left corner) to the mouse cursor position
 #F9::{
   MouseGetPos(&mx, &my)
   WinMove(mx, my, , , "A")
 }
 
-; Win-Alt-F9: move current window (center) to the mouse cursor position
+;; Win-Alt-F9: move current window (center) to the mouse cursor position
 #<!F9::{
   MouseGetPos(&mx, &my)
   WinGetPos(, , &ww, &wh, "A")
@@ -252,28 +281,27 @@ OnClipboardChange(clipChanged, -1)
   WinMove(x, y, , , "A")
 }
 
-; Win-Alt-Shift-F9: move current window for games in windowed mode (center, hide bar)
+;; Win-Alt-Shift-F9: move current window for games in windowed mode (center, hide bar)
 #<!+F9::WinMove(-1, -22, , , "A")
-; }}} - Window Move ----------------------------------------------------------
+;; }}} - END: Window Move ----------------------------------------------------
 
-; {{{ - Window States --------------------------------------------------------
-; Win-Alt-t: Toggle window's always-on-top state
+;; {{{ - Window States -------------------------------------------------------
+;; Win-Alt-t: Toggle window's always-on-top state
 ;#!t::WinSetAlwaysOnTop(-1, "A")
-; DISABLED, part of Microsoft PowerToys
+;; DISABLED, part of Microsoft PowerToys
 
-; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
-; https://www.autohotkey.com/boards/viewtopic.php?t=74849
-#!s::{
-  ExStyle := WinGetExStyle("A")  ; "A" means the active window
-  If !(ExStyle & 0x00000080)  ; Visible on all desktops
-    WinSetExStyle(128, "A")
-  else
-    WinSetExStyle(-128, "A")
-}
-; }}} - Window States --------------------------------------------------------
+;; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
+#!s::WinSetSticky(-1)
+;; }}} - END: Window States --------------------------------------------------
 
-; {{{ - Stay Awake -----------------------------------------------------------
-; Win-F5: Toggle timer to keep PC awake (dummy mouse event every 4 min)
+;; {{{ - Window Navigation ---------------------------------------------------
+;; TODO currently only toggles between two windows, should cycle through all
+;; Win-Alt-Tab: Navigate between windows of the same application
+;#<!Tab::SwitchWindowsSameApp()
+;; }}} - END: Window Navigation  ---------------------------------------------
+
+;; {{{ - Stay Awake ----------------------------------------------------------
+;; Win-F5: Toggle timer to keep PC awake (dummy mouse event every 4 min)
 #F5::stayAwakeToggle()
 
 stayAwakeToggle(){
@@ -312,11 +340,10 @@ class StayAwakeTimer{
     MouseMove(0, 0, 0, "R") ; Mouse pointer stays in place but sends a mouse event
   }
 }
-; }}} - Stay Awake -----------------------------------------------------------
+;; }}} - END: Stay Awake -----------------------------------------------------
 
-; {{{ - Misc -----------------------------------------------------------------
-; OnClipboardChange("clipChanged", -1) events, see above
-
+;; {{{ - Misc ----------------------------------------------------------------
+;; OnClipboardChange("clipChanged", -1) events, see above
 clipChanged(Type) {
   global clipChangedToggle := false
   global clipChangedUrlsOnly := false
@@ -332,9 +359,9 @@ clipChanged(Type) {
   }
 }
 
-; Win-F6: Toggle clipboard monitoring for any text content
-; If enabled monitor the clipboard for any new text and when found appends the
-; whole clipboard to $HOME/ahk_from_clipboard.txt
+;; Win-F6: Toggle clipboard monitoring for any text content
+;; If enabled monitor the clipboard for any new text and when found appends the
+;; whole clipboard to $HOME/ahk_from_clipboard.txt
 #F6::{
   ;; Toggle only if same mode, else switch mode only
   ;if !(clipChangedToggle and clipChangedUrlsOnly) {
@@ -345,9 +372,9 @@ clipChanged(Type) {
   _removeToolTipDelay(1.5)
 }
 
-; Win-Alt-F6: Toggle clipboard monitoring for URLs only
-; If enabled monitor the clipboard for URLs (any .*:// schema) and when found
-; appends the whole clipboard to $HOME/ahk_from_clipboard_urls.txt
+;; Win-Alt-F6: Toggle clipboard monitoring for URLs only
+;; If enabled monitor the clipboard for URLs (any .*:// schema) and when found
+;; appends the whole clipboard to $HOME/ahk_from_clipboard_urls.txt
 #<!F6::{
   ;; Toggle only if same mode, else switch mode only
   ;if !(clipChangedToggle and !clipChangedUrlsOnly) {
@@ -357,11 +384,11 @@ clipChanged(Type) {
   ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (URL): On" : ": Off"))
   _removeToolTipDelay(1.5)
 }
-; }}} - Misc -----------------------------------------------------------------
-; }}} = Additional HotKeys ===================================================
+;; }}} - END: Misc -----------------------------------------------------------
+;; }}} = END: Additional HotKeys =============================================
 
-; {{{ = Session Monitor ======================================================
-; {{{ - Switch Power Scheme by Session State ---------------------------------
+;; {{{ = Session Monitor =====================================================
+;; {{{ - Switch Power Scheme by Session State --------------------------------
 ;; On session lock activate power schemen Power saver
 ;; Best effort (host/level may be unknown, see POWER_SCHEMES for details)
 registerSessionLockListener(activatePowerSchemeByLevel.Bind("4", false))
@@ -382,5 +409,5 @@ registerSessionUnLockListener(activatePowerSchemeByLevel.Bind("1", false))
 ;   ActivatePowerSchemeByGUID(POWER_SCHEME_PREV)
 ;   POWER_SCHEME_PREV := ""
 ; }
-; }}} - END: Switch Power Scheme by Session State ----------------------------
-; }}} = END: Session Monitor =================================================
+;; }}} - END: Switch Power Scheme by Session State ---------------------------
+;; }}} = END: Session Monitor ================================================

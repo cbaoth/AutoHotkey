@@ -16,7 +16,7 @@ If RegExMatch(A_ComputerName, "i)^puppet$") {
   global isConfineMouseTaskbarModeActive := True
 }
 
-; {{{ = Hotkeys ==============================================================
+;; {{{ = Hotkeys =============================================================
 ;; Win-Shift-F10: toggle mouse cursor confinement to avoid auto-hide taskbar
 ;;   triggering by blocking the 2 lowest most pixel rows
 ;; Win-Alt-Shift-F10: toggle mouse cursor confinement to exclude the auto-hide taskbar
@@ -25,9 +25,9 @@ If RegExMatch(A_ComputerName, "i)^puppet$") {
 #F10::ConfineMouseCursorByMode(, true)
 ;; Win-Alt-F10: toggle mouse cursor confinement to active window dimensions w/ decoration
 #!F10::ConfineMouseCursorByMode()
-; }}} = Hotkeys ==============================================================
+;; }}} = END: Hotkeys ========================================================
 
-; {{{ = Mouse Confinement ====================================================
+;; {{{ = Mouse Confinement ===================================================
 ; clip cursor every 100ms
 SetTimer(ConfineMouseTaskbarMode, 100)
 
@@ -149,4 +149,4 @@ ConfineMouseCursorByMode(taskbarMode:=False, windowedMode:=False, activeWindow:=
   ;; confine mouse cursor to the calculated area
   ConfineMouseCursor(True, confine_x, confine_y, confine_x2, confine_y2)
 }
-; }}} = Mouse Confinement ====================================================
+;; }}} = END: Mouse Confinement ==============================================

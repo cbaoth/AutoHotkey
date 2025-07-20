@@ -1,6 +1,6 @@
 ﻿; WindowTracking.ahk: Track window properties
 
-; {{{ = Help =================================================================
+;; {{{ = Help ================================================================
 ; This script monitors details from the currently active and previously active
 ; window. With the _toggleShowTrackedWindows hotkey function assigned below
 ; (default: win-F8) a tooltip can be toggled. The tootlip is updated whenver
@@ -13,9 +13,9 @@
 ; from the regular (active/previous) windows. The blacklist currently covers
 ; things like AHK (e.g. tooltip itself), windows task-bar, start-menu,
 ; task-switcher (alt-tab/win-tab) etc. which are usualy not desired targets.
-; }}} = Help =================================================================
+;; }}} = END: Help ===========================================================
 
-; {{{ = Environment ==========================================================
+;; {{{ = Environment =========================================================
 ; currently active window (ignoring certain windows components and AHK)
 global active_id := ""
 global active_title := ""
@@ -49,7 +49,7 @@ DetectHiddenWindows(true) ; include hidden windows
 ;#Warn ; activate warnings
 #MaxThreadsPerHotkey 2
 
-; {{{ - HotKeys --------------------------------------------------------------
+;; {{{ - HotKeys -------------------------------------------------------------
 ; It's not easily possible (and not intended) to open multiple tooltips at the
 ; same time so any subsequent call of _toggleShowTrackedWindows will close any
 ; existing tooltip, no matter if the parameters deviate from those of the
@@ -64,10 +64,10 @@ DetectHiddenWindows(true) ; include hidden windows
 #!F8::_toggleShowTrackedWindows(true, true) ; bl + clipboard on close, show final tt 5sec
 ;#+F8::_toggleShowTrackedWindows(true,0,0) ; bl + no clipboard, close immediate
 ;#F8::_toggleShowTrackedWindows(true,2) ; bl + always clipboard (each change)
-; }}} - HotKeys --------------------------------------------------------------
-; }}} = Environment ==========================================================
+;; }}} - END: HotKeys --------------------------------------------------------
+;; }}} = END: Environment ====================================================
 
-; {{{ = Commons ==============================================================
+;; {{{ = Commons =============================================================
 ; Same functions as in Commons.ahk, re-defined with "_" prefix (stand-alone).
 
 ; remove ToolTip after timeout in seconds (default 5), example:
@@ -79,10 +79,10 @@ _removeToolTip() {
 _removeToolTipDelay(sec:=5) {
   SetTimer(_removeToolTip,sec * -1000) ; remove tooltip after 5sec
 }
-; }}} = Commons ==============================================================
+;; }}} = END: Commons ========================================================
 
-; {{{ = Window Tracking ======================================================
-; {{{ - Trackng --------------------------------------------------------------
+;; {{{ = Window Tracking =====================================================
+;; {{{ - Trackng -------------------------------------------------------------
 ; keep track of currently and previously active window
 ; use is_first_time: true when opening tracking for the first time
 ;   initially updating active_* before waiting for a window change
@@ -185,9 +185,9 @@ _setWindowVars(prefix, win_id, win_title, win_class, win_pid, win_exe) {
   %prefix%_pid := win_pid
   %prefix%_exe := win_exe
 }
-; }}} - Trackng --------------------------------------------------------------
+;; }}} - END: Trackng --------------------------------------------------------
 
-; {{{ - Data String ----------------------------------------------------------
+;; {{{ - Data String ---------------------------------------------------------
 ; get window details as string
 _getWindowData(include_previous:=true, include_blacklisted:=false) {
   local result
@@ -217,9 +217,9 @@ _prepareDataForClipboard(data) {
   result := RegExReplace(data, "m)^- (\w+):`t+", "$1`t") ; no variable 'decore'
   return result
 }
-; }}} - Data String ----------------------------------------------------------
+;; }}} - END: Data String ----------------------------------------------------
 
-; {{{ - Blacklist -----------------------------------------------------------
+;; {{{ - Blacklist ----------------------------------------------------------
 ; is given window blacklisted? change  as needed, return false to deactivate
 _isBlacklistedWindow(win_id, win_title, win_class, win_pid, win_exe) {
   local win_cmd := RegExReplace(win_exe, ".*\\")
@@ -232,9 +232,9 @@ _isBlacklistedWindow(win_id, win_title, win_class, win_pid, win_exe) {
              || win_class == "WorkerW")) ; windows desktop
      || win_cmd == "greenshot.exe"
 }
-; }}} - Blacklist -----------------------------------------------------------
+;; }}} - END: Blacklist -----------------------------------------------------
 
-; {{{ - Toggle Loop ----------------------------------------------------------
+;; {{{ - Toggle Loop ---------------------------------------------------------
 ; toggle loop _getWindowData
 ; track_active: track active window if true, else track window below cursor (default)
 ; include_blacklisted: show blacklisted window details (else: tracked but hidden)
@@ -292,5 +292,5 @@ _toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false       
     }
   }
 }
-; }}} - Toggle Loop ----------------------------------------------------------
-; }}} = Window Tracking ======================================================
+;; }}} - END: Toggle Loop ----------------------------------------------------
+;; }}} = END: Window Tracking ================================================

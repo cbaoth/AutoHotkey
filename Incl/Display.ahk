@@ -3,7 +3,7 @@
 ;; SetDPI must be in PATH: https://github.com/imniko/SetDPI
 global DP_SETDPI := "SetDpi.exe"
 
-; {{{ = Hotkeys ==============================================================
+;; {{{ = Hotkeys =============================================================
 ;; display tweaks control sequence
 #d::
 {
@@ -60,7 +60,7 @@ Change Preset [Motoko]:
     ; set common combination
   }
 }
-; }}} = Hotkeys ==============================================================
+;; }}} = END: Hotkeys ========================================================
 
 dpReadKeySequence(length := 1) {
   local key := ""
