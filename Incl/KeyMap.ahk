@@ -262,6 +262,8 @@ SC056::Control  ; -> Control (less distance)
 <^>!+.::SendInput("{U+21D2}")             ; AltGr-Shift-. -> ⇒
 <^>!,::SendInput("←")                     ; AltGr-,       -> ←
 <^>!+,::SendInput("{U+21D0}")             ; AltGr-Shift-, -> ⇐
+<^>!m::SendInput("{U+2194}")              ; AltGr-m       -> ↔
+<^>!+m::SendInput("{U+21D4}")             ; AltGr-Shift-m -> ⟺
 ;; }}} = END: Custom Input ===================================================
 
 ;; {{{ = Control Sequences ===================================================
