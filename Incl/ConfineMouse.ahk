@@ -45,7 +45,7 @@ ConfineMouseTaskbarModeToggle() {
   if ! isConfineMouseTaskbarModeActive {
     ConfineMouseCursor(False)
     ToolTip("ConfineMouse: OFF")
-    _removeToolTipDelay(0.5)
+    RemoveToolTipDelay(0.5)
   } else {
     ConfineMouseCursorByMode(True,,, True)
   }
@@ -101,7 +101,7 @@ ConfineMouseCursorByMode(taskbarMode:=False, windowedMode:=False, activeWindow:=
     if ! isWindowModeActive {
       ConfineMouseCursor(False) ; always just disable first, just in case
       ToolTip("ConfineMouse: OFF")
-      _removeToolTipDelay(0.5)
+      RemoveToolTipDelay(0.5)
       return
     }
   }
@@ -115,7 +115,7 @@ ConfineMouseCursorByMode(taskbarMode:=False, windowedMode:=False, activeWindow:=
     confine_y2 := A_ScreenHeight - 2
     if taskBarModeToggled {
       ToolTip("ConfineMouse: " . modeText . " Mode (" . confine_x . "/" . confine_y . " to " . confine_x2 . "/" . confine_y2 . ")")
-      _removeToolTipDelay(1.5)
+      RemoveToolTipDelay(1.5)
     }
   } else {
     if activeWindow {
@@ -143,7 +143,7 @@ ConfineMouseCursorByMode(taskbarMode:=False, windowedMode:=False, activeWindow:=
       confine_y2 := max(confine_y, win_y2 + confine_mouse_y2_offset)
     }
     ToolTip("ConfineMouse: " . modeText . " Mode (" . confine_x . "/" . confine_y . " to " . confine_x2 . "/" . confine_y2 . ")")
-    _removeToolTipDelay(1.5)
+    RemoveToolTipDelay(1.5)
   }
 
   ;; confine mouse cursor to the calculated area

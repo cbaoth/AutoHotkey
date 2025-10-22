@@ -25,7 +25,7 @@ global d2rHKToggle := false
 {
   d2rHKToggle := !d2rHKToggle
   ToolTip("D2R Hotkeys: " . (d2rHKToggle ? "ON" : "OFF"))
-  _removeToolTipDelay(1)
+  RemoveToolTipDelay(1)
 }
 
 #HotIf

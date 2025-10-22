@@ -19,7 +19,7 @@ LockScreen(timeout:=3) {
     return
   }
   timeoutToolTip(A_Now " Time to take a break, locking screen in ", timeout) ; Show tooltip and wait for timeout
-  Tooltip("Locking screen ..."), removeToolTipDelay(3) ; Final tooltip before locking (may be barely visible)
+  Tooltip("Locking screen ..."), RemoveToolTipDelay(3) ; Final tooltip before locking (may be barely visible)
   DllCall("LockWorkStation") ; Lock the screen
 }
 

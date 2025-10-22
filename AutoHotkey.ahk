@@ -88,13 +88,13 @@ OnClipboardChange(clipChanged, -1)
   Send("#^{Left}")
   ;; FIXME or remove
   ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
-  ;removeToolTipDelay(0.35)
+  ;RemoveToolTipDelay(0.35)
 }
 #^w::{
   Send("#^{Right}")
   ;; FIXME or remove
   ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
-  ;removeToolTipDelay(0.35)
+  ;RemoveToolTipDelay(0.35)
 }
 
 ;; Win-Ctrl-Shift-q/w: Desktop previous/next moving currently active window to target desktop
@@ -138,6 +138,9 @@ OnClipboardChange(clipChanged, -1)
 
 ;; Auto confirm/close dialogs etc.
 #Include "Incl\AutoConfirm.ahk"
+
+;; Session and Power related functions
+#Include "Incl\SessionAndPower.ahk"
 
 ;; TODO consider removing
 ;; Digital detox features surrounding Cold Turkey and custom scripts
@@ -188,7 +191,9 @@ OnClipboardChange(clipChanged, -1)
 
 ;; Win+return -> Terminal
 ;; Full app list: "Get-AppxPackage | findstr -i terminal" / "shell:AppsFolder"
-#Enter::Run("shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App")
+#Enter:: Run("shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App")
+;;#Enter::Run("shell:AppsFolder\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe!App")
+#+Enter:: Run('*RunAs "shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"')
 ;; }}} - END: Windows commands + SHIFT (if deactivated) ----------------------
 
 ;; {{{ - Putty ---------------------------------------------------------------
@@ -300,114 +305,4 @@ OnClipboardChange(clipChanged, -1)
 ;#<!Tab::SwitchWindowsSameApp()
 ;; }}} - END: Window Navigation  ---------------------------------------------
 
-;; {{{ - Stay Awake ----------------------------------------------------------
-;; Win-F5: Toggle timer to keep PC awake (dummy mouse event every 4 min)
-#F5::stayAwakeToggle()
-
-stayAwakeToggle(){
-  static counter := StayAwakeTimer()
-  counter.Toggle
-}
-
-class StayAwakeTimer{
-  __New() {
-    this.idleMin := 240000 ; Only trigger when idle for at least 4min
-    this.intervalMin := 30000 ; Wait at least 0.5 min
-    this.intervalMax := 270000 ; Repeat max every 4.5min
-    this.isActive := false
-    ;this.count := 0
-    this.timer := ObjBindMethod(this, "Tick")
-  }
-
-  Toggle() {
-    timer := this.timer
-    this.isActive := !this.isActive
-    SetTimer(timer, (this.isActive ? 1 : 0))
-    ToolTip("Stay Awake: " . (this.isActive ? "On" : "Off"))
-    _removeToolTipDelay(1.5)
-  }
-
-  Tick() {
-    if (A_TimeIdle > this.idleMin) { ; Idle long enough?
-      timer := this.timer
-      this.DummyMouseEvent()
-      interval := Random(this.intervalMin, this.intervalMax)
-      SetTimer(timer, interval) ; Start timer with new random interval
-    } ; Not idle long enough -> do nothing
-  }
-
-  DummyMouseEvent() {
-    MouseMove(0, 0, 0, "R") ; Mouse pointer stays in place but sends a mouse event
-  }
-}
-;; }}} - END: Stay Awake -----------------------------------------------------
-
-;; {{{ - Misc ----------------------------------------------------------------
-;; OnClipboardChange("clipChanged", -1) events, see above
-clipChanged(Type) {
-  global clipChangedToggle := false
-  global clipChangedUrlsOnly := false
-  ; Clipboard monitoring is on AND clipboard contains text only
-  ; AND clipboard contains url (if url-only is enabled)?
-  if (clipChangedToggle
-      && Type == 1
-      && (!clipChangedUrlsOnly || InStr(A_Clipboard, "://"))) {
-    ToolTip("Saved: " SubStr(A_Clipboard, 1, 100) (StrLen(A_Clipboard) > 100 ? "..." : ""))
-    _removeToolTipDelay(1.5)
-    outFile := clipChangedUrlsOnly ? HOME . "\ahk_from_clipboard_urls.txt" : HOME . "\ahk_from_clipboard.txt"
-    FileAppend(A_Clipboard "`r`n", outFile)
-  }
-}
-
-;; Win-F6: Toggle clipboard monitoring for any text content
-;; If enabled monitor the clipboard for any new text and when found appends the
-;; whole clipboard to $HOME/ahk_from_clipboard.txt
-#F6::{
-  ;; Toggle only if same mode, else switch mode only
-  ;if !(clipChangedToggle and clipChangedUrlsOnly) {
-  global clipChangedToggle := !clipChangedToggle
-  ;}
-  clipChangedUrlsOnly := false
-  ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (All): On" : ": Off"))
-  _removeToolTipDelay(1.5)
-}
-
-;; Win-Alt-F6: Toggle clipboard monitoring for URLs only
-;; If enabled monitor the clipboard for URLs (any .*:// schema) and when found
-;; appends the whole clipboard to $HOME/ahk_from_clipboard_urls.txt
-#<!F6::{
-  ;; Toggle only if same mode, else switch mode only
-  ;if !(clipChangedToggle and !clipChangedUrlsOnly) {
-  global clipChangedToggle := !clipChangedToggle
-  ;}
-  clipChangedUrlsOnly := true
-  ToolTip("A_Clipboard Monitoring" . (clipChangedToggle ? " (URL): On" : ": Off"))
-  _removeToolTipDelay(1.5)
-}
-;; }}} - END: Misc -----------------------------------------------------------
 ;; }}} = END: Additional HotKeys =============================================
-
-;; {{{ = Session Monitor =====================================================
-;; {{{ - Switch Power Scheme by Session State --------------------------------
-;; On session lock activate power schemen Power saver
-;; Best effort (host/level may be unknown, see POWER_SCHEMES for details)
-registerSessionLockListener(activatePowerSchemeByLevel.Bind("4", false))
-
-;; On session unlock activate power schemen Ultra Performance
-;; Best effort (host/level may be unknown, see POWER_SCHEMES for details)
-registerSessionUnLockListener(activatePowerSchemeByLevel.Bind("1", false))
-;; TODO consider using a timer, e.g. switch scheme only after 5min of continuous lock
-;; TODO add hotkey to toggle switching on/off, e.g. to run high performance tasks while locked
-;; When continuously locked for at least 5 minutes, set power profile to Balanced
-;; while remembering the previous power profile
-; SetTimer(activatePowerSchemeByLevel, 300000, 3)
-
-;; TODO keep track of previous power scheme, vs. fixed schemes
-; global POWER_SCHEME_PREV := ""
-;; After unlocking the screen, restore the previous power profile (if any)
-; if (POWER_SCHEME_PREV != "") {
-;   ActivatePowerSchemeByGUID(POWER_SCHEME_PREV)
-;   POWER_SCHEME_PREV := ""
-; }
-;; }}} - END: Switch Power Scheme by Session State ---------------------------
-;; }}} = END: Session Monitor ================================================

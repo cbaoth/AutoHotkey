@@ -25,7 +25,7 @@
 ;     ; If there are multiple windows of the same application, switch to the next one
 ;     if (windows.Length > 1) {
 ;         ;Tooltip("Switching windows of the same application... " . arrayJoin(", ", sameAppWindows*))
-;         ;removeToolTipDelay(1.5)
+;         ;RemoveToolTipDelay(1.5)
 ;         currentIndex := arrayIndexOf(WinGetID("A"), windows*)
 ;         nextIndex := Mod(currentIndex, windows.Length) + 1
 ;         WinActivate("ahk_id " windows[nextIndex])

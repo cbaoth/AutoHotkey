@@ -67,20 +67,6 @@ DetectHiddenWindows(true) ; include hidden windows
 ;; }}} - END: HotKeys --------------------------------------------------------
 ;; }}} = END: Environment ====================================================
 
-;; {{{ = Commons =============================================================
-; Same functions as in Commons.ahk, re-defined with "_" prefix (stand-alone).
-
-; remove ToolTip after timeout in seconds (default 5), example:
-;ToolTip, "Some text ..." ; show a tooltip
-;_removeToolTipDelay() ; hide tolltip after 5 sec
-_removeToolTip() {
-  ToolTip()
-}
-_removeToolTipDelay(sec:=5) {
-  SetTimer(_removeToolTip,sec * -1000) ; remove tooltip after 5sec
-}
-;; }}} = END: Commons ========================================================
-
 ;; {{{ = Window Tracking =====================================================
 ;; {{{ - Trackng -------------------------------------------------------------
 ; keep track of currently and previously active window
@@ -250,7 +236,7 @@ _toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false       
 
   ; just activated?
   if active { ; cleanup previous tooltips (if existing)
-    SetTimer(_removeToolTip,0) ; delete existing tt_timeout
+    SetTimer(removeToolTip,0) ; delete existing tt_timeout
     ToolTip() ; and hide existing tt immediately
     first_time := true
   }
@@ -263,7 +249,7 @@ _toggleShowTrackedWindows(track_active:=false, include_blacklisted:=false       
         ToolTip(_prepareDataForTootlip(data) . "`n`nCOPIED TO A_Clipboard")
       }
       ; hide tool-tip with given timeout (delay)
-      _removeToolTipDelay(tt_timeout)
+      RemoveToolTipDelay(tt_timeout)
       break
     }
     if first_time {

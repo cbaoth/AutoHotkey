@@ -124,12 +124,12 @@ rndSleepSendSeq(keyArray, min, max) {
 ;; {{{ = ToolTips ============================================================
 ;; Remove ToolTip after a given timeout in seconds (default 5), example:
 ;ToolTip("Some text ...") ; Show a tooltip
-;_removeToolTipDelay() ; Hide tooltip after 5 sec
+;RemoveToolTipDelay() ; Hide tooltip after 5 sec
 removeToolTip() {
   ToolTip()
 }
-removeToolTipDelay(sec:=5) {
-  SetTimer(_removeToolTip,sec * -1000) ; Remove tooltip after delay
+RemoveToolTipDelay(sec:=5) {
+  SetTimer(removeToolTip,sec * -1000) ; Remove tooltip after delay
 }
 ;; Show a tooltip with the given message(s) that counts down every second
 ;; while using sleep
@@ -175,10 +175,153 @@ isCurrentTimeInRange(startTime, endTime) {
 ;; https://www.autohotkey.com/board/topic/18760-date-parser-convert-any-date-format-to-yyyymmddhh24miss/?p=605062
 ;; }}} = END: Date/Time ======================================================
 
+;; {{{ = Pattern Matching ====================================================
+; Function to match glob patterns including ** for recursive directory matching
+; Supports:
+;   * - matches any characters except path separators
+;   ** - matches any number of directories (recursive, including zero - current directory)
+; Examples:
+;   "C:\\AI\\**\\python.exe" matches C:\AI\python.exe, C:\AI\tool1\python.exe, C:\AI\deep\nested\python.exe
+;   "D:\\**\\*.exe" matches D:\testapp.exe, D:\Games\game.exe, D:\Tools\subfolder\tool.exe
+matchesGlobPattern(path, pattern) {
+    ; Simple, robust glob matching without complex regex
+    ; Convert to lowercase for case-insensitive matching
+    path := StrLower(path)
+    pattern := StrLower(pattern)
+
+    ; Handle ** (recursive directory wildcard)
+    if (InStr(pattern, "**")) {
+        ; Split pattern on ** to get parts
+        parts := StrSplit(pattern, "**")
+
+        ; For pattern like "C:\AI\**\python.exe" or "D:\**\*.exe"
+        ; parts[1] = "C:\AI\" and parts[2] = "\python.exe"
+        ; parts[1] = "D:\" and parts[2] = "\*.exe"
+        if (parts.Length == 2) {
+            prefix := parts[1]
+            suffix := parts[2]
+
+            ; Check if path starts with prefix
+            if (prefix != "" && !InStr(path, prefix) == 1) {
+                return false
+            }
+
+            ; Handle suffix matching
+            if (suffix != "") {
+                ; If suffix starts with backslash, we need to handle both:
+                ; 1. Direct match (current directory): D:\testapp.exe vs \*.exe
+                ; 2. Subdirectory match: D:\Games\game.exe vs \*.exe
+                if (InStr(suffix, 1) == "\") {
+                    ; Remove leading backslash for pattern matching
+                    suffixPattern := SubStr(suffix, 2)
+
+                    ; Get the part of path after the prefix
+                    pathAfterPrefix := SubStr(path, StrLen(prefix) + 1)
+
+                    ; Check if it matches the pattern directly (current directory)
+                    ; or if it contains the pattern somewhere (subdirectory)
+                    if (matchesSingleWildcard(pathAfterPrefix, suffixPattern)) {
+                        return true
+                    }
+                    ; Also check if any subdirectory part matches
+                    pathParts := StrSplit(pathAfterPrefix, "\")
+                    for part in pathParts {
+                        if (matchesSingleWildcard(part, suffixPattern)) {
+                            return true
+                        }
+                    }
+                    return false
+                } else {
+                    ; Suffix doesn't start with backslash, do exact suffix match
+                    return StrEndsWith(path, suffix)
+                }
+            }
+            return true
+        }
+    }
+
+    ; Handle single * wildcards
+    if (InStr(pattern, "*") && !InStr(pattern, "**")) {
+        return matchesSingleWildcard(path, pattern)
+    }
+
+    ; No wildcards - simple substring match
+    return InStr(path, pattern) > 0
+}
+
+; Helper function to check if string ends with suffix
+StrEndsWith(str, suffix) {
+    if (StrLen(suffix) == 0) {
+        return true
+    }
+    if (StrLen(suffix) > StrLen(str)) {
+        return false
+    }
+    return SubStr(str, -StrLen(suffix) + 1) == suffix
+}
+
+; Helper function to match single wildcard patterns (no ** allowed)
+; Examples: "*.exe" matches "test.exe", "app*.txt" matches "application.txt"
+matchesSingleWildcard(str, pattern) {
+    ; Handle simple cases
+    if (pattern == "*") {
+        return true
+    }
+    if (!InStr(pattern, "*")) {
+        return str == pattern
+    }
+
+    ; Split pattern by * to get literal parts
+    parts := StrSplit(pattern, "*")
+    pos := 1
+
+    for i, part in parts {
+        if (part != "") {
+            foundPos := InStr(str, part, pos)
+            if (foundPos == 0) {
+                return false
+            }
+            ; For first part, it must be at the beginning
+            if (i == 1 && foundPos != 1) {
+                return false
+            }
+            pos := foundPos + StrLen(part)
+        }
+    }
+
+    ; For last part, it must be at the end if pattern doesn't end with *
+    if (!StrEndsWith(pattern, "*") && parts.Length > 0) {
+        lastPart := parts[parts.Length]
+        if (lastPart != "" && !StrEndsWith(str, lastPart)) {
+            return false
+        }
+    }
+
+    return true
+}
+
+; Function to check if a process matches the configured criteria
+IsProcessMatching(processName, processPath, configEntry) {
+    ; If config entry contains path separators, do path matching
+    if (InStr(configEntry, "\") || InStr(configEntry, "/")) {
+        ; Check for wildcard patterns
+        if (InStr(configEntry, "**") || InStr(configEntry, "*")) {
+            return matchesGlobPattern(processPath, configEntry)
+        } else {
+            ; Check if the full process path contains the configured path
+            return InStr(processPath, configEntry) > 0
+        }
+    } else {
+        ; Simple executable name matching
+        return (processName = configEntry)
+    }
+}
+;; }}} = END: Pattern Matching ===============================================
+
 ;; {{{ = SplashImage =========================================================
 ;; Remove SplashImage after a given timeout in seconds (default 5), example:
 ;SplashImage, Image.png
-;_removeToolTipDelay() ; Hide tooltip after 5 sec
+;RemoveToolTipDelay() ; Hide tooltip after 5 sec
 ; REMOVED: removeSplashImage() {
 ;  SplashImageGui := Gui("ToolWindow -Sysmenu Disabled"), SplashImageGui.MarginY := 0, SplashImageGui.MarginX := 0, SplashImageGui.AddPicture("w200 h-1", "Off"), SplashImageGui.Show()
 ;}
@@ -186,162 +329,3 @@ isCurrentTimeInRange(startTime, endTime) {
 ;  SetTimer(removeSplashImage,sec * -1000) ; Remove SplashImage after delay
 ;}
 ;; }}} = END: SplashImage ====================================================
-
-;; {{{ = Power Profiles ======================================================
-;; Known power pofiles per host from highest to lowest power consumption / performance
-;; Use `powercfg /l` to list available profiles
-global POWER_SCHEMES := Map()
-POWER_SCHEMES["motoko", "1"] := "38156909-5918-4777-864e-fbf99c75df8b" ; Ultimate Performance
-POWER_SCHEMES["motoko", "2"] := "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" ; High performance
-POWER_SCHEMES["motoko", "3"] := "381b4222-f694-41f0-9685-ff5bb260df2e" ; Balanced
-POWER_SCHEMES["motoko", "4"] := "a1841308-3541-4fab-bc81-f71556f20b4a" ; Power saver
-
-activatePowerSchemeByGUID(guid, showErrorMessage:=true, throwOnError:=false) {
-  if (StrLen(guid) != 36) {
-    if showErrorMessage {
-      MsgBox("ERROR: Invalid power scheme GUID '" guid "'")
-    }
-    if throwOnError {
-      throw ValueError("Invalid power scheme GUID", 1)
-    }
-    return
-  }
-  try {
-    ;Run(A_ComSpec ' /c powercfg -setactive "' . guid . '" && echo done ... || echo Faild! & timeout 3') ; ,, "Hidden")
-    ;; TODO fix error/exception handling, failed powercfg command will not be caught
-    RunWait('powercfg -setactive "' . guid . '"' ,, "Hidden")
-  } catch as e {
-    if showErrorMessage {
-      MsgBox("ERROR: Activation of power scheme '" guid "' has failed:`n`n"
-        . type(e) " in " e.What ", which was called at line " e.Line ":`n" e.Message)
-    }
-    if throwOnError {
-      throw e
-    }
-    return
-  }
-}
-;ActivatePowerSchemeByGUID("38156909-5918-4777-864e-fbf99c75df8b")
-
-activatePowerSchemeByLevel(level, showErrorMessage := true, throwOnError := false) {
-  global POWER_SCHEMES
-  guid := ""
-  try {
-    guid := POWER_SCHEMES[StrLower(A_ComputerName), level]
-  } catch Error as e {
-    if showErrorMessage {
-      MsgBox("ERROR: No power scheme found for host '" StrLower(A_ComputerName) "' and level " level ":`n" e.Message)
-    }
-    if throwOnError {
-      throw e
-    }
-    return
-  }
-  try {
-    activatePowerSchemeByGUID(guid, showErrorMessage, throwOnError)
-  } catch Error as e {
-    if showErrorMessage { ; no need, already shown in activatePowerSchemeByGUID
-      if throwOnError {
-        throw e
-      }
-    }
-  }
-}
-;ActivatePowerSchemeByLevel("1")
-;; }}} = END: Power Profiles =================================================
-
-;; {{{ = Session Monitor =====================================================
-; Source: https://www.autohotkey.com/boards/viewtopic.php?p=542126#p542126
-Global isSessionUnlocked := true
-Global sessionLockListeners := []
-Global sessionUnlockListeners := []
-
-;----------------------------------------------------------------------------
-; Session Monitor code to track locked/unlocked status
-;----------------------------------------------------------------------------
-
-registerSessionMonitor()
-OnExit unRegisterSessionMonitor
-
-;----------------------------------------------------------------------
-; Register/Unregister the session monitor
-;----------------------------------------------------------------------
-registerSessionMonitor() {
-   Static WTS_CURRENT_SERVER := 0
-   Static NOTIFY_FOR_ALL_SESSIONS := 1
-
-   If !(DllCall("wtsapi32.dll\WTSRegisterSessionNotificationEx", "Ptr", WTS_CURRENT_SERVER, "Ptr", A_ScriptHwnd, "UInt", NOTIFY_FOR_ALL_SESSIONS))
-      Return false
-   OnMessage(0x02B1, WM_WTSSESSION_CHANGE)
-   Return true
-}
-
-unRegisterSessionMonitor(ExitReason, ExitCode) {
-  Static WTS_CURRENT_SERVER := 0
-  Try {
-     OnMessage(0x02B1, WM_WTSSESSION_CHANGE, -1)
-     If !(DllCall("wtsapi32.dll\WTSUnRegisterSessionNotificationEx", "Ptr", WTS_CURRENT_SERVER, "Ptr", A_ScriptHwnd))
-        Return false
-  }
-  Return false   ; true will prevent exit
-}
-
-;----------------------------------------------------------------------
-; Callback for session change notice
-;----------------------------------------------------------------------
-WM_WTSSESSION_CHANGE(wParam, lParam, msg, hwnd) { ; http://msdn.com/library/aa383828(vs.85,en-us)
-   Global isSessionUnlocked
-   Global sessionLockListeners
-   Global sessionUnlockListeners
-   Static WTS_SESSION_LOCK := 0x7
-   Static WTS_SESSION_UNLOCK := 0x8
-   Switch wParam {
-      Case WTS_SESSION_LOCK:   ; user left-clicked tray icon
-         ; Session Change Message=0x7, Param=0x1, msg=0x2B1, hwnd=0xD0766
-         OutputDebug("Station Lock...")
-         isSessionUnlocked := false
-         for listener in sessionLockListeners {
-            OutputDebug("Calling SessionLock listener " listener.Name "()")
-            listener.Call()
-         }
-      Case WTS_SESSION_UNLOCK:   ; user double left-clicked tray icon
-         OutputDebug("Session UnLock...")
-         isSessionUnlocked := true
-         for listener in sessionUnlockListeners {
-          OutputDebug("Calling SessionUnLock listener " listener.Name "()")
-          listener.Call()
-         }
-      Default:
-   }
-}
-
-;----------------------------------------------------------------------
-; Register a function to be called on session lock
-;----------------------------------------------------------------------
-global sessionLockListeners := Array()
-registerSessionLockListener(listener) {
-    global sessionLockListeners
-    sessionLockListeners.Push(listener)
-}
-
-;----------------------------------------------------------------------
-; Register a function to be called on session unlock
-;----------------------------------------------------------------------
-global sessionUnlockListeners := Array()
-registerSessionUnlockListener(listener) {
-    global sessionUnlockListeners
-    sessionUnlockListeners.Push(listener)
-}
-
-; Example usage:
-; registerSessionLockListener(Func("OnSessionLock"))
-; registerSessionUnlockListener(Func("OnSessionUnlock"))
-
-; OnSessionLock() {
-;     MsgBox("Session Locked")
-; }
-
-; OnSessionUnlock() {
-;     MsgBox("Session Unlocked")
-; }
-;; }}} = END: Session Monitor ================================================
