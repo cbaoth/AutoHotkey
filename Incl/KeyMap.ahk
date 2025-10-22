@@ -329,6 +329,7 @@ p: print screen
 window [k: kill, c: close]
 power [s: sleep, h: hibernate]
 power-prof [1: utra perf, 2: high perf, 3: balanced, 4: power save]
+status [g: GPU usage]
 service-restart [t: Cold Turkey]
   )"
   ToolTip(tt_text)
@@ -368,6 +369,7 @@ service-restart [t: Cold Turkey]
     ;case "ts": sc("start", "Power_a17007")
     ;case "ta": sc("stop", "Power_a17007")
     ;case "tr": sc("stop", "Power_a17007"), sc("start", "Power_a17007")
+    case "g": RunWait(A_ComSpec ' /c nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv -l 1')
     case "t": sc("stop", "Power_a17007"), sc("start", "Power_a17007")
   }
 }
