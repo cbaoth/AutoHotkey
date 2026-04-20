@@ -71,22 +71,31 @@ WinSetBorderColor(isVisible := 1, color:=0x00b7c3, windowID := "A") {
 ;; Toggle window's sticky state (show on all virtual desktops)
 ;; https://www.autohotkey.com/boards/viewtopic.php?t=74849
 ;; newSate: 0 = Off, 1 = On, -1 = Toggle
-WinSetSticky(newState := 1, windowID := "A") {
-    ; Exit if window does not exist
-    if (!WinExist(windowID))
-        return
-
-    ; Determine if sticky should be enabled
-    if (newState == -1) {  ; toggle
-        ExStyle := WinGetExStyle(windowID)
-        isEnabled := !(ExStyle & 0x00000080)  ; Toggle current state
-    } else {
-        isEnabled := (newState == 1)
+WinSetSticky(newSate := 1, windowID := "A") {
+    ExStyle := WinGetExStyle(windowID)  ; "A" means the active window
+    try {
+        if (newSate == 1) {
+            WinSetExStyle("+0x80", windowID)  ; Set always on top
+            isEnabled := true
+        } else if (newSate == 0) {
+            WinSetExStyle("-0x80", windowID)  ; Remove always on top
+            isEnabled := false
+        } else {  ; toggle
+            if (ExStyle & 0x00000080) {  ; Check if the window is already always on top
+                WinSetExStyle("-0x80", windowID)  ; Remove always on top
+                isEnabled := false
+            } else {
+                WinSetExStyle("+0x80", windowID)   ; Set always on top
+                isEnabled := true
+            }
+        }
+        WinSetBorderColor(isEnabled)
+        ToolTip("Sticky state: " . (isEnabled ? "on" : "off"))
+        RemoveToolTipDelay(1.5)
+    } catch as e {
+        ToolTip("Cannot change sticky state for this window.`n(Access denied or protected process)")
+        RemoveToolTipDelay(1.5)
     }
-
-    ; Apply the state
-    WinSetExStyle(isEnabled ? 128 : -128, windowID)
-    WinSetBorderColor(isEnabled)
 }
 ;; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
 ;#!s::WinSetSticky(-1)
