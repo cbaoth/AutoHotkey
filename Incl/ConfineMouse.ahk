@@ -9,15 +9,12 @@
 ;; If window is switched or resized window confinement is lost (intentional)
 ;; while taskbar mode is kept alive by a timer
 
-; ;; Default: Disabled on startup (toggle with Win-Shift-F10)
-; global isConfineMouseTaskbarModeActive := False
-; ;; Enable on startup for certain hosts only (e.g. smaller screen, less precise cursor)
-; If RegExMatch(A_ComputerName, "i)^puppet$") {
-;   global isConfineMouseTaskbarModeActive := True
-; }
-
-; Default: Enabled on startup (toggle with Win-Shift-F10)
-global isConfineMouseTaskbarModeActive := True
+;; Default: Disabled on startup (toggle with Win-Shift-F10)
+global isConfineMouseTaskbarModeActive := False
+;; Enable on startup for certain hosts only (e.g. smaller screen, less precise cursor)
+If RegExMatch(A_ComputerName, "i)^puppet$") {
+  global isConfineMouseTaskbarModeActive := True
+}
 
 ;; {{{ = Hotkeys =============================================================
 ;; Win-Shift-F10: toggle mouse cursor confinement to avoid auto-hide taskbar
