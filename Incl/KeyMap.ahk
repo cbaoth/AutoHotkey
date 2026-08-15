@@ -66,12 +66,17 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 
 ;; Win-Backspace (incl. CapsLock on Colemak)
 #BackSpace::Delete
+;; AltGr+Backspace -> Delete (matches the linux xkb AltGr/LevelThree mapping;
+;; Super cannot be used there, toolkits never treat Mod4 as consumed)
+<^>!BackSpace::Delete
 
 ;; {{{ - ISO/ANSI/Mini Tweaks ------------------------------------------------
 ;; Some improvements for the Logitech MX Mechanical Mini (US Intl. ISO, non-ANSI)
 ;#If A_ComputerName = MOTOKO ; only on hosts using this keyboard
 ;; Win+Del -> Insert
 #Del::Insert
+;; AltGr+Del -> Insert (matches the linux xkb AltGr/LevelThree mapping)
+<^>!Del::Insert
 
 ;; (Shift-)\ -> Enter, extend the Enter key (simulate ANSI Enter key size)
 ;*\::Enter
