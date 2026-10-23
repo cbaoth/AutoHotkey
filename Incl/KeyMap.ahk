@@ -43,7 +43,7 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;; CapsLock -> Control
 ;CapsLock::Control
 
-;; CapsLock -> BackSpac
+;; CapsLock -> BackSpace
 ;CapsLock::BackSpace ; already part of windows Colemak layout
 
 ;; Shift CapsLock -> Toggle CapsLock
