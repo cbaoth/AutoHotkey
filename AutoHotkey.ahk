@@ -64,6 +64,9 @@ OnClipboardChange(clipChanged, -1)
 ;; Some key (re-)maps (Colemak, hacking, etc.)
 #Include "Incl\KeyMap.ahk"
 
+;; DreymaR style Extend layer (CapsLock held = navigation/editing layer)
+#Include "Incl\Extend.ahk"
+
 ;; Some hotkeys for window management
 #Include "Incl\WindowManagement.ahk"
 

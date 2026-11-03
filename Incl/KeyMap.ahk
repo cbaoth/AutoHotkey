@@ -1,6 +1,8 @@
 ﻿; KeyMap.ahk: My custom key map (Colemak, hacking, etc.)
 
-; All (active) mappings assume Colemak keyboard layout (incl. capslock -> backspace)
+; All (active) mappings assume Colemak keyboard layout.
+; CapsLock belongs to the Extend layer (Extend.ahk), it is neither BackSpace
+; nor CapsLock.
 
 ;; In case Win-Shift-Alt(-Ctrl) conflicts with the Office hotkey(s) execute this in PS
 ;; to disable the Office (hot) Key:
@@ -40,35 +42,14 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;; }}} = END: Umlaute ========================================================
 
 ;; {{{ = Hacker Remapping & Special Keys =====================================
-;; CapsLock -> Control
-;CapsLock::Control
-
-;; CapsLock -> BackSpace
-;CapsLock::BackSpace ; already part of windows Colemak layout
-
-;; Shift CapsLock -> Toggle CapsLock
-;Shift & CapsLock:
-;!]:
-;  GetKeyState CapsLockState, CapsLock, T
-;  IfEqual CapsLockState,D, SetCapslockState AlwaysOff
-;  Else SetCapslockState AlwaysOn
-;Return
-
-;; LWin-Backspace -> Toggle CapsLock (use if re-mapped via AHK)
-;;<#BackSpace::CapsLock
-
-;; Win-Home -> Toggle ScrollLock
-#Home::ScrollLock
+;; CapsLock is the Extend key, see Extend.ahk: BackSpace/Delete/Insert/CapsLock
+;; live on the Extend layer (Ext-o / Ext-; / Ext-] / Ext-Esc). The former
+;; CapsLock -> BackSpace plus (Win|AltGr)-BackSpace -> Delete pair is gone, as
+;; on linux (custom(mods), dotfiles docs/setup/extend-layer.md).
 
 ;; ~Ctrl-Win-X -> Delete, ~Ctrl-Win-v -> Insert
 ~^#x::Delete
 ~^#v::Insert
-
-;; Win-Backspace (incl. CapsLock on Colemak)
-#BackSpace::Delete
-;; AltGr+Backspace -> Delete (matches the linux xkb AltGr/LevelThree mapping;
-;; Super cannot be used there, toolkits never treat Mod4 as consumed)
-<^>!BackSpace::Delete
 
 ;; {{{ - ISO/ANSI/Mini Tweaks ------------------------------------------------
 ;; Some improvements for the Logitech MX Mechanical Mini (US Intl. ISO, non-ANSI)
@@ -86,10 +67,16 @@ XButton2::PgUp ; Mouse 5 (usually thumb2) -> Page Up
 ;#If
 ;; }}} - END: ISO/ANSI/Mini --------------------------------------------------
 
-;; Unused key #105 (redundant <>| or similar on ISO kb) -> Control
-;; Key not used at all on ISO keyboards when using Colemak/ANSI layout
-SC056::Control  ; -> Control (less distance)
-;SC056::LShift   ; -> LeftShift (to extend the smaller ISO shift key)
+;; Unused key #105 (redundant <>| or similar on ISO kb)
+;; On linux this key is Hyper ($hyper / Mod3 in sway). Windows has no Hyper, so
+;; the key is deliberately left dead rather than mapped to something heavily
+;; used (it was Control for a while, which never caught on anyway) - a mapping
+;; that exists on only one of the two systems trains the wrong muscle memory.
+;; Available as a prefix for script-local combos (SC056 & <key>::) if a use case
+;; for the extra key space ever shows up.
+SC056:: {
+  ; intentionally dead
+}
 
 
 ;; US Layout (QWERTY) / Colemak braces re-map: () <-> []
@@ -120,130 +107,7 @@ SC056::Control  ; -> Control (less distance)
 ;<^>!o::SendInput("{ASC 125}") ; AltGr-E -> }
 ;ó::SendInput("{ASC 125}")     ; AltGr-E -> }
 
-;; Simulate a NUMPAD (win+ctrl+[x])
-;#^6::NumLock
-;#^7::NumpadDiv
-;#^8::NumpadMult
-;#^0::NumpadSub
-;#^-::NumpadAdd
-;#^j::Numpad7
-;#^l::Numpad8
-;#^u::Numpad9
-;#^h::Numpad4
-;#^n::Numpad5
-;#^e::Numpad6
-;#^b::Numpad0
-;#^k::Numpad1
-;#^m::Numpad2
-;#^,::Numpad3
-;#^/::NumpadDot
 ;; }}} = END: Hacker Remapping & Special Keys ================================e
-
-;; {{{ = ScrollLock Alternative Keys =========================================
-;; ScrollLock toggles the following alternative keys
-#HotIf GetKeyState("ScrollLock", "T")
-
-;; (AnyMod)w/a/r/s -> (AnyMod)ArrowKeys
-*w::Up
-*r::Down
-*a::Left
-*s::Right
-
-;; (AnyMod)p/t/q/f -> (AnyMod)PageUp/-Down/Home/End
-*p::PgUp
-*t::PgDn
-*q::Home
-*f::End
-
-;; Simulate a NumPad
-*SC029::NumLock ; ~ -> NumLock
-*1::Numpad1     ; 1 -> NumPad 1
-*2::Numpad2     ; 2 -> NumPad 2
-*3::Numpad3     ; 3 -> NumPad 3
-*4::Numpad4     ; 4 -> NumPad 4
-*5::Numpad5     ; 5 -> NumPad 5
-*6::Numpad6     ; 6 -> NumPad 6
-*7::Numpad7     ; 7 -> NumPad 7
-*8::Numpad8     ; 8 -> NumPad 8
-*9::Numpad9     ; 9 -> NumPad 9
-*0::Numpad0     ; 0 -> NumPad 0
-*-::NumpadSub   ; - -> NumPad -
-*=::NumpadAdd   ; = -> NumPad +
-*;::NumpadDot   ; ; -> NumPad .
-*[::NumpadMult  ; [ -> NumPad *
-*]::NumpadDiv   ; ] -> NumPad /
-
-;; Simulate a Mouse
-;; source: https://www.autohotkey.com/boards/viewtopic.php?t=24588
-<#u::  MouseMove(0, -1, 0, "R")   ; LWin-u -> mouse cursor up 1px
-*u::  MouseMove(0, -20, 0, "R")    ; (AnyMod)u -> mouse cursor up 20px
-<#e::  MouseMove(0, 1, 0, "R")    ; LWin-e -> mouse cursor down 1px
-*e::  MouseMove(0, 20, 0, "R")     ; (AnyMod)e -> mouse cursor down 20px
-<#n::  MouseMove(-1, 0, 0, "R")   ; LWin-n -> mouse cursor left 1px
-*n::  MouseMove(-20, 0, 0, "R")    ; (AnyMod)n -> mouse cursor left 20px
-<#i::  MouseMove(1, 0, 0, "R")    ; LWin-i -> mouse cursor right 1px
-*i::  MouseMove(20, 0, 0, "R")     ; (AnyMod)i -> mouse cursor right 20px
-*o::  Click("right")               ; (AnyMod)h -> (AnyMod) mouse right click
-;; Left mouse button simulation with option to drag on key down (hold)
-;; source: https://autohotkey.com/board/topic/59665-key-press-and-hold-emulates-mouse-click-and-hold-win7/
-*h::                          ; (AnyMod)o -> (AnyMod) mouse left click and hold
-{
-  If (A_PriorHotKey = A_ThisHotKey)
-      return
-  Click("down")
-}
-*h up::  Click("up")               ; (AnyMod) o -> (AnyMod) mouse left click release
-
-;; Ignore all remaining regular keys so not to write anything by mistake
-*g::
-*j::
-*l::
-*y::
-*d::
-*'::
-*\::
-*z::
-*x::
-*c::
-*v::
-*b::
-*k::
-*m::
-*,::
-*.::
-*/::
-  ;; do nothing
-
-#HotIf
-;; }}} = END: ScrollLock Alternative Keys ====================================
-
-;; {{{ = CapsLock + [Key] ====================================================
-;; http://www.autohotkey.com/board/topic/113783-hand-friendly-text-navigation-help/
-;CapsLock & w::
-;  if getKeyState("alt") = 0
-;    SendInput, {Up}
-;  else
-;    SendInput, {PageUp}
-;return
-;CapsLock & a::
-;  if getKeyState("alt") = 0
-;    SendInput, {Left}
-;  else
-;e   SendInput, {Home}
-;return
-;CapsLock & r::
-;  if getKeyState("alt") = 0
-;    SendInput, {Down}
-;  else
-;    SendInput, {PageDown}
-;return
-;CapsLock & s::
-;  if getKeyState("alt") = 0
-;    SendInput, {Right}
-;  else
-;    SendInput, {End}
-;return
-;; }}} = END: CapsLock + [KEY] ===============================================
 
 ;; {{{ = Media Keys ==========================================================
 ;; Simulate Media Keys (alternative shortcuts)
@@ -278,8 +142,6 @@ SC056::Control  ; -> Control (less distance)
   local tt_text := "
   (
 c: toggle caps lock
-s: toggle scroll lock (alternative keys)
-n: toggle num lock
 p: print screen
   )"
   ToolTip(tt_text)
@@ -299,12 +161,6 @@ p: print screen
     ; c/C: toggle caps lockCapsLockc
     case "c": SendInput("{CapsLock On}")
     case "C": SendInput("{CapsLock Off}")
-    ; s/S: toggle scroll lock
-    case "s": SendInput("{ScrollLock On}")
-    case "S": SendInput("{ScrollLock Off}")
-    ; n/N: toggle num lock
-    case "n": SendInput("{NumLock On}")
-    case "N": SendInput("{NumLock Off}")
     ; p: print screen
     case "p": SendInput("{PrintScreen}")
   }

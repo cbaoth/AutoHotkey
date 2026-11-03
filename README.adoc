@@ -76,8 +76,8 @@ Keybiding excerpts _(some disabled in my current setup)_:
 |{icon-ok}|`Win-Alt-=` _(+)_|`MediaKey: Raise Volume`|_See above ..._
 |{icon-ok}|`Win-x, Win-c`|Close current window|Same as Alt-F4
 |{icon-ok}|`Win-x, Win-k`|Kill current window (process)|Easily kill app if not responding
-|{icon-ok}|`Alt/Shift-ScrollLock`|Toggle CapsLock|Noone really needs CapsLock nowadays but sometimes it is activated for no apparent reason, so it's good to have a key-binding to deactivate it.
-|{icon-ok}|`SC056` _(DE: `<>&#124;`)_|`Control`|If, for some strange twist of faith, I'm forced to use a german QWERTZ keyboard, the otherwise useless `<>&#124;` key will be re-mapped to `Control`.
+|{icon-ok}|`CapsLock` _(hold)_|Extend layer|Navigation, editing and home-row modifiers from the home position, see link:Incl/Extend.ahk[]. Mirrors the XKB/sway setup in my dotfiles.
+|{icon-x}|`SC056` _(DE: `<>&#124;`)_|_(dead)_|Hyper on linux, but Windows has no Hyper - left unmapped on purpose so no muscle memory builds up around a key that behaves differently per platform.
 |{icon-x}|`[ ]`|`( )`|Classic lisp hacker / emacs mapping, but also practical in daily life, since `( )` is more commonly used than `[ ]` even though dedicated keys exist for the latter.
 |{icon-ok}|`AltGr-n/e`|`( )`|Home-row access to brackets _(`j/k` on US layout)_.
 |{icon-ok}|`AltGr-N/E`|`[ ]`|Home-row access to brackets _(`J/K` on US layout)_.
@@ -89,7 +89,7 @@ Additional _(currently disabled)_ mappings exist for:
 * German umlauts accessible on default german keyboard positions + `AltGr` (e.g. `AltGr-;` &rarr; `ö`) or like on common international layout _(AltGr)_ position (e.g. `AltGr-p` &rarr; `ö`).
 ** The latter is already the case with the international US Colemak layout.
 * `CapsLock` &rarr; `Backspace`
-** Already default with Colemak layout _(partially not the case in the past)_.
+** Was the default with the Colemak layout, now replaced by the Extend layer _(`Backspace` moved to `Extend-o`)_.
 * `CapsLock` &rarr; `Control`
 ** Old hacker mapping _(e.g. from emacs users)_ but no longer preferred by me. Ctrl already easily accessible but `backspace` requires leaving home-row, so I prefer `backspace` instead.
 
