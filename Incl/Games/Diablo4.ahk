@@ -1,6 +1,6 @@
 ﻿; Diablo4.ahk: Diablo 4 scripts
 
-#HotIf WinActive("Diablo IV", )
+#HotIf StrLower(A_ComputerName) = "motoko" && !WinActive("ahk_exe msrdc.exe") && WinActive("Diablo IV", )
 
 ;; {{{ = HotKeys =============================================================
 ;~WheelDown::rndSleepSend(["w", "f"], 50, 200)
@@ -14,4 +14,4 @@
 ;; {{{ = Diablo 4 Functions ==================================================
 ;; }}} = END: Diablo 4 Functions =============================================
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")

@@ -239,7 +239,7 @@ service-restart [t: Cold Turkey]
 ;; Win-LAlt-T, [Key] - General start sequence for all (covered) apps
 
 ;; Microsoft OneNote control sequence
-#HotIf InStr(WinGetProcessName("A"), "ONENOTE.exe")
+#HotIf !WinActive("ahk_exe msrdc.exe") && InStr(WinGetProcessName("A"), "ONENOTE.exe")
 ;; Win-LAlt-T, [Key] - Use the general "App" control sequence
 #<!t::
 {
@@ -267,7 +267,7 @@ p: Copy link to paragraph
       Send("p") ; Assuming 'p' is the underlined letter for "Paragraph"
   }
 }
-#HotIf !WinActive(, )
+#HotIf !WinActive("ahk_exe msrdc.exe") && !WinActive(, )
 ;; }}} - END: Apps -----------------------------------------------------------
 ;; }}} = END: Control Sequences ==============================================
 

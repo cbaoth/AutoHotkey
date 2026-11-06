@@ -1,6 +1,6 @@
 ; OblivionRM.ahk: Oblivion Remastered
 
-#HotIf WinActive("The Elder Scrolls IV: Oblivion Remastered", )
+#HotIf StrLower(A_ComputerName) = "motoko" && !WinActive("ahk_exe msrdc.exe") && WinActive("The Elder Scrolls IV: Oblivion Remastered", )
 
 ; ;; Map LAlt-[WARS] (Colemak) to arrow keys for convenient menue navigation
 ; <!w::Up         ; LAlt-e (Colemak WARS) -> Up arrow
@@ -18,4 +18,4 @@
 ; ;; Map Alt-X to K to open local map directly or toggle local/world map if already open
 ; <!x::k  ; LAlt-X -> K
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")

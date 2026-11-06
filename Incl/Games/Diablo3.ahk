@@ -1,6 +1,6 @@
 ﻿; Diablo3.ahk: Diablo 3 scripts
 
-#HotIf WinActive("Diablo III", )
+#HotIf StrLower(A_ComputerName) = "motoko" && !WinActive("ahk_exe msrdc.exe") && WinActive("Diablo III", )
 
 ;; {{{ = HotKeys =============================================================
 ; switch to broken crown, expected in inventory 10x1
@@ -98,4 +98,4 @@ _d3ClickInventory(clip_pos, click_pylon, find_img_on, find_img_off, find_img_sca
 }
 ;; }}} = END: Diablo 3 Functions =============================================
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")

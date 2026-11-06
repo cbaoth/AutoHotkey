@@ -37,6 +37,7 @@ SetTitleMatchMode("RegEx") ; https://autohotkey.com/docs/commands/SetTitleMatchM
 ;; Register on-clipboard-change event (defined below), must be before hotkeys
 OnClipboardChange(clipChanged, -1)
 
+#HotIf !WinActive("ahk_exe msrdc.exe")
 ;; Win-F12: reload this script
 #F12::{
   ToolTip("Restarting ..")
@@ -211,13 +212,13 @@ MoveActiveWindowToAdjacentDesktop(direction) {
 
 ;; {{{ - Putty ---------------------------------------------------------------
 ;; Define ssh hotkeys based on current host (map Win-F* to putty profiles)
-#HotIf RegExMatch(A_ComputerName, "i)^de\d+") ; Work host?
+#HotIf !WinActive("ahk_exe msrdc.exe") && RegExMatch(A_ComputerName, "i)^de\d+") ; Work host?
 #F2::Run(PUTTY " -load `"saito (remote)`"")
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")
 
-#HotIf !RegExMatch(A_ComputerName, "i)^de\d+") ; Non-work host?
+#HotIf !WinActive("ahk_exe msrdc.exe") && !RegExMatch(A_ComputerName, "i)^de\d+") ; Non-work host?
 #F2::Run(PUTTY " -load `"saito`"")
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")
 
 #F1::Run(PUTTY " -load `"11001001.org`"")  ; Win-F1 -> SSH to 11001001.org
 #!F1::Run(PUTTY) ; Win-Alt-F1 -> open Putty
@@ -255,7 +256,7 @@ MoveActiveWindowToAdjacentDesktop(direction) {
 ;; }}} - END: Win-R, [Key] control sequences ---------------------------------
 
 ;; {{{ - Others --------------------------------------------------------------
-#HotIf A_ComputerName = "PUPPET" ; Puppet (Lenovo notebook) only
+#HotIf !WinActive("ahk_exe msrdc.exe") && A_ComputerName = "PUPPET" ; Puppet (Lenovo notebook) only
 
 ;; Win-Shift-q: Lenovo quick settings
 #+q::{
@@ -264,7 +265,7 @@ MoveActiveWindowToAdjacentDesktop(direction) {
   }
 }
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")
 ;; }}} - END: Others ---------------------------------------------------------
 ;; }}} = END: App Launcher ===================================================
 

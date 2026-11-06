@@ -64,6 +64,12 @@ DetectHiddenWindows(true) ; include hidden windows
 #!F8::_toggleShowTrackedWindows(true, true) ; bl + clipboard on close, show final tt 5sec
 ;#+F8::_toggleShowTrackedWindows(true,0,0) ; bl + no clipboard, close immediate
 ;#F8::_toggleShowTrackedWindows(true,2) ; bl + always clipboard (each change)
+
+; Consume the tracking toggles in WSLg so they are not sent to Sway.
+#HotIf WinActive("ahk_exe msrdc.exe")
+#F8::return
+#!F8::return
+#HotIf !WinActive("ahk_exe msrdc.exe")
 ;; }}} - END: HotKeys --------------------------------------------------------
 ;; }}} = END: Environment ====================================================
 
@@ -76,14 +82,15 @@ DetectHiddenWindows(true) ; include hidden windows
 ; track_active: track active window if true, else track window below cursor
 _trackWindows(track_active, is_first_time:=false, interval:=.2) {
   ; temporary window details (currently active window)
-  local new_id, win_id, win_title, win_class, win_pid, win_exe
+  local new_id, active_id, win_id, win_title, win_class, win_pid, win_exe
 
   ; get current window / mouseover details
   if track_active {
     win_id := WinGetID("A")
   } else {
-    MouseGetPos(, , &win_id)
+    win_id := _getWindowUnderMouse()
   }
+  active_id := WinGetID("A")
 
   win_title := WinGetTitle("ahk_id " win_id)
   win_class := WinGetClass("ahk_id " win_id)
@@ -110,8 +117,8 @@ _trackWindows(track_active, is_first_time:=false, interval:=.2) {
       } else {
         ; continue until the window below the mouse cursor changes
         Sleep(interval * 1000)
-        MouseGetPos(, , &new_id)
-        if (new_id != win_id) { ; window below cursor has changed
+        new_id := _getWindowUnderMouse()
+        if (new_id != win_id || WinGetID("A") != active_id) { ; cursor target or focus changed
           break ; stop and update details (below)
         }
       }
@@ -132,7 +139,7 @@ _updateWindowDetails(track_active, prev_id:="", prev_title:="", prev_class:="", 
   if track_active {
     win_id := WinGetID("A")
   } else {
-    MouseGetPos(, , &win_id)
+    win_id := _getWindowUnderMouse()
   }
   win_title := WinGetTitle("ahk_id " win_id)
   win_class := WinGetClass("ahk_id " win_id)
@@ -160,6 +167,20 @@ _updateWindowDetails(track_active, prev_id:="", prev_title:="", prev_class:="", 
     ; previous window not blacklisted and not active/same? -> update previous
     _setWindowVars("previous", prev_id, prev_title, prev_class, prev_pid, prev_exe)
   }
+}
+
+; MouseGetPos can miss WSLg's RAIL window, so check its screen bounds as a fallback.
+_getWindowUnderMouse() {
+  local mouse_x, mouse_y, win_id, candidate_id, x, y, width, height
+  MouseGetPos(&mouse_x, &mouse_y, &win_id)
+  try {
+    for candidate_id in WinGetList("ahk_exe msrdc.exe") {
+      WinGetPos(&x, &y, &width, &height, "ahk_id " candidate_id)
+      if (mouse_x >= x && mouse_x < x + width && mouse_y >= y && mouse_y < y + height)
+        return candidate_id
+    }
+  }
+  return win_id
 }
 
 ; set active window details

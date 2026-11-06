@@ -1,6 +1,6 @@
 ﻿; Skyrim.ahk: Some Skyrim hotkeys
 
-#HotIf WinActive("ahk_exe TESV.exe || ahk_exe SkyrimSE.exe", )
+#HotIf StrLower(A_ComputerName) = "motoko" && !WinActive("ahk_exe msrdc.exe") && WinActive("ahk_exe TESV.exe || ahk_exe SkyrimSE.exe", )
 
 #[::{
   SetKeyDelay(25)
@@ -24,4 +24,4 @@
   SetKeyDelay(-1)
 }
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")

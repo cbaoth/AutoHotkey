@@ -121,7 +121,7 @@ ExtRelease() {
 ;; }}} = END: Extend Key =====================================================
 
 ;; {{{ = Extend Layer ========================================================
-#HotIf GetKeyState("SC03A", "P")
+#HotIf !WinActive("ahk_exe msrdc.exe") && GetKeyState("SC03A", "P")
 
 ;; {{{ - Function Row: Multimedia --------------------------------------------
 *Esc::SetCapsLockState(GetKeyState("CapsLock", "T") ? "AlwaysOff" : "AlwaysOn")
@@ -207,5 +207,5 @@ ExtRelease() {
 *m up::ExtClick("Middle", false)
 ;; }}} - END: Mouse ----------------------------------------------------------
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")
 ;; }}} = END: Extend Layer ===================================================

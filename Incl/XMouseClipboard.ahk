@@ -35,32 +35,32 @@ SetTitleMatchMode("RegEx")
 
 ;; enable feature for all but a few apps that e.g. already use middleclick
 ;; paste (like some terminals) or that have other issues with this feature
-#HotIf !WinActive("ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty|PuttyNG|Qt5QWindowIcon|GxWindowClass)$", )
+#HotIf !WinActive("ahk_exe msrdc.exe") && !WinActive("ahk_class i)^(MozillaWindowClass|Chrome_WidgetWin_1|KiTTY|Putty|PuttyNG|Qt5QWindowIcon|GxWindowClass)$", )
   ;; w/o click-through (~). these apps already support middle-click paste
   ;; $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
   $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
-#HotIf !WinActive(, )
+#HotIf !WinActive("ahk_exe msrdc.exe")
 ;; we generally excluded Chrome_WidgetWin_1 in the default bindings above
 ;; since some electron apps requiring other keys, so we have to (re-)activate
 ;; the same default bindings for all compatible electron apps and chrome itself
-#HotIf WinActive("ahk_exe i)(chrome|Code)\.exe$", )
+#HotIf !WinActive("ahk_exe msrdc.exe") && WinActive("ahk_exe i)(chrome|Code)\.exe$", )
   $~mbutton::_xPasteOnMiddleClick() ; Ctrl-v
   $~+mbutton::_xPasteOnMiddleClick(, "{ASC 34}") ; add double quotes ""
-#HotIf !WinActive(, )
+#HotIf !WinActive("ahk_exe msrdc.exe")
 
 ;; and some (partially electron based) terminals require Ctrl-Shift-v and no
 ;; click-throng {~}
-#HotIf WinActive("ahk_exe i)(terminus|hyper)\.exe$", )
+#HotIf !WinActive("ahk_exe msrdc.exe") && WinActive("ahk_exe i)(terminus|hyper)\.exe$", )
   $mbutton::_xPasteOnMiddleClick("^+v") ; Ctrl-Shift-v
   $+mbutton::_xPasteOnMiddleClick("^+v", "{ASC 34}") ; add double quotes ""
-#HotIf !WinActive(, )
+#HotIf !WinActive("ahk_exe msrdc.exe")
 
 ;; map ctrl-(shift-)v to middle-click for apps that natively support
 ;; middle-click pasting but don't support ctrl-v (like some terminals)
-#HotIf WinActive("ahk_class i)(KiTTY|Putty|PuttyNG)$", )
+#HotIf !WinActive("ahk_exe msrdc.exe") && WinActive("ahk_class i)(KiTTY|Putty|PuttyNG)$", )
   ^v::_xPasteOnMiddleClick("{MButton}")
   ^+v::_xPasteOnMiddleClick("{MButton}", "{ASC 34}")
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")
 ;; }}} - END: Paste On MiddleClick -------------------------------------------
 ;; }}} = END: HotKeys ========================================================
 

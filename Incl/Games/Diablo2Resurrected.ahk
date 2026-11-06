@@ -3,18 +3,18 @@
 ;; Expected in-game keyboard shortcuts (assuming Colemak layout)
 ;;   QWFPARST: Skills 1-8 (default: F1-8)
 
-#HotIf WinActive("ahk_exe i)Diablo II Resurrected.*D2R\.exe$", )
+#HotIf StrLower(A_ComputerName) = "motoko" && !WinActive("ahk_exe msrdc.exe") && WinActive("ahk_exe i)Diablo II Resurrected.*D2R\.exe$", )
 
 ;; select and execute skill (rapid fire on hold)
 d2rSkill(skillKey) {
   Loop{
     SendInput("{Click Down Right}")
-    rndSleep(50, 100)
+    Sleep(Random(50, 100))
     SendInput("{Click Up Right}")
     if (!GetKeyState(skillKey)) {
         break
     }
-    rndSleep(50, 100)
+    Sleep(Random(50, 100))
   }
 }
 
@@ -25,13 +25,13 @@ global d2rHKToggle := false
 {
   d2rHKToggle := !d2rHKToggle
   ToolTip("D2R Hotkeys: " . (d2rHKToggle ? "ON" : "OFF"))
-  RemoveToolTipDelay(1)
+  SetTimer(() => ToolTip(), -1000)
 }
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")
 
 ;; hotkeys to be toggled via ctrl-~ (combat/typing)
-#HotIf d2rHKToggle and WinActive("ahk_exe i)Diablo II Resurrected.*D2R\.exe$")
+#HotIf StrLower(A_ComputerName) = "motoko" && !WinActive("ahk_exe msrdc.exe") && d2rHKToggle and WinActive("ahk_exe i)Diablo II Resurrected.*D2R\.exe$")
 
 ;#UseHook ON
 
@@ -83,4 +83,4 @@ global d2rHKToggle := false
 
 ;; }}} - END: Hotkeys w/ Toggle ----------------------------------------------
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")

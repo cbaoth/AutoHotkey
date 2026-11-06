@@ -16,7 +16,7 @@
 ;; tab (panic) and qwfpgj (qwert) with optional meta key Alt must be used,
 ;; drastically reducing finger movements in combat situations.
 
-#HotIf WinActive("ahk_class POEWindowClass", )
+#HotIf StrLower(A_ComputerName) = "motoko" && !WinActive("ahk_exe msrdc.exe") && WinActive("ahk_class POEWindowClass", )
 
 ;; rndSleepSendSeq wrapper with default sleep time range for skill actions
 ;; Some skill (non-instant) take time to cast, meaning if the sequence is
@@ -25,7 +25,11 @@
 ;; the end of the sequence (that's why we don't randomize keys here).
 poeRndSleepSendSeq(keyArray) { ; just a wrapper to set some defaults
   ; tweek depening on the current skill setup, min 150 has worked well for me
-  rndSleepSendSeq(keyArray, 150, 200)
+  for index, key in keyArray {
+    if (index > 1)
+      Sleep(Random(150, 200))
+    Send(key)
+  }
 }
 
 ;;; TODO make this configurable
@@ -130,7 +134,12 @@ WheelDown::Send("{Down}")
 ;SC029:: ; hyphon "`"
 ;!SC029:: ; alt-hyphon (alt may be pressed by mistake)
 tab::{ ; tab
-  rndSleepSend(["1","2","3","4","5"], 5, 50)
+  local flasks := ["1", "2", "3", "4", "5"]
+  Loop flasks.Length {
+    if (A_Index > 1)
+      Sleep(Random(5, 50))
+    Send(flasks.RemoveAt(Random(1, flasks.Length)))
+  }
 }
 
 ;; LControl + MButton: auto-left-click until either LControl/MButton released
@@ -156,4 +165,4 @@ tab::{ ; tab
   }
 }
 
-#HotIf
+#HotIf !WinActive("ahk_exe msrdc.exe")
