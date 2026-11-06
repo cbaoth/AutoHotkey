@@ -71,30 +71,35 @@ WinSetBorderColor(isVisible := 1, color:=0x00b7c3, windowID := "A") {
 ;; Toggle window's sticky state (show on all virtual desktops)
 ;; https://www.autohotkey.com/boards/viewtopic.php?t=74849
 ;; newSate: 0 = Off, 1 = On, -1 = Toggle
-WinSetSticky(newSate := 1, windowID := "A") {
-    ExStyle := WinGetExStyle(windowID)  ; "A" means the active window
+;; WS_EX_TOOLWINDOW (0x80) windows are shown on all virtual desktops.
+WinSetSticky(newSate := 1, windowID := "A", quiet := false) {
     try {
+        ExStyle := WinGetExStyle(windowID)  ; "A" means the active window
         if (newSate == 1) {
-            WinSetExStyle("+0x80", windowID)  ; Set always on top
+            WinSetExStyle("+0x80", windowID)
             isEnabled := true
         } else if (newSate == 0) {
-            WinSetExStyle("-0x80", windowID)  ; Remove always on top
+            WinSetExStyle("-0x80", windowID)
             isEnabled := false
         } else {  ; toggle
-            if (ExStyle & 0x00000080) {  ; Check if the window is already always on top
-                WinSetExStyle("-0x80", windowID)  ; Remove always on top
+            if (ExStyle & 0x00000080) {
+                WinSetExStyle("-0x80", windowID)
                 isEnabled := false
             } else {
-                WinSetExStyle("+0x80", windowID)   ; Set always on top
+                WinSetExStyle("+0x80", windowID)
                 isEnabled := true
             }
         }
-        WinSetBorderColor(isEnabled)
-        ToolTip("Sticky state: " . (isEnabled ? "on" : "off"))
-        RemoveToolTipDelay(1.5)
+        WinSetBorderColor(isEnabled, , windowID)
+        if (!quiet) {
+            ToolTip("Sticky state: " . (isEnabled ? "on" : "off"))
+            RemoveToolTipDelay(1.5)
+        }
+        return true
     } catch as e {
         ToolTip("Cannot change sticky state for this window.`n(Access denied or protected process)")
         RemoveToolTipDelay(1.5)
+        return false
     }
 }
 ;; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)

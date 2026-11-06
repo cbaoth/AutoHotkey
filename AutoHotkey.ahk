@@ -84,41 +84,51 @@ OnClipboardChange(clipChanged, -1)
 ;#5::return
 ;#6::return
 
-;; TODO consider all non-core mappings from the main file to separate file(s)
+;; WARNING low level built in windows shortcuts will (most likely) interefre unless they are disabled (see
+;;   `toggle_windows_hotkeys_in_registry.cmd` for details)
 ;; Simple solution for virtual desktop navigation and window management
-;; Win-Ctrl-q/w: Desktop previous/next
-#^q::{
+;; Win-q/w: Desktop previous/next
+#q::{
   Send("#^{Left}")
   ;; FIXME or remove
   ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
   ;RemoveToolTipDelay(0.35)
 }
-#^w::{
+#w::{
   Send("#^{Right}")
   ;; FIXME or remove
   ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
   ;RemoveToolTipDelay(0.35)
 }
 
-;; Win-Ctrl-Shift-q/w: Desktop previous/next moving currently active window to target desktop
-#^+q:: {
-  WinSetSticky(1) ; Set sticky state for current window
-  ;; TODO check if sleep is acutally needed, added as a precaution
-  Sleep(50) ; Wait a bit to ensure the sticky state is set
-  Send("#^{Left}")
-  Sleep(50) ; Wait a bit to ensure we are on the new desktop
-  WinSetSticky(0) ; Remove sticky state from current window
-}
-#^+w::{
-  WinSetSticky(1) ; Set sticky state for current window
-  ;; TODO check if sleep is acutally needed, added as a precaution
-  Sleep(50) ; Wait a bit to ensure the sticky state is set
-  Send("#^{Right}")
-  Sleep(50) ; Wait a bit to ensure we are on the new desktop
-  WinSetSticky(0) ; Remove sticky state from current window
+;; Win-Shift-q/w: Desktop previous/next moving currently active window to target desktop
+#+q::MoveActiveWindowToAdjacentDesktop("Left")
+#+w::MoveActiveWindowToAdjacentDesktop("Right")
+
+MoveActiveWindowToAdjacentDesktop(direction) {
+  if !(hwnd := WinExist("A")) {
+    return
+  }
+  win := "ahk_id " hwnd
+  try wasSticky := !!(WinGetExStyle(win) & 0x80)
+  catch {
+    return
+  }
+  if !wasSticky && !WinSetSticky(1, win, true) {
+    return
+  }
+  ;; TODO check if sleeps are actually needed, added as a precaution
+  Sleep(250)
+  Send("#^{" direction "}")
+  Sleep(250)
+  ;; Restore the original sticky state on the captured window, not whichever is active now.
+  if !wasSticky {
+    WinSetSticky(0, win, true)
+  }
+  try WinActivate(win)
 }
 
-;; FIXRME or remove
+;; FIXME or remove
 ; ;; Destop Switcher
 ; ;; Original version by pmb6tz: https://github.com/pmb6tz/windows-desktop-switcher
 ; #Include "Incl\DesktopSwitcher.ahk"  ; Desktop Switcher
