@@ -74,66 +74,54 @@ OnClipboardChange(clipChanged, -1)
 ;; Bind *#F8 hotkeys to window detail tracking tooltip
 #Include "Incl\WindowTracking.ahk"
 
-;; FIXME or remove
-;; Virtual Desktop stuff (advanced)
-;#Include "Incl\VirtualDesktop.ahk"
-;; TODO Temporarily disable annoying win-1+ hotkeys until vd selection is impl.
-;#1::return
-;#2::return
-;#3::return
-;#4::return
-;#5::return
-;#6::return
+;; Virtual desktop helpers (pin window to all desktops)
+#Include "Incl\VirtualDesktop.ahk"
 
 ;; WARNING low level built in windows shortcuts will (most likely) interefre unless they are disabled (see
 ;;   `toggle_windows_hotkeys_in_registry.cmd` for details)
 ;; Simple solution for virtual desktop navigation and window management
 ;; Win-q/w: Desktop previous/next
-#q::{
-  Send("#^{Left}")
-  ;; FIXME or remove
-  ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
-  ;RemoveToolTipDelay(0.35)
-}
-#w::{
-  Send("#^{Right}")
-  ;; FIXME or remove
-  ;ToolTip("Desktop: " . VirtualDesktops.GetCurrentVirtualDesktopName())
-  ;RemoveToolTipDelay(0.35)
-}
+#q::Send("#^{Left}")
+#w::Send("#^{Right}")
 
 ;; Win-Shift-q/w: Desktop previous/next moving currently active window to target desktop
 #+q::MoveActiveWindowToAdjacentDesktop("Left")
 #+w::MoveActiveWindowToAdjacentDesktop("Right")
 
 MoveActiveWindowToAdjacentDesktop(direction) {
+  ;; Buffer other hotkeys (e.g. a quick Win-q back) until the window is unpinned again.
+  Critical("On")
   if !(hwnd := WinExist("A")) {
     return
   }
-  win := "ahk_id " hwnd
-  try wasSticky := !!(WinGetExStyle(win) & 0x80)
-  catch {
+  ;; Pin temporarily so the window follows the desktop switch, then unpin on the new desktop.
+  try {
+    wasPinned := VirtualDesktop.IsWindowPinned(hwnd)
+    if !wasPinned {
+      VirtualDesktop.PinWindow(hwnd, true)
+    }
+  } catch {
     return
   }
-  if !wasSticky && !WinSetSticky(1, win, true) {
-    return
-  }
-  ;; TODO check if sleeps are actually needed, added as a precaution
-  Sleep(250)
+  static regKey := "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops"
+  try startDesktop := RegRead(regKey, "CurrentVirtualDesktop")
   Send("#^{" direction "}")
-  Sleep(250)
-  ;; Restore the original sticky state on the captured window, not whichever is active now.
-  if !wasSticky {
-    WinSetSticky(0, win, true)
+  ;; Wait until explorer has switched (falls back to a fixed delay if the value is unavailable).
+  if IsSet(startDesktop) {
+    loop 50 {
+      Sleep(10)
+      try if (RegRead(regKey, "CurrentVirtualDesktop") != startDesktop) {
+        break
+      }
+    }
+  } else {
+    Sleep(250)
   }
-  try WinActivate(win)
+  if !wasPinned {
+    try VirtualDesktop.PinWindow(hwnd, false)
+  }
+  try WinActivate(hwnd)
 }
-
-;; FIXME or remove
-; ;; Destop Switcher
-; ;; Original version by pmb6tz: https://github.com/pmb6tz/windows-desktop-switcher
-; #Include "Incl\DesktopSwitcher.ahk"  ; Desktop Switcher
-; ;; See Config/DesktopSwitcherConfig.ahk for user configuration
 
 ;; Bin *F10 hotkeys to confine mouse to active window
 ;If !(InStr(A_ComputerName, "motoko") = 1) { ; No workstation (large display)?
@@ -307,16 +295,17 @@ MoveActiveWindowToAdjacentDesktop(direction) {
 ;; {{{ - Window States -------------------------------------------------------
 ;; Win-Alt-t: Toggle window's always-on-top state
 ;#!t::WinSetAlwaysOnTop(-1, "A")
-;; DISABLED, part of Microsoft PowerToys
+;; DISABLED, handled by PowerToys "Always On Top" (hotkey remapped to Win-Alt-t, border 3px,
+;; see WinSetBorderColor in Incl\WindowManagement.ahk)
 
 ;; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
 #!s::WinSetSticky(-1)
 ;; }}} - END: Window States --------------------------------------------------
 
 ;; {{{ - Window Navigation ---------------------------------------------------
-;; TODO currently only toggles between two windows, should cycle through all
-;; Win-Alt-Tab: Navigate between windows of the same application
-;#<!Tab::SwitchWindowsSameApp()
+;; Win-LAlt-[Shift-]Tab: Cycle [backwards] through windows of the active app (current desktop)
+#<!Tab::SwitchWindowsSameApp()
+#<!+Tab::SwitchWindowsSameApp(true)
 ;; }}} - END: Window Navigation  ---------------------------------------------
 
 ;; }}} = END: Additional HotKeys =============================================

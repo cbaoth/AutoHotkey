@@ -16,9 +16,8 @@
 ;; https://www.autohotkey.com/boards/viewtopic.php?style=23&p=548984&sid=afd051d6ea368ec36bb489a3c0a6279f#p548984
 ;; WARNINGS:
 ;; This does not work with any Windows version before Windows 11
-;; This seems to interfere with the optional border shown by PowerToys "Always on Top".
-;; - Enable "Always on Top" followed by this border, and both will be shown.
-;; - Enable this border followed by "Always on Top", and only this border will be shown.
+;; Used as sticky indicator. PowerToys "Always On Top" (Win-Alt-t, remapped) draws its own
+;; overlay border, intentionally set to 3px there so this 1px border stays visible on top of it.
 WinSetBorderColor(isVisible := 1, color:=0x00b7c3, windowID := "A") {
     ; Exit if window does not exist
     if (! hwnd := WinExist(windowID))
@@ -45,65 +44,130 @@ WinSetBorderColor(isVisible := 1, color:=0x00b7c3, windowID := "A") {
 ;; }}} - END: Draw Border Around Active Window -------------------------------
 
 ;; {{{ - Navigate between windows of the same application --------------------
-;; TODO currently only toggles between two windows, should cycle through all
-; SwitchWindowsSameApp() {
-;     ; Get the process name of the active window
-;     activePID := WinGetPID("A")
-;     activeProcess := WinGetProcessName("ahk_pid " activePID)
+;; Alt+Tab-like candidate: visible, unowned (or app window), not a tool window,
+;; not cloaked (cloaked = e.g. on another virtual desktop), has a title.
+IsSwitchableWindow(hwnd) {
+    static WS_EX_TOOLWINDOW := 0x80, WS_EX_APPWINDOW := 0x40000, DWMWA_CLOAKED := 14
+    if !(WinGetStyle(hwnd) & 0x10000000) || WinGetTitle(hwnd) == ""
+        return false
+    exStyle := WinGetExStyle(hwnd)
+    if (exStyle & WS_EX_TOOLWINDOW)
+        return false
+    if DllCall("GetWindow", "Ptr", hwnd, "UInt", GW_OWNER := 4, "Ptr") && !(exStyle & WS_EX_APPWINDOW)
+        return false
+    DllCall("dwmapi\DwmGetWindowAttribute", "Ptr", hwnd, "UInt", DWMWA_CLOAKED, "UInt*", &cloaked := 0, "UInt", 4)
+    return !cloaked
+}
 
-;     ; Get a list of all windows
-;     windows := WinGetList("ahk_pid " activePID)
-
-;     ; If there are multiple windows of the same application, switch to the next one
-;     if (windows.Length > 1) {
-;         ;Tooltip("Switching windows of the same application... " . arrayJoin(", ", sameAppWindows*))
-;         ;RemoveToolTipDelay(1.5)
-;         currentIndex := arrayIndexOf(WinGetID("A"), windows*)
-;         nextIndex := Mod(currentIndex, windows.Length) + 1
-;         WinActivate("ahk_id " windows[nextIndex])
-;     }
-; }
-; ;; Win-Alt-Tab: Navigate between windows of the same application
-; #<!Tab::SwitchWindowsSameApp()
+;; Cycle through windows of the active app on the current desktop (reverse: backwards).
+;; Matches by process name, not PID (Chrome profiles, VS Code etc. share processes).
+SwitchWindowsSameApp(reverse := false) {
+    if !(activeHwnd := WinExist("A"))
+        return
+    try procName := WinGetProcessName(activeHwnd)
+    catch
+        return
+    candidates := []
+    ; WinGetList is in z-order (top first)
+    for hwnd in WinGetList() {
+        try {
+            if (hwnd != activeHwnd && IsSwitchableWindow(hwnd) && WinGetProcessName(hwnd) = procName)
+                candidates.Push(hwnd)
+        }
+    }
+    if !candidates.Length
+        return
+    ; Forward activates the app's bottom-most window; reverse undoes that by sinking the
+    ; active one just below the app's bottom-most window (not below all windows) and taking the top-most.
+    if reverse {
+        static SWP_NOSIZE_NOMOVE_NOACTIVATE := 0x13
+        DllCall("SetWindowPos", "Ptr", activeHwnd, "Ptr", candidates[candidates.Length]
+            , "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", SWP_NOSIZE_NOMOVE_NOACTIVATE)
+        try WinActivate(candidates[1])
+    } else {
+        try WinActivate(candidates[candidates.Length])
+    }
+}
 ;; }}} - END: Navigate between windows of the same application ---------------
 
 ;; {{{ - Change window states ------------------------------------------------
-;; Toggle window's sticky state (show on all virtual desktops)
-;; https://www.autohotkey.com/boards/viewtopic.php?t=74849
-;; newSate: 0 = Off, 1 = On, -1 = Toggle
-;; WS_EX_TOOLWINDOW (0x80) windows are shown on all virtual desktops.
-WinSetSticky(newSate := 1, windowID := "A", quiet := false) {
+;; Toggle window's sticky state (pinned to all virtual desktops, see VirtualDesktop.ahk)
+;; newState: 0 = Off, 1 = On, -1 = Toggle
+WinSetSticky(newState := 1, windowID := "A", quiet := false) {
     try {
-        ExStyle := WinGetExStyle(windowID)  ; "A" means the active window
-        if (newSate == 1) {
-            WinSetExStyle("+0x80", windowID)
-            isEnabled := true
-        } else if (newSate == 0) {
-            WinSetExStyle("-0x80", windowID)
-            isEnabled := false
-        } else {  ; toggle
-            if (ExStyle & 0x00000080) {
-                WinSetExStyle("-0x80", windowID)
-                isEnabled := false
-            } else {
-                WinSetExStyle("+0x80", windowID)
-                isEnabled := true
-            }
-        }
-        WinSetBorderColor(isEnabled, , windowID)
+        hwnd := WinExist(windowID)
+        isEnabled := newState == -1 ? !VirtualDesktop.IsWindowPinned(hwnd) : !!newState
+        VirtualDesktop.PinWindow(hwnd, isEnabled)
+        WinSetBorderColor(isEnabled, , hwnd)
+        StickyBorders.Track(hwnd, isEnabled)
         if (!quiet) {
             ToolTip("Sticky state: " . (isEnabled ? "on" : "off"))
             RemoveToolTipDelay(1.5)
         }
         return true
-    } catch as e {
-        ToolTip("Cannot change sticky state for this window.`n(Access denied or protected process)")
+    } catch {
+        ToolTip("Cannot change sticky state for this window.")
         RemoveToolTipDelay(1.5)
         return false
     }
 }
 ;; Win-Alt-s: Toggle window's sticky state (show on all virtual desktops)
 ;#!s::WinSetSticky(-1)
+
+;; Apps/DWM reset the custom border color on focus changes, so re-apply it to
+;; sticky windows after every window activation (shell hook).
+class StickyBorders {
+    static hwnds := Map()
+    static refreshFn := 0
+
+    static Init() {
+        this.refreshFn := ObjBindMethod(this, "Refresh")
+        DllCall("RegisterShellHookWindow", "Ptr", A_ScriptHwnd)
+        OnMessage(DllCall("RegisterWindowMessage", "Str", "SHELLHOOK", "UInt"), ObjBindMethod(this, "_OnShellHook"))
+        ; Pick up windows pinned before a script reload (or via Task View).
+        SetTimer(ObjBindMethod(this, "_TrackExisting"), -1)
+    }
+
+    static Track(hwnd, isSticky) {
+        if isSticky
+            this.hwnds[hwnd] := true
+        else if this.hwnds.Has(hwnd)
+            this.hwnds.Delete(hwnd)
+    }
+
+    static Refresh() {
+        for hwnd in [this.hwnds*] {
+            try {
+                if VirtualDesktop.IsWindowPinned(hwnd) {
+                    WinSetBorderColor(true, , hwnd)
+                    continue
+                }
+            }
+            this.hwnds.Delete(hwnd)
+        }
+    }
+
+    static _OnShellHook(wParam, *) {
+        static HSHELL_WINDOWACTIVATED := 4  ; & 0x7FFF also matches HSHELL_RUDEAPPACTIVATED
+        if (this.hwnds.Count && (wParam & 0x7FFF) == HSHELL_WINDOWACTIVATED) {
+            this.Refresh()
+            ; Some apps repaint their frame a bit later
+            SetTimer(this.refreshFn, -300)
+        }
+    }
+
+    static _TrackExisting() {
+        for hwnd in WinGetList() {
+            try {
+                if IsSwitchableWindow(hwnd) && VirtualDesktop.IsWindowPinned(hwnd) {
+                    this.Track(hwnd, true)
+                    WinSetBorderColor(true, , hwnd)
+                }
+            }
+        }
+    }
+}
+StickyBorders.Init()
 ;; }}} - END: Change window states -------------------------------------------
 
 ;; }}} = END: Functions ======================================================
