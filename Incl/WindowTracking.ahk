@@ -86,16 +86,19 @@ _trackWindows(track_active, is_first_time:=false, interval:=.2) {
 
   ; get current window / mouseover details
   if track_active {
-    win_id := WinGetID("A")
+    win_id := _getActiveWindowId()
   } else {
     win_id := _getWindowUnderMouse()
   }
-  active_id := WinGetID("A")
+  active_id := _getActiveWindowId()
 
-  win_title := WinGetTitle("ahk_id " win_id)
-  win_class := WinGetClass("ahk_id " win_id)
-  win_pid := WinGetPID("ahk_id " win_id)
-  win_exe := WinGetProcessPath("ahk_id " win_id)
+  win_title := win_class := win_pid := win_exe := ""
+  try {
+    win_title := WinGetTitle("ahk_id " win_id)
+    win_class := WinGetClass("ahk_id " win_id)
+    win_pid := WinGetPID("ahk_id " win_id)
+    win_exe := WinGetProcessPath("ahk_id " win_id)
+  }
 
   ; first execution?
   if is_first_time {
@@ -107,7 +110,12 @@ _trackWindows(track_active, is_first_time:=false, interval:=.2) {
       { ; stop monitoring?
         return ; interrupted, return
       }
-      if (track_active)
+      if (win_id = "")
+      { ; nothing to watch (no active window / none below cursor), poll instead
+        Sleep(interval * 1000)
+        if (track_active ? _getActiveWindowId() : _getWindowUnderMouse()) != ""
+          break
+      } else if (track_active)
       {
         ; continue until a new window is activated or interval is reached
         ErrorLevel := WinWaitNotActive("ahk_id " win_id, , interval) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
@@ -118,7 +126,7 @@ _trackWindows(track_active, is_first_time:=false, interval:=.2) {
         ; continue until the window below the mouse cursor changes
         Sleep(interval * 1000)
         new_id := _getWindowUnderMouse()
-        if (new_id != win_id || WinGetID("A") != active_id) { ; cursor target or focus changed
+        if (new_id != win_id || _getActiveWindowId() != active_id) { ; cursor target or focus changed
           break ; stop and update details (below)
         }
       }
@@ -137,14 +145,19 @@ _updateWindowDetails(track_active, prev_id:="", prev_title:="", prev_class:="", 
 
   ; get current window / mouseover details
   if track_active {
-    win_id := WinGetID("A")
+    win_id := _getActiveWindowId()
   } else {
     win_id := _getWindowUnderMouse()
   }
-  win_title := WinGetTitle("ahk_id " win_id)
-  win_class := WinGetClass("ahk_id " win_id)
-  win_pid := WinGetPID("ahk_id " win_id)
-  win_exe := WinGetProcessPath("ahk_id " win_id)
+  if (win_id = "")
+    return
+  try {
+    win_title := WinGetTitle("ahk_id " win_id)
+    win_class := WinGetClass("ahk_id " win_id)
+    win_pid := WinGetPID("ahk_id " win_id)
+    win_exe := WinGetProcessPath("ahk_id " win_id)
+  } catch
+    return ; window vanished
 
   ; completely ignore the tooltip itself (results in strange effects)
   if (win_class = "tooltips_class32") {
@@ -167,6 +180,12 @@ _updateWindowDetails(track_active, prev_id:="", prev_title:="", prev_class:="", 
     ; previous window not blacklisted and not active/same? -> update previous
     _setWindowVars("previous", prev_id, prev_title, prev_class, prev_pid, prev_exe)
   }
+}
+
+; WinGetID("A") throws while no window is active (e.g. during focus changes).
+_getActiveWindowId() {
+  try return WinGetID("A")
+  return ""
 }
 
 ; MouseGetPos can miss WSLg's RAIL window, so check its screen bounds as a fallback.
